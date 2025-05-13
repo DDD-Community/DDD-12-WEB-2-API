@@ -1,7 +1,10 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.4.5"
 	id("io.spring.dependency-management") version "1.1.7"
+    id("com.diffplug.spotless") version "7.0.3"
 }
 
 group = "com.ddd.api"
@@ -40,4 +43,14 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+configure<SpotlessExtension> {
+    java {
+        googleJavaFormat().aosp()
+
+        trimTrailingWhitespace()
+        endWithNewline()
+        removeUnusedImports()
+    }
 }

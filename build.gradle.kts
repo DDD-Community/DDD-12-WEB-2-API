@@ -45,6 +45,26 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+tasks.register<Copy>("initGitHooks") {
+    from(file("$rootDir/githooks")) {
+        include("pre-commit")
+        rename("pre-commit", "pre-commit")
+    }
+
+    into(file("$rootDir/.git/hooks"))
+
+    doLast {
+        val hookFile = file("$rootDir/.git/hooks/pre-commit")
+        if (hookFile.exists()) {
+            hookFile.setExecutable(true)
+        }
+    }
+}
+
+tasks.named("clean") {
+    dependsOn("initGitHooks")
+}
+
 configure<SpotlessExtension> {
     java {
         googleJavaFormat().aosp()

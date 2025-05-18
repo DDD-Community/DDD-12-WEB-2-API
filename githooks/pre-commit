@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+echo "▶ 스테이지된 Java 파일만 spotlessApply 실행 중..."
+
+# 1. 현재 스테이지에 올라간 파일 목록만 추출
+files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
+
+if [ -z "$files" ]; then
+  echo "✅ 포맷할 Java 파일이 없습니다. 커밋을 진행합니다."
+  exit 0
+fi
+
+# 2. Spotless는 지정된 파일만 직접 지정 불가 → 대신 전체 실행 후, 수정된 파일 중 대상만 git add
+./gradlew spotlessApply --quiet
+
+echo "▶ 다시 git add 중..."
+echo "$files" | xargs git add
+
+echo "▶ spotlessCheck 실행 중..."
+./gradlew spotlessCheck --quiet
+
+echo "✅ 포맷 완료. 커밋 진행 가능!"

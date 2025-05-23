@@ -1,0 +1,47 @@
+name: PR Discord Webhook
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  send-discord-webhook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord webhook
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TITLE: ${{ github.event.pull_request.title }}
+          URL: ${{ github.event.pull_request.html_url }}
+          BODY: ${{ github.event.pull_request.body }}
+          USER: ${{ github.event.pull_request.user.login }}
+          HEAD: ${{ github.event.pull_request.head.ref }}
+          BASE: ${{ github.event.pull_request.base.ref }}
+          REPO: ${{ github.repository }}
+          TIME: ${{ github.event.pull_request.created_at }}
+        run: |
+          JSON=$(jq -n --arg title "$TITLE" \
+                      --arg url "$URL" \
+                      --arg desc "${BODY:-내용 없음}" \
+                      --arg user "$USER" \
+                      --arg branch "$HEAD → $BASE" \
+                      --arg repo "$REPO" \
+                      --arg time "$TIME" \
+          '{
+            content: "🔔 새로운 PR이 열렸습니다!",
+            embeds: [{
+              title: $title,
+              url: $url,
+              description: $desc,
+              color: 3447003,
+              fields: [
+                { name: "작성자", value: $user, inline: true },
+                { name: "브랜치", value: $branch, inline: true },
+                { name: "레포지토리", value: $repo, inline: false }
+              ],
+              timestamp: $time
+            }]
+          }')
+
+          curl -X POST -H "Content-Type: application/json" -d "$JSON" "$DISCORD_WEBHOOK_URL"

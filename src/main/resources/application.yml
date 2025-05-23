@@ -22,3 +22,7 @@ spring:
         show_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
         use_sql_comments: true
+
+  mvc:
+    problemdetails:
+      enabled: true

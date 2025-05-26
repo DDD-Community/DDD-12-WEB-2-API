@@ -14,11 +14,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
 import org.springframework.util.ObjectUtils;
 
 @Getter
 @Entity
 @Table(name = "sample")
+@SoftDelete(
+        columnName = "isUse",
+        converter = BooleanYnConverter.class,
+        strategy = SoftDeleteType.ACTIVE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sample extends AuditInformation {
 

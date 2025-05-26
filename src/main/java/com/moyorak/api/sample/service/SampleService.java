@@ -40,4 +40,14 @@ public class SampleService {
 
         sample.modify(request.title(), request.content());
     }
+
+    @Transactional
+    public void remove(final Long id) {
+        Sample sample =
+                sampleRepository
+                        .findById(id)
+                        .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
+
+        sampleRepository.delete(sample);
+    }
 }

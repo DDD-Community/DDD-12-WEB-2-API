@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,5 +46,11 @@ class SampleController {
             @PathVariable @Positive final Long id,
             @RequestBody @Valid final SampleUpdateRequest request) {
         sampleService.modify(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "샘플 데이터 삭제", description = "샘플 데이터를 삭제합니다.")
+    public void remove(@PathVariable @Positive final Long id) {
+        sampleService.remove(id);
     }
 }

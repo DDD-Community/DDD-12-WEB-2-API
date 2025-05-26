@@ -4,6 +4,7 @@ import com.moyorak.api.config.exception.BusinessException;
 import com.moyorak.api.sample.domain.Sample;
 import com.moyorak.api.sample.dto.SampleResponse;
 import com.moyorak.api.sample.dto.SampleSaveRequest;
+import com.moyorak.api.sample.dto.SampleUpdateRequest;
 import com.moyorak.api.sample.repository.SampleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,15 @@ public class SampleService {
     @Transactional
     public void register(final SampleSaveRequest request) {
         sampleRepository.save(request.toEntity());
+    }
+
+    @Transactional
+    public void modify(final Long id, final SampleUpdateRequest request) {
+        Sample sample =
+                sampleRepository
+                        .findById(id)
+                        .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
+
+        sample.modify(request.title(), request.content());
     }
 }

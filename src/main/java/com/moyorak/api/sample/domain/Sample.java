@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.util.ObjectUtils;
 
 @Getter
 @Entity
@@ -49,5 +50,15 @@ public class Sample extends AuditInformation {
         sample.content = content;
 
         return sample;
+    }
+
+    public void modify(final String title, final String content) {
+        if (!ObjectUtils.isEmpty(title)) {
+            this.title = title;
+        }
+
+        if (!ObjectUtils.isEmpty(content)) {
+            this.content = content;
+        }
     }
 }

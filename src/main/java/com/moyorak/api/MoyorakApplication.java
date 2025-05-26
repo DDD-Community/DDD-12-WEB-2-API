@@ -1,12 +1,12 @@
-package com.ddd.api;
+package com.moyorak.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Ddd12Web2Application {
+public class MoyorakApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Ddd12Web2Application.class, args);
+        SpringApplication.run(MoyorakApplication.class, args);
     }
 }

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: DDD-12-WEB-2
+    name: DDD-12-MOYORAK-API
 
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL

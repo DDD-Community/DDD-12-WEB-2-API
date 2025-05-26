@@ -1,4 +1,4 @@
-package com.ddd.api.infra.orm;
+package com.moyorak.api.infra.orm;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,4 +1,4 @@
-package com.ddd.api.infra.orm;
+package com.moyorak.api.infra.orm;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

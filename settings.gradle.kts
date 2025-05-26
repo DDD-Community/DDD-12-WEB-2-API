@@ -1,1 +1,1 @@
-rootProject.name = "ddd-12-web-2"
+rootProject.name = "ddd-12-moyorak-api"

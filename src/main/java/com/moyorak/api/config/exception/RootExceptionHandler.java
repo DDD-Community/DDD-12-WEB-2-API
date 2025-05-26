@@ -1,4 +1,4 @@
-package com.ddd.api.config.exception;
+package com.moyorak.api.config.exception;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.ddd.api.infra.swagger;
+package com.moyorak.api.infra.swagger;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -13,7 +13,7 @@ class SwaggerConfig {
         return new OpenAPI()
                 .info(
                         new Info()
-                                .title("DDD 12기 WEB 2팀 API")
-                                .description("DDD 12기 WEB 2팀 API SWAGGER UI입니다."));
+                                .title("모여락 API")
+                                .description("DDD 12기 WEB 2팀 모여락 API SWAGGER UI입니다."));
     }
 }

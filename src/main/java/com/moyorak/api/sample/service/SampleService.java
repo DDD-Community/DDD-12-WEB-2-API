@@ -1,12 +1,15 @@
 package com.moyorak.api.sample.service;
 
 import com.moyorak.api.config.exception.BusinessException;
+import com.moyorak.api.global.domain.ListResponse;
 import com.moyorak.api.sample.domain.Sample;
 import com.moyorak.api.sample.dto.SampleResponse;
 import com.moyorak.api.sample.dto.SampleSaveRequest;
+import com.moyorak.api.sample.dto.SampleSearchRequest;
 import com.moyorak.api.sample.dto.SampleUpdateRequest;
 import com.moyorak.api.sample.repository.SampleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,15 @@ public class SampleService {
                         .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
 
         return SampleResponse.from(sample);
+    }
+
+    @Transactional(readOnly = true)
+    public ListResponse<SampleResponse> search(final SampleSearchRequest request) {
+        final Page<Sample> samples =
+                sampleRepository.findByConditions(
+                        request.getTitle(), request.getContent(), request.toPageable());
+
+        return ListResponse.from(samples, SampleResponse::from);
     }
 
     @Transactional

@@ -1,7 +1,9 @@
 package com.moyorak.api.sample.controller;
 
+import com.moyorak.api.global.domain.ListResponse;
 import com.moyorak.api.sample.dto.SampleResponse;
 import com.moyorak.api.sample.dto.SampleSaveRequest;
+import com.moyorak.api.sample.dto.SampleSearchRequest;
 import com.moyorak.api.sample.dto.SampleUpdateRequest;
 import com.moyorak.api.sample.service.SampleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +34,12 @@ class SampleController {
     @Operation(summary = "샘플 데이터 단건 조회", description = "샘플 데이터 단건을 조회합니다.")
     public SampleResponse getDetail(@PathVariable @Positive final Long id) {
         return sampleService.getDetail(id);
+    }
+
+    @GetMapping
+    @Operation(summary = "샘플 데이터 검색", description = "샘플 데이터 리스트를 검색합니다.")
+    public ListResponse<SampleResponse> search(@Valid final SampleSearchRequest request) {
+        return sampleService.search(request);
     }
 
     @PostMapping

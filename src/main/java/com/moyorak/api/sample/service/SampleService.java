@@ -60,6 +60,8 @@ public class SampleService {
                         .findById(id)
                         .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
 
+        sample.remove();
+
         sampleRepository.delete(sample);
     }
 }

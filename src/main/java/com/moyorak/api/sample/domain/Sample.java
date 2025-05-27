@@ -67,4 +67,8 @@ public class Sample extends AuditInformation {
             this.content = content;
         }
     }
+
+    public void remove() {
+        this.isUse = false;
+    }
 }

@@ -47,7 +47,7 @@ public class Sample extends AuditInformation {
     @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
-    private boolean isUse = true;
+    private Boolean isUse = true;
 
     public static Sample create(final String title, final String content) {
         Sample sample = new Sample();

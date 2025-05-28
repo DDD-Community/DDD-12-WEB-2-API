@@ -1,6 +1,6 @@
 package com.moyorak.api.sample.service;
 
-import com.moyorak.api.config.exception.BusinessException;
+import com.moyorak.api.config.exception.domain.DataNotFoundException;
 import com.moyorak.api.global.domain.ListResponse;
 import com.moyorak.api.sample.domain.Sample;
 import com.moyorak.api.sample.dto.SampleResponse;
@@ -21,10 +21,7 @@ public class SampleService {
 
     @Transactional(readOnly = true)
     public SampleResponse getDetail(final Long id) {
-        final Sample sample =
-                sampleRepository
-                        .findById(id)
-                        .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
+        final Sample sample = findByIdOrThrow(id);
 
         return SampleResponse.from(sample);
     }
@@ -45,23 +42,21 @@ public class SampleService {
 
     @Transactional
     public void modify(final Long id, final SampleUpdateRequest request) {
-        Sample sample =
-                sampleRepository
-                        .findById(id)
-                        .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
+        Sample sample = findByIdOrThrow(id);
 
         sample.modify(request.title(), request.content());
     }
 
     @Transactional
     public void remove(final Long id) {
-        Sample sample =
-                sampleRepository
-                        .findById(id)
-                        .orElseThrow(() -> new BusinessException("존재하지 않는 데이터입니다."));
+        Sample sample = findByIdOrThrow(id);
 
         sample.remove();
 
         sampleRepository.delete(sample);
+    }
+
+    private Sample findByIdOrThrow(final Long id) {
+        return sampleRepository.findById(id).orElseThrow(DataNotFoundException::new);
     }
 }

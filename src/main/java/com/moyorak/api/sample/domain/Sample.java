@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Entity
@@ -59,11 +59,11 @@ public class Sample extends AuditInformation {
     }
 
     public void modify(final String title, final String content) {
-        if (!ObjectUtils.isEmpty(title)) {
+        if (StringUtils.hasText(title)) {
             this.title = title;
         }
 
-        if (!ObjectUtils.isEmpty(content)) {
+        if (StringUtils.hasText(content)) {
             this.content = content;
         }
     }

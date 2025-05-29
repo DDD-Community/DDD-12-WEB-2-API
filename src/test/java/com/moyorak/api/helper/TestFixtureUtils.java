@@ -7,7 +7,7 @@ public class TestFixtureUtils {
     private static final String CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    public static Long size에_맞는_Long_생성(int size) {
+    public static Long createLongWithSize(int size) {
         if (size < 0) {
             throw new IllegalArgumentException("크기는 음수일 수 없습니다.");
         }
@@ -15,7 +15,7 @@ public class TestFixtureUtils {
         return (long) (random.nextDouble() * (size + 1));
     }
 
-    public static String size에_맞는_문자열_생성(int size) {
+    public static String createStringWithLength(int size) {
         if (size < 0) {
             throw new IllegalArgumentException("크기는 음수일 수 없습니다.");
         }

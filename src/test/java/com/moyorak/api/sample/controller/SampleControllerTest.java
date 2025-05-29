@@ -153,7 +153,7 @@ class SampleControllerTest {
                 @DisplayName("64자 초과일 때, 유효성 검증에 실패합니다.")
                 void isMore() throws Exception {
                     // given
-                    final String title = TestFixtureUtils.size에_맞는_문자열_생성(65);
+                    final String title = TestFixtureUtils.createStringWithLength(65);
 
                     // when & then
                     mockMvc.perform(get(getUrl(title, null)))
@@ -168,7 +168,7 @@ class SampleControllerTest {
                 @DisplayName("200자 초과일 때, 유효성 검증에 실패합니다.")
                 void isMore() throws Exception {
                     // given
-                    final String content = TestFixtureUtils.size에_맞는_문자열_생성(201);
+                    final String content = TestFixtureUtils.createStringWithLength(201);
 
                     // when & then
                     mockMvc.perform(get(getUrl(null, content)))
@@ -278,7 +278,7 @@ class SampleControllerTest {
                 @Test
                 @DisplayName("64자를 초과했을 경우, 실패합니다.")
                 void isMore() throws Exception {
-                    final String title = TestFixtureUtils.size에_맞는_문자열_생성(65);
+                    final String title = TestFixtureUtils.createStringWithLength(65);
 
                     final String requestBody =
                             """
@@ -348,7 +348,7 @@ class SampleControllerTest {
                 @DisplayName("200자를 초과했을 경우, 실패합니다.")
                 void isMore() throws Exception {
                     // given
-                    final String content = TestFixtureUtils.size에_맞는_문자열_생성(201);
+                    final String content = TestFixtureUtils.createStringWithLength(201);
 
                     final String requestBody =
                             """
@@ -456,7 +456,7 @@ class SampleControllerTest {
                     // given
                     final Long id = 1L;
 
-                    final String title = TestFixtureUtils.size에_맞는_문자열_생성(65);
+                    final String title = TestFixtureUtils.createStringWithLength(65);
 
                     final String requestBody =
                             """
@@ -532,7 +532,7 @@ class SampleControllerTest {
                     // given
                     final Long id = 1L;
 
-                    final String content = TestFixtureUtils.size에_맞는_문자열_생성(201);
+                    final String content = TestFixtureUtils.createStringWithLength(201);
 
                     final String requestBody =
                             """

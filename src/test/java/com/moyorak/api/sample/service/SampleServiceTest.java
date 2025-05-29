@@ -219,7 +219,7 @@ class SampleServiceTest {
                     then(sampleRepository).should().delete(captor.capture());
 
                     Sample captorValue = captor.getValue();
-                    assertThat(captorValue.getIsUse()).isFalse();
+                    assertThat(captorValue.isUse()).isFalse();
                 }
             }
         }

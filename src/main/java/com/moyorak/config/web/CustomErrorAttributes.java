@@ -1,4 +1,4 @@
-package com.moyorak.api.config.web;
+package com.moyorak.config.web;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

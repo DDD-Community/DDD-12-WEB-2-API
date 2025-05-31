@@ -1,6 +1,6 @@
-package com.moyorak.api.config.exception.domain;
+package com.moyorak.config.exception.domain;
 
-import com.moyorak.api.config.exception.BusinessException;
+import com.moyorak.config.exception.BusinessException;
 
 public class DataNotFoundException extends BusinessException {
 

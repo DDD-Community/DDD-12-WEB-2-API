@@ -1,4 +1,4 @@
-package com.moyorak.api;
+package com.moyorak;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

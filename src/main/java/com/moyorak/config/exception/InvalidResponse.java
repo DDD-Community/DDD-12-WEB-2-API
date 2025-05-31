@@ -1,4 +1,4 @@
-package com.moyorak.api.config.exception;
+package com.moyorak.config.exception;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.moyorak.api.config.exception;
+package com.moyorak.config.exception;
 
 public class BusinessException extends RuntimeException {
 

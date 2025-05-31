@@ -1,4 +1,4 @@
-package com.moyorak.api.config.web;
+package com.moyorak.config.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

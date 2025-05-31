@@ -1,6 +1,6 @@
 package com.moyorak.api.sample.dto;
 
-import com.moyorak.api.global.domain.ListRequest;
+import com.moyorak.global.domain.ListRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;

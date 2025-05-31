@@ -1,11 +1,11 @@
 package com.moyorak.api.sample.controller;
 
-import com.moyorak.api.global.domain.ListResponse;
 import com.moyorak.api.sample.dto.SampleResponse;
 import com.moyorak.api.sample.dto.SampleSaveRequest;
 import com.moyorak.api.sample.dto.SampleSearchRequest;
 import com.moyorak.api.sample.dto.SampleUpdateRequest;
 import com.moyorak.api.sample.service.SampleService;
+import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

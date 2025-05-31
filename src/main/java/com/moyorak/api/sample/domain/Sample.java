@@ -1,7 +1,7 @@
 package com.moyorak.api.sample.domain;
 
-import com.moyorak.api.infra.orm.AuditInformation;
-import com.moyorak.api.infra.orm.BooleanYnConverter;
+import com.moyorak.infra.orm.AuditInformation;
+import com.moyorak.infra.orm.BooleanYnConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

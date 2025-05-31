@@ -1,4 +1,4 @@
-package com.moyorak.api.infra.orm;
+package com.moyorak.infra.orm;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

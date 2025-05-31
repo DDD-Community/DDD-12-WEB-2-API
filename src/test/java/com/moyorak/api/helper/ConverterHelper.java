@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.moyorak.api.global.domain.ListResponse;
+import com.moyorak.global.domain.ListResponse;
 import java.util.List;
 
 public class ConverterHelper {

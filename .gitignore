@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### dev env ###
+application-local.yml
+
+### mac ###
+.DS_Store

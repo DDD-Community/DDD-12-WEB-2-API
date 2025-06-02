@@ -28,4 +28,4 @@ spring:
       enabled: true
 
   profiles:
-    active: local
+    active: ${SPRING_PROFILES_ACTIVE:local}

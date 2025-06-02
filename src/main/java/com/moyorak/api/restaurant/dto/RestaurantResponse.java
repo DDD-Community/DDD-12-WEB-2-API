@@ -1,6 +1,6 @@
 package com.moyorak.api.restaurant.dto;
 
-import com.moyorak.api.restaurant.external.dto.KakaoPlace;
+import com.moyorak.infra.client.kakao.dto.KakaoPlace;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(title = "음식점 정보 DTO")

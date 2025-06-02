@@ -1,7 +1,7 @@
-package com.moyorak.api.restaurant.external;
+package com.moyorak.infra.client.kakao;
 
-import com.moyorak.api.restaurant.external.dto.KakaoSearchRequest;
-import com.moyorak.api.restaurant.external.dto.KakoSearchResponse;
+import com.moyorak.infra.client.kakao.dto.KakaoSearchRequest;
+import com.moyorak.infra.client.kakao.dto.KakoSearchResponse;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

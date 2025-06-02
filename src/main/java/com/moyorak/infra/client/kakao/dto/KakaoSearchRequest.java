@@ -1,4 +1,4 @@
-package com.moyorak.api.restaurant.external.dto;
+package com.moyorak.infra.client.kakao.dto;
 
 import java.util.Objects;
 import org.springframework.util.LinkedMultiValueMap;

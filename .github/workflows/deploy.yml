@@ -18,11 +18,6 @@ jobs:
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Set up SSH key
-        run: |
-          echo "${{ secrets.SSH_KEY }}" | base64 -d > key.pem
-          chmod 600 key.pem
-
       - name: SSH to private EC2 via Bastion and deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -31,7 +26,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           proxy_host: ${{ secrets.BASTION_HOST }}
           proxy_username: ${{ secrets.BASTION_USER }}
-          proxy_key: ${{ secrets.SSH_KEY }}
+          proxy_key: ${{ secrets.BASTION_KEY }}
           script: |
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
             docker pull ${{ secrets.IMAGE_NAME }}

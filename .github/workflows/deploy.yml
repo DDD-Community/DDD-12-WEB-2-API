@@ -8,12 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get GitHub Actions public IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Add GitHub Actions IP to Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -33,3 +44,11 @@ jobs:
             docker stop app || true
             docker rm app || true
             docker run -d --name app -p 8080:8080 ${{ secrets.IMAGE_NAME }}
+
+      - name: Remove GitHub Actions IP from Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32

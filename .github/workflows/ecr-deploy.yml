@@ -12,7 +12,7 @@ jobs:
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
-      ECR_REGISTRY: ${{ secrets.$ECR_REGISTRY }}
+      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
     steps:
       - name: Checkout code

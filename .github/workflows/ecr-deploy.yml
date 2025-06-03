@@ -1,0 +1,37 @@
+name: Deploy to ECR on merge to main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+      ECR_REGISTRY: ${{ secrets.$ECR_REGISTRY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: Tag Docker image
+        run: docker tag $IMAGE_NAME:latest $ECR_REGISTRY:latest
+
+      - name: Push Docker image to ECR
+        run: docker push $ECR_REGISTRY:latest

@@ -16,6 +16,10 @@ java {
 	}
 }
 
+tasks.bootJar {
+    layered {}
+}
+
 repositories {
 	mavenCentral()
 }

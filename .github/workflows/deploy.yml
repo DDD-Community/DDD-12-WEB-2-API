@@ -1,0 +1,40 @@
+name: Deploy to private EC2 via Bastion
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up SSH key
+        run: |
+          echo "${{ secrets.SSH_KEY }}" | base64 -d > key.pem
+          chmod 600 key.pem
+
+      - name: SSH to private EC2 via Bastion and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PRIVATE_HOST }}
+          username: ${{ secrets.BASTION_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          proxy_host: ${{ secrets.BASTION_HOST }}
+          proxy_username: ${{ secrets.BASTION_USER }}
+          proxy_key: ${{ secrets.SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+            docker pull ${{ secrets.IMAGE_NAME }}
+            docker stop app || true
+            docker rm app || true
+            docker run -d --name app -p 8080:8080 ${{ secrets.IMAGE_NAME }}

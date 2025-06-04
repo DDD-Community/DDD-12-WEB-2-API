@@ -1,24 +1,27 @@
 package com.moyorak.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-public class RestClientConfig {
+@RequiredArgsConstructor
+class RestClientConfig {
 
-    @Value("${kakao.api.key}")
-    private String kakaoApiKey;
+    public static final int CONNECT_TIMEOUT = 5000;
 
     @Bean
-    public RestClient kakaoRestClient() {
+    RestClient.Builder restClientBuilder() {
+        SimpleClientHttpRequestFactory simpleClientHttpRequestFactory =
+                new SimpleClientHttpRequestFactory();
+        simpleClientHttpRequestFactory.setConnectTimeout(CONNECT_TIMEOUT);
+        simpleClientHttpRequestFactory.setReadTimeout(CONNECT_TIMEOUT);
         return RestClient.builder()
-                .baseUrl("https://dapi.kakao.com")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoApiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
+                .requestFactory(simpleClientHttpRequestFactory);
     }
 }

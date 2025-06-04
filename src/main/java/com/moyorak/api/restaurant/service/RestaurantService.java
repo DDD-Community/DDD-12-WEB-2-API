@@ -5,13 +5,9 @@ import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.global.domain.ListResponse;
 import com.moyorak.infra.client.kakao.KakaoSearcher;
 import com.moyorak.infra.client.kakao.dto.KakaoPlace;
-import com.moyorak.infra.client.kakao.dto.KakoSearchResponse;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,26 +19,7 @@ public class RestaurantService {
 
     public ListResponse<RestaurantResponse> searchRestaurant(
             RestaurantSearchRequest searchRequest) {
-        KakoSearchResponse kakoSearchResponse =
-                kakaoSearcher.search(searchRequest.toKakaoSearchRequest());
-        Page<KakaoPlace> page =
-                createPage(kakoSearchResponse, searchRequest.page(), searchRequest.size());
+        Page<KakaoPlace> page = kakaoSearcher.search(searchRequest.toKakaoSearchRequest());
         return ListResponse.from(page, RestaurantResponse::fromKakaoPlace);
-    }
-
-    private Page<KakaoPlace> createPage(
-            KakoSearchResponse kakoSearchResponse, int currentPage, int size) {
-        int offset = (currentPage - 1) * size;
-        PageRequest pageRequest = PageRequest.of(currentPage - 1, size);
-        if (offset >= kakoSearchResponse.meta().pageable_count()) {
-            return new PageImpl<>(
-                    Collections.emptyList(),
-                    pageRequest,
-                    kakoSearchResponse.meta().pageable_count());
-        }
-        return new PageImpl<>(
-                kakoSearchResponse.documents(),
-                pageRequest,
-                kakoSearchResponse.meta().pageable_count());
     }
 }

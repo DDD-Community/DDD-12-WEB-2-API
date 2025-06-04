@@ -16,8 +16,8 @@ class KakaoClientConfig {
 
     @Bean
     KakoClient kakoClient(
-            @Value("${kakao.api.base-url}") String baseUrl,
-            @Value("${kakao.api.key}") String apiKey) {
+            @Value("${kakao.api.base-url}") final String baseUrl,
+            @Value("${kakao.api.key}") final String apiKey) {
         RestClient restClient =
                 restClientBuilder
                         .baseUrl(baseUrl)

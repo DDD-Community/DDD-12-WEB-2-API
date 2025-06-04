@@ -1,3 +1,4 @@
 kakao:
   api:
     key: your-kakao-api-key-here
+    base-url: your-kakao-api-base-url-here

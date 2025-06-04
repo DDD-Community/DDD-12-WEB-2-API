@@ -1,4 +1,4 @@
-package com.moyorak.config;
+package com.moyorak.infra.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

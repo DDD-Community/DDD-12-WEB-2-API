@@ -50,22 +50,25 @@ jobs:
 
       - name: Delete old ECR images (keep 2 latest)
         run: |
-          IMAGE_TAGS=$(aws ecr list-images --repository-name moyorak --query 'imageIds[*].imageTag' --output text | tr '\t' '\n' | grep -v none | sort)
-          IMAGE_COUNT=$(echo "$IMAGE_TAGS" | wc -l)
-          echo "Total images: $IMAGE_COUNT"
+          IMAGE_IDS=$(aws ecr list-images \
+            --repository-name moyorak \
+            --query 'imageIds' \
+            --output json)
 
-          if [ "$IMAGE_COUNT" -gt 2 ]; then
+            IMAGE_COUNT=$(echo "$IMAGE_IDS" | jq length)
+          echo "Total images (including untagged): $IMAGE_COUNT"
+
+            if [ "$IMAGE_COUNT" -gt 2 ]; then
             DELETE_COUNT=$(($IMAGE_COUNT - 2))
             echo "Deleting $DELETE_COUNT old image(s)..."
 
-            IMAGES_TO_DELETE=$(echo "$IMAGE_TAGS" | head -n $DELETE_COUNT)
+            IMAGES_TO_DELETE=$(echo "$IMAGE_IDS" | jq -c ".[:$DELETE_COUNT]")
 
-            for tag in $IMAGES_TO_DELETE; do
-              echo "Deleting tag: $tag"
-              aws ecr batch-delete-image \
-                --repository-name moyorak \
-                --image-ids imageTag=$tag
-            done
-          else
+            echo "$IMAGES_TO_DELETE" > delete.json
+
+            aws ecr batch-delete-image \
+            --repository-name moyorak \
+            --image-ids file://delete.json
+            else
             echo "No old images to delete."
-          fi
+            fi

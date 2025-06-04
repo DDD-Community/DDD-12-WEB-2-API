@@ -29,21 +29,16 @@ jobs:
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: SSH to private EC2 via Bastion and deploy
+      - name: Configure SSH access to Public EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.PRIVATE_HOST }}
+          host: ${{ secrets.BASTION_HOST }}
           username: ${{ secrets.BASTION_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          proxy_host: ${{ secrets.BASTION_HOST }}
-          proxy_username: ${{ secrets.BASTION_USER }}
-          proxy_key: ${{ secrets.BASTION_KEY }}
+          key: ${{ secrets.BASTION_KEY }}
           script: |
-            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-            docker pull ${{ secrets.IMAGE_NAME }}
-            docker stop app || true
-            docker rm app || true
-            docker run -d --name app -p 8080:8080 ${{ secrets.IMAGE_NAME }}
+            cd ${{ secrets.BASTION_DIRECTORY }}
+            chmod +x ${{ secrets.BASTION_SHELL_NAME }}
+            ./${{ secrets.BASTION_SHELL_NAME }}
 
       - name: Remove GitHub Actions IP from Security Group
         if: always()

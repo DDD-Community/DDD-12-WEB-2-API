@@ -31,8 +31,41 @@ jobs:
       - name: Build Docker image
         run: docker build -t $IMAGE_NAME .
 
+      - name: Check image size (limit = 500MB)
+        id: check-size
+        run: |
+          IMAGE_SIZE=$(docker image inspect $IMAGE_NAME:latest --format='{{.Size}}')
+          SIZE_MB=$((IMAGE_SIZE / 1024 / 1024))
+          echo "Docker image size: ${SIZE_MB}MB"
+          if [ $SIZE_MB -gt 500 ]; then
+            echo "❌ Image is too large! (${SIZE_MB}MB)"
+            exit 1
+          fi
+
       - name: Tag Docker image
         run: docker tag $IMAGE_NAME:latest $ECR_REGISTRY:latest
 
       - name: Push Docker image to ECR
         run: docker push $ECR_REGISTRY:latest
+
+      - name: Delete old ECR images (keep 2 latest)
+        run: |
+          IMAGE_TAGS=$(aws ecr list-images --repository-name moyorak --query 'imageIds[*].imageTag' --output text | tr '\t' '\n' | grep -v none | sort)
+          IMAGE_COUNT=$(echo "$IMAGE_TAGS" | wc -l)
+          echo "Total images: $IMAGE_COUNT"
+
+          if [ "$IMAGE_COUNT" -gt 2 ]; then
+            DELETE_COUNT=$(($IMAGE_COUNT - 2))
+            echo "Deleting $DELETE_COUNT old image(s)..."
+
+            IMAGES_TO_DELETE=$(echo "$IMAGE_TAGS" | head -n $DELETE_COUNT)
+
+            for tag in $IMAGES_TO_DELETE; do
+              echo "Deleting tag: $tag"
+              aws ecr batch-delete-image \
+                --repository-name moyorak \
+                --image-ids imageTag=$tag
+            done
+          else
+            echo "No old images to delete."
+          fi

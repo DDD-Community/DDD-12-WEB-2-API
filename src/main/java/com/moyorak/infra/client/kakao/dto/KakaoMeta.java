@@ -1,3 +1,8 @@
 package com.moyorak.infra.client.kakao.dto;
 
-public record KakaoMeta(int total_count, int pageable_count, boolean is_end) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record KakaoMeta(
+        @JsonProperty("total_count") int totalCount,
+        @JsonProperty("pageable_count") int pageableCount,
+        @JsonProperty("is_end") boolean isEnd) {}

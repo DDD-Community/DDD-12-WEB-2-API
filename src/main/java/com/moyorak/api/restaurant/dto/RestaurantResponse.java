@@ -14,9 +14,9 @@ public record RestaurantResponse(
 
     public static RestaurantResponse fromKakaoPlace(KakaoPlace kakaoPlace) {
         return new RestaurantResponse(
-                kakaoPlace.place_name(),
-                kakaoPlace.address_name(),
-                kakaoPlace.road_address_name(),
+                kakaoPlace.placeName(),
+                kakaoPlace.addressName(),
+                kakaoPlace.roadAddressName(),
                 kakaoPlace.phone(),
                 kakaoPlace.x(),
                 kakaoPlace.y());

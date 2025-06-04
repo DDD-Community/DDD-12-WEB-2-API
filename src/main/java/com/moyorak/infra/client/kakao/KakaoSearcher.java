@@ -34,15 +34,15 @@ public class KakaoSearcher {
             KakoSearchResponse kakoSearchResponse, int currentPage, int size) {
         int offset = (currentPage - 1) * size;
         PageRequest pageRequest = PageRequest.of(currentPage - 1, size);
-        if (offset >= kakoSearchResponse.meta().pageable_count()) {
+        if (offset >= kakoSearchResponse.meta().pageableCount()) {
             return new PageImpl<>(
                     Collections.emptyList(),
                     pageRequest,
-                    kakoSearchResponse.meta().pageable_count());
+                    kakoSearchResponse.meta().pageableCount());
         }
         return new PageImpl<>(
                 kakoSearchResponse.documents(),
                 pageRequest,
-                kakoSearchResponse.meta().pageable_count());
+                kakoSearchResponse.meta().pageableCount());
     }
 }

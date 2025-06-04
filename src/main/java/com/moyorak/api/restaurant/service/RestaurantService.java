@@ -17,7 +17,7 @@ public class RestaurantService {
 
     private final KakaoSearcher kakaoSearcher;
 
-    public ListResponse<RestaurantResponse> searchRestaurant(
+    public ListResponse<RestaurantResponse> searchRestaurants(
             RestaurantSearchRequest searchRequest) {
         Page<KakaoPlace> page = kakaoSearcher.search(searchRequest.toKakaoSearchRequest());
         return ListResponse.from(page, RestaurantResponse::fromKakaoPlace);

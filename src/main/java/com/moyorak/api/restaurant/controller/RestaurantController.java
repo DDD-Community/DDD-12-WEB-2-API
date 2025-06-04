@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/restaurants")
 @Tag(name = "음식점 API", description = "음식점 API 입니다.")
-public class RestaurantController {
+class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    @GetMapping("/search")
+    @GetMapping
     @Operation(summary = "음식점 데이터 조회", description = "음식점 데이터 리스트를 검색합니다.")
     public ListResponse<RestaurantResponse> searchRestaurants(
             @Valid RestaurantSearchRequest searchRequest) {
-        return restaurantService.searchRestaurant(searchRequest);
+        return restaurantService.searchRestaurants(searchRequest);
     }
 }

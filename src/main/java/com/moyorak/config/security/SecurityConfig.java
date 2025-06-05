@@ -11,7 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 class SecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService oAuth2UserService)
+            throws Exception {
         http.authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(
@@ -28,7 +29,11 @@ class SecurityConfig {
                                                 HeadersConfigurer.FrameOptionsConfig
                                                         ::disable) // H2 콘솔 iframe 허용하기 위함
                                         .contentTypeOptions(Customizer.withDefaults()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .oauth2Login(
+                        oauth ->
+                                oauth.userInfoEndpoint(
+                                        userInfo -> userInfo.userService(oAuth2UserService)));
 
         return http.build();
     }

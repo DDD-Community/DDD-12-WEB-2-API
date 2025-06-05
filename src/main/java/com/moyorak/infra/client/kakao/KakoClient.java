@@ -1,5 +1,7 @@
 package com.moyorak.infra.client.kakao;
 
+import com.moyorak.config.exception.BusinessException;
+import com.moyorak.config.exception.ServerSideException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,10 +20,16 @@ public class KakoClient {
                 .uri(uri)
                 .retrieve()
                 .onStatus(
-                        HttpStatusCode::isError,
+                        HttpStatusCode::is4xxClientError,
                         ((request, response) -> {
-                            log.error("Kakao Error Code {}", response.getStatusCode());
-                            throw new RuntimeException("Kakao Client Error");
+                            log.error("Kakao 4xx Error Code {}", response.getStatusCode());
+                            throw new BusinessException("잘못된 요청입니다.");
+                        }))
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
+                        ((request, response) -> {
+                            log.error("Kakao 5xx Error Code {}", response.getStatusCode());
+                            throw new ServerSideException("서버 오류가 발생했습니다.");
                         }))
                 .body(typeReference);
     }

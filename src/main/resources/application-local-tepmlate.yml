@@ -11,3 +11,6 @@ spring:
           google:
             client-id: google-client-id
             client-secret: google-client-secret
+
+jwt:
+  secret: jwt-secret

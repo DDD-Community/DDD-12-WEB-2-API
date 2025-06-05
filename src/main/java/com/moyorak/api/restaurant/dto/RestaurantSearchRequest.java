@@ -11,14 +11,14 @@ import org.springdoc.core.annotations.ParameterObject;
 public record RestaurantSearchRequest(
         @NotBlank(message = "키워드를 입력해주세요.") @Parameter(description = "키워드", example = "맥도날드")
                 String query,
-        @DecimalMin(value = "-90.0", message = "위도는 {value} 이상이어야 합니다.")
-                @DecimalMax(value = "90.0", message = "위도는 {value} 이하여야 합니다.")
-                @Parameter(description = "위도", example = "37.279838")
-                Double latitude,
         @DecimalMin(value = "-180.0", message = "경도는 {value} 이상이어야 합니다.")
                 @DecimalMax(value = "180.0", message = "경도는 {value} 이하여야 합니다.")
                 @Parameter(description = "경도", example = "127.043616")
-                Double longitude,
+                Double x,
+        @DecimalMin(value = "-90.0", message = "위도는 {value} 이상이어야 합니다.")
+                @DecimalMax(value = "90.0", message = "위도는 {value} 이하여야 합니다.")
+                @Parameter(description = "위도", example = "37.279838")
+                Double y,
         @Min(value = 0, message = "반경은 {value}m 이상이어야 합니다.")
                 @Max(value = 20000, message = "반경은 {value}m 이하여야 합니다.")
                 @Parameter(description = "조회 범위", example = "2000")
@@ -35,6 +35,6 @@ public record RestaurantSearchRequest(
     private static final String FOOD_CODE = "FD6";
 
     public KakaoSearchRequest toKakaoSearchRequest() {
-        return new KakaoSearchRequest(query, latitude, longitude, radius, page, size, FOOD_CODE);
+        return new KakaoSearchRequest(query, x, y, radius, page, size, FOOD_CODE);
     }
 }

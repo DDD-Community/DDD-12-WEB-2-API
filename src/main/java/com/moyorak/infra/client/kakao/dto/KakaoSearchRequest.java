@@ -6,8 +6,8 @@ import org.springframework.util.MultiValueMap;
 
 public record KakaoSearchRequest(
         String query,
-        Double latitude,
-        Double longitude,
+        Double x,
+        Double y,
         Integer radius,
         Integer page,
         Integer size,
@@ -16,8 +16,8 @@ public record KakaoSearchRequest(
     public MultiValueMap<String, String> toMultiValueMap() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("query", query);
-        addIfNotNull(params, "x", longitude);
-        addIfNotNull(params, "y", latitude);
+        addIfNotNull(params, "x", x);
+        addIfNotNull(params, "y", y);
         addIfNotNull(params, "radius", radius);
         addIfNotNull(params, "page", page);
         addIfNotNull(params, "size", size);

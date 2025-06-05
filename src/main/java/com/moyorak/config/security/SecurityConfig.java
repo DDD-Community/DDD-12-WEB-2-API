@@ -1,5 +1,6 @@
 package com.moyorak.config.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -8,7 +9,11 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 class SecurityConfig {
+
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService oAuth2UserService)
@@ -33,7 +38,8 @@ class SecurityConfig {
                 .oauth2Login(
                         oauth ->
                                 oauth.userInfoEndpoint(
-                                        userInfo -> userInfo.userService(oAuth2UserService)));
+                                                userInfo -> userInfo.userService(oAuth2UserService))
+                                        .successHandler(customOAuth2SuccessHandler));
 
         return http.build();
     }

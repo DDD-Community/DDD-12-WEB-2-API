@@ -3,6 +3,8 @@ package com.moyorak.config.security;
 import com.moyorak.api.auth.domain.User;
 import com.moyorak.api.auth.repository.UserRepository;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -33,18 +35,22 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
 
         // 현재는 회원 가입 정보가 없으면 즉시 회원 가입이 됩니다.
         // TODO: 회원 가입 정책이 정해지면 이 부분을 수정합니다.
-        userRepository
-                .findByEmail(email)
-                .orElseGet(
-                        () -> {
-                            final User newUser = User.registeredUser(email, name);
+        final User user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseGet(
+                                () -> {
+                                    final User newUser = User.registeredUser(email, name);
 
-                            return userRepository.save(newUser);
-                        });
+                                    return userRepository.save(newUser);
+                                });
+
+        Map<String, Object> attributes = new HashMap<>(oauth2User.getAttributes());
+        attributes.put("id", user.getId());
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                oauth2User.getAttributes(),
+                attributes,
                 "email");
     }
 

@@ -38,4 +38,8 @@ public class User extends AuditInformation {
         this.email = email;
         this.name = name;
     }
+
+    public static User registeredUser(final String email, final String name) {
+        return User.builder().email(email).name(name).build();
+    }
 }

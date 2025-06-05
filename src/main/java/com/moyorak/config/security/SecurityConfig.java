@@ -39,7 +39,8 @@ class SecurityConfig {
                         oauth ->
                                 oauth.userInfoEndpoint(
                                                 userInfo -> userInfo.userService(oAuth2UserService))
-                                        .successHandler(customOAuth2SuccessHandler));
+                                        .successHandler(customOAuth2SuccessHandler)
+                                        .failureHandler(customOAuth2FailureHandler));
 
         return http.build();
     }

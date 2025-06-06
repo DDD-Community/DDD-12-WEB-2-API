@@ -34,7 +34,11 @@ class SecurityConfig {
                                                 HeadersConfigurer.FrameOptionsConfig
                                                         ::disable) // H2 콘솔 iframe 허용하기 위함
                                         .contentTypeOptions(Customizer.withDefaults()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .csrf(
+                        csrf ->
+                                csrf.ignoringRequestMatchers(
+                                        "/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**"))
+                .cors(Customizer.withDefaults())
                 .oauth2Login(
                         oauth ->
                                 oauth.userInfoEndpoint(

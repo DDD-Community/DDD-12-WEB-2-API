@@ -53,6 +53,14 @@ final class RootExceptionHandler extends ResponseEntityExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ServerSideException.class)
+    private ProblemDetail serverSideExceptionHandler(final ServerSideException e) {
+        log.error("[ ServerSideException ] : ", e);
+
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
     private ProblemDetail runtimeExceptionHandler(RuntimeException e) {

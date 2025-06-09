@@ -15,7 +15,7 @@ import org.hibernate.annotations.Comment;
 
 @Getter
 @Entity
-@Table(name = "user_info")
+@Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends AuditInformation {
 

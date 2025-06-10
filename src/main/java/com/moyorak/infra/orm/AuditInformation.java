@@ -17,7 +17,7 @@ public abstract class AuditInformation {
 
     @CreatedDate
     @Comment("생성 일자")
-    @Column(name = "CREATED_DATE", nullable = false, updatable = false)
+    @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
     //    @CreatedBy
@@ -27,7 +27,7 @@ public abstract class AuditInformation {
 
     @LastModifiedDate
     @Comment("수정 일자")
-    @Column(name = "UPDATE_DATE")
+    @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
     //    @LastModifiedBy

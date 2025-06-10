@@ -2,3 +2,15 @@ kakao:
   api:
     key: your-kakao-api-key-here
     base-url: https://dapi.kakao.com
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: google-client-id
+            client-secret: google-client-secret
+
+jwt:
+  secret: jwt-secret

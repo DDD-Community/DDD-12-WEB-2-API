@@ -5,6 +5,16 @@ spring:
   application:
     name: DDD-12-MOYORAK-API
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            scope:
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL
   h2:

@@ -1,5 +1,6 @@
 package com.moyorak.config.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +14,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 class SecurityConfig {
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
+
+    private final ObjectMapper objectMapper;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService oAuth2UserService)
@@ -42,7 +47,14 @@ class SecurityConfig {
                                 oauth.userInfoEndpoint(
                                                 userInfo -> userInfo.userService(oAuth2UserService))
                                         .successHandler(customOAuth2SuccessHandler)
-                                        .failureHandler(customOAuth2FailureHandler));
+                                        .failureHandler(customOAuth2FailureHandler))
+                .exceptionHandling(
+                        ex -> {
+                            ex.authenticationEntryPoint(
+                                            new CustomAuthenticationEntryPoint(objectMapper))
+                                    .accessDeniedHandler(
+                                            new CustomAccessDeniedHandler(objectMapper));
+                        });
 
         return http.build();
     }

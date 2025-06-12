@@ -19,6 +19,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 class JwtAuthenticationFilterTest {
 
+    private static final String JWT_TOKEN_PREFIX = "Bearer ";
+
     private final JwtTokenProvider jwtTokenProvider =
             new JwtTokenProvider(new JwtTokenProperties("this-is-a-longer-test-secret-key-123456"));
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -53,10 +55,34 @@ class JwtAuthenticationFilterTest {
         }
 
         @Test
+        @DisplayName("토큰이 유효한 prefix로 시작하지 않는다면, 401를 반환합니다.")
+        void invalidToken() throws ServletException, IOException {
+            // given
+            final String token = String.join("", "INVALID-PREFIX ", "INVALID-TOKEN");
+
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.addHeader(HttpHeaders.AUTHORIZATION, token);
+
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            MockFilterChain filterChain = new MockFilterChain();
+
+            // when
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            // then
+            assertSoftly(
+                    it -> {
+                        it.assertThat(response.getStatus())
+                                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                        it.assertThat(getResponseMessage(response)).contains("잘못된 요청입니다.");
+                    });
+        }
+
+        @Test
         @DisplayName("유효하지 않은 토큰으로 요청하게 되면, 401를 반환합니다.")
         void isValid() throws ServletException, IOException {
             // given
-            final String token = "INVALID-TOKEN";
+            final String token = String.join("", JWT_TOKEN_PREFIX, "INVALID-TOKEN");
 
             MockHttpServletRequest request = new MockHttpServletRequest();
             request.addHeader(HttpHeaders.AUTHORIZATION, token);
@@ -81,8 +107,11 @@ class JwtAuthenticationFilterTest {
         void success() throws ServletException, IOException {
             // given
             final String token =
-                    jwtTokenProvider.generateAccessToken(
-                            UserPrincipal.generate(1L, "test@test.com", "홍길동"));
+                    String.join(
+                            "",
+                            JWT_TOKEN_PREFIX,
+                            jwtTokenProvider.generateAccessToken(
+                                    UserPrincipal.generate(1L, "test@test.com", "홍길동")));
 
             MockHttpServletRequest request = new MockHttpServletRequest();
             request.addHeader(HttpHeaders.AUTHORIZATION, token);

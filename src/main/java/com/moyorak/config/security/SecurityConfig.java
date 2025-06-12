@@ -9,12 +9,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
@@ -49,12 +52,13 @@ class SecurityConfig {
                                         .successHandler(customOAuth2SuccessHandler)
                                         .failureHandler(customOAuth2FailureHandler))
                 .exceptionHandling(
-                        ex -> {
-                            ex.authenticationEntryPoint(
-                                            new CustomAuthenticationEntryPoint(objectMapper))
-                                    .accessDeniedHandler(
-                                            new CustomAccessDeniedHandler(objectMapper));
-                        });
+                        ex ->
+                                ex.authenticationEntryPoint(authenticationEntryPoint)
+                                        .accessDeniedHandler(
+                                                new CustomAccessDeniedHandler(objectMapper)))
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, authenticationEntryPoint),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -22,9 +22,11 @@ class JwtAuthenticationFilterTest {
     private final JwtTokenProvider jwtTokenProvider =
             new JwtTokenProvider(new JwtTokenProperties("this-is-a-longer-test-secret-key-123456"));
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint =
+            new CustomAuthenticationEntryPoint(objectMapper);
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter =
-            new JwtAuthenticationFilter(jwtTokenProvider, objectMapper);
+            new JwtAuthenticationFilter(jwtTokenProvider, authenticationEntryPoint);
 
     @Nested
     @DisplayName("요청의 토큰이 유효한지 검증할 때,")

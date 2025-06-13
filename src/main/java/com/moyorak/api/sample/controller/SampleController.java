@@ -7,6 +7,7 @@ import com.moyorak.api.sample.dto.SampleUpdateRequest;
 import com.moyorak.api.sample.service.SampleService;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sample")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT")
 @Tag(name = "샘플 API", description = "샘플용 API 입니다.")
 class SampleController {
 

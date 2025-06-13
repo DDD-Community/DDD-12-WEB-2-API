@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -61,5 +62,17 @@ class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /** 필터 처리에서 제외 될 정적 리소스를 작성합니다. */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web ->
+                web.ignoring()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/favicon.ico",
+                                "/h2-console/**");
     }
 }

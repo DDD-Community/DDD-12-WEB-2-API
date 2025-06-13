@@ -54,15 +54,4 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
             authenticationEntryPoint.commence(request, response, e);
         }
     }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        final String uri = request.getRequestURI();
-
-        // TODO: 이후, 인증 요청이 필요 없는 path의 경우 아래 추가가 필요합니다.
-        return uri.startsWith("/swagger-ui")
-                || uri.startsWith("/v3/api-docs")
-                || uri.startsWith("/h2-console")
-                || uri.equals("/favicon.ico");
-    }
 }

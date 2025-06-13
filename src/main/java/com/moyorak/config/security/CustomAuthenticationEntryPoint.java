@@ -32,7 +32,7 @@ class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
                         HttpStatus.UNAUTHORIZED, authException.getMessage());
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(objectMapper.writeValueAsString(detail));
     }

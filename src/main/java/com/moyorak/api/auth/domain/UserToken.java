@@ -34,4 +34,13 @@ public class UserToken extends AuditInformation {
     @Comment("리프레시 토큰")
     @Column(name = "refresh_token", columnDefinition = "varchar(256)")
     private String refreshToken;
+
+    public static UserToken create(final Long userId, final String accessToken) {
+        UserToken userToken = new UserToken();
+
+        userToken.userId = userId;
+        userToken.accessToken = accessToken;
+
+        return userToken;
+    }
 }

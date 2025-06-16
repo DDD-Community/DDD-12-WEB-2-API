@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class JwtTokenProvider {
+public class JwtTokenProvider {
 
     // TODO: 테스트를 위해 시간 짧게 유지 해야한다면, 환경 변수 처리가 필요합니다.
     private static final long EXPIRATION_MILLIS = 1000 * 60 * 60;

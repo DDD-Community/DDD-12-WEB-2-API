@@ -5,6 +5,7 @@ import com.moyorak.api.auth.repository.UserRepository;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -23,6 +25,7 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 
@@ -35,20 +38,24 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
 
         final String picture = oauth2User.getAttribute("picture");
 
-        // 현재는 회원 가입 정보가 없으면 즉시 회원 가입이 됩니다.
-        // TODO: 회원 가입 정책이 정해지면 이 부분을 수정합니다.
-        final User user =
-                userRepository
-                        .findByEmail(email)
-                        .orElseGet(
-                                () -> {
-                                    final User newUser = User.registeredUser(email, name, picture);
-
-                                    return userRepository.save(newUser);
-                                });
+        final Optional<User> user = userRepository.findByEmail(email);
 
         Map<String, Object> attributes = new HashMap<>(oauth2User.getAttributes());
-        attributes.put("id", user.getId());
+
+        if (user.isPresent()) {
+            attributes.put("id", user.get().getId());
+            attributes.put("isNew", false);
+
+            return new DefaultOAuth2User(
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                    attributes,
+                    "email");
+        }
+
+        final User newUser = userRepository.save(User.registeredUser(email, name, picture));
+
+        attributes.put("id", newUser.getId());
+        attributes.put("isNew", true);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),

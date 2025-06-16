@@ -6,7 +6,9 @@ import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,18 +22,18 @@ public abstract class AuditInformation {
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    //    @CreatedBy
-    //    @Comment("생성자")
-    //    @Column(name = "CREATED_ID", nullable = false, updatable = false)
-    //    private Long createdId;
+    @CreatedBy
+    @Comment("생성자")
+    @Column(name = "created_id", nullable = false, updatable = false)
+    private Long createdId;
 
     @LastModifiedDate
     @Comment("수정 일자")
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
-    //    @LastModifiedBy
-    //    @Comment("수정자")
-    //    @Column(name = "UPDATE_ID")
-    //    private Long updatedId;
+    @LastModifiedBy
+    @Comment("수정자")
+    @Column(name = "updated_id")
+    private Long updatedId;
 }

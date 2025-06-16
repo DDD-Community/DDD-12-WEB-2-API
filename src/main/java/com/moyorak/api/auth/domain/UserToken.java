@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Entity
@@ -42,5 +43,13 @@ public class UserToken extends AuditInformation {
         userToken.accessToken = accessToken;
 
         return userToken;
+    }
+
+    public boolean isInValidToken() {
+        return !StringUtils.hasText(this.accessToken);
+    }
+
+    public void clear() {
+        this.accessToken = null;
     }
 }

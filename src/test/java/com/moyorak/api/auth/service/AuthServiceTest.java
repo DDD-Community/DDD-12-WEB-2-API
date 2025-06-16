@@ -25,9 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class TokenServiceTest {
+class AuthServiceTest {
 
-    @InjectMocks private TokenService tokenService;
+    @InjectMocks private AuthService authService;
 
     @Mock private TokenRepository tokenRepository;
 
@@ -48,7 +48,7 @@ class TokenServiceTest {
             given(userRepository.findById(userId)).willThrow(new UserNotFoundException());
 
             // when & then
-            assertThatThrownBy(() -> tokenService.generate(userId))
+            assertThatThrownBy(() -> authService.generate(userId))
                     .isInstanceOf(UserNotFoundException.class)
                     .hasMessage("유효하지 않은 회원 정보입니다.");
         }
@@ -70,7 +70,7 @@ class TokenServiceTest {
             given(tokenRepository.save(any(UserToken.class))).willReturn(expectedUserToken);
 
             // when
-            final SignInResponse result = tokenService.generate(userId);
+            final SignInResponse result = authService.generate(userId);
 
             // then
             assertThat(result.accessToken()).isEqualTo(token);
@@ -90,7 +90,7 @@ class TokenServiceTest {
             given(userRepository.findById(userId)).willThrow(new UserNotFoundException());
 
             // when & then
-            assertThatThrownBy(() -> tokenService.signOut(userId))
+            assertThatThrownBy(() -> authService.signOut(userId))
                     .isInstanceOf(UserNotFoundException.class)
                     .hasMessage("유효하지 않은 회원 정보입니다.");
         }
@@ -109,7 +109,7 @@ class TokenServiceTest {
                 .willThrow(new BusinessException("로그인 정보가 존재하지 않습니다."));
 
         // when & then
-        assertThatThrownBy(() -> tokenService.signOut(userId))
+        assertThatThrownBy(() -> authService.signOut(userId))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("로그인 정보가 존재하지 않습니다.");
     }
@@ -128,7 +128,7 @@ class TokenServiceTest {
                 .willReturn(Optional.of(expectedUserToken));
 
         // when & then
-        assertThatThrownBy(() -> tokenService.signOut(userId))
+        assertThatThrownBy(() -> authService.signOut(userId))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("로그인 정보가 존재하지 않습니다.");
     }
@@ -147,7 +147,7 @@ class TokenServiceTest {
                 .willReturn(Optional.of(expectedUserToken));
 
         // when
-        tokenService.signOut(userId);
+        authService.signOut(userId);
 
         // then
         assertThat(expectedUserToken.getAccessToken()).isNull();

@@ -33,6 +33,8 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
         final String provider = userRequest.getClientRegistration().getRegistrationId();
         validProvider(provider);
 
+        final String picture = oauth2User.getAttribute("picture");
+
         // 현재는 회원 가입 정보가 없으면 즉시 회원 가입이 됩니다.
         // TODO: 회원 가입 정책이 정해지면 이 부분을 수정합니다.
         final User user =
@@ -40,7 +42,7 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
                         .findByEmail(email)
                         .orElseGet(
                                 () -> {
-                                    final User newUser = User.registeredUser(email, name);
+                                    final User newUser = User.registeredUser(email, name, picture);
 
                                     return userRepository.save(newUser);
                                 });

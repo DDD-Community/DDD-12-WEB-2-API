@@ -32,14 +32,20 @@ public class User extends AuditInformation {
     @Column(name = "name", nullable = false, columnDefinition = "varchar(32)")
     private String name;
 
+    @Comment("프로필 이미지 URL")
+    @Column(name = "profile_image", nullable = false, columnDefinition = "varchar(256)")
+    private String profileImage;
+
     @Builder(access = AccessLevel.PRIVATE)
-    protected User(Long id, String email, String name) {
+    protected User(Long id, String email, String name, String profileImage) {
         this.id = id;
         this.email = email;
         this.name = name;
+        this.profileImage = profileImage;
     }
 
-    public static User registeredUser(final String email, final String name) {
-        return User.builder().email(email).name(name).build();
+    public static User registeredUser(
+            final String email, final String name, final String profileImage) {
+        return User.builder().email(email).name(name).profileImage(profileImage).build();
     }
 }

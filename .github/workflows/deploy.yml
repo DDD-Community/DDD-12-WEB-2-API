@@ -2,6 +2,11 @@ name: Deploy to private EC2 via Bastion
 
 on:
   workflow_dispatch:
+    inputs:
+      springProfile:
+        description: 'Spring Profile (예: dev, prod)'
+        required: true
+        default: 'dev'
 
 jobs:
   deploy:
@@ -29,16 +34,33 @@ jobs:
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Configure SSH access to Public EC2
+      - name: Create .env file for Docker
+        run: |
+          echo "KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET_ID=${{ secrets.GOOGLE_CLIENT_SECRET_ID }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "SPRING_PROFILES_ACTIVE=${{ github.event.inputs.springProfile }}" >> .env
+
+      - name: Copy .env to EC2
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: ".env"
+          target: "/home/ec2-user"
+
+      - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.BASTION_HOST }}
-          username: ${{ secrets.BASTION_USER }}
-          key: ${{ secrets.BASTION_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            cd ${{ secrets.BASTION_DIRECTORY }}
-            chmod +x ${{ secrets.BASTION_SHELL_NAME }}
-            ./${{ secrets.BASTION_SHELL_NAME }}
+            cd ${{ secrets.SHELL_DIRECTORY }}
+            chmod +x ${{ secrets.SHELL_NAME }}
+            ./${{ secrets.SHELL_NAME }}
 
       - name: Remove GitHub Actions IP from Security Group
         if: always()
@@ -47,3 +69,8 @@ jobs:
             --group-id ${{ secrets.AWS_SG_ID }} \
             --protocol tcp --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Clean up .env file
+        if: always()
+        run: |
+          rm -f .env

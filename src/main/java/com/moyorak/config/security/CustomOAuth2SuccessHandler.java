@@ -1,9 +1,9 @@
 package com.moyorak.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.dto.SignInResponse;
 import com.moyorak.api.auth.dto.SignUpResponse;
+import com.moyorak.api.auth.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -29,7 +29,6 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         final OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        final String email = oAuth2User.getAttribute("email");
         final String name = oAuth2User.getAttribute("name");
         final Long id = oAuth2User.getAttribute("id");
 
@@ -46,10 +45,7 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
-        final String token =
-                jwtTokenProvider.generateAccessToken(UserPrincipal.generate(id, email, name));
-
-        final SignInResponse signInResponse = new SignInResponse(token);
+        final SignInResponse signInResponse = tokenService.generate(id);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

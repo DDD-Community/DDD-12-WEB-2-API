@@ -3,6 +3,7 @@ package com.moyorak.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.dto.SignInResponse;
+import com.moyorak.api.auth.dto.SignUpResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,6 +32,19 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
         final String email = oAuth2User.getAttribute("email");
         final String name = oAuth2User.getAttribute("name");
         final Long id = oAuth2User.getAttribute("id");
+
+        final Boolean isNew = oAuth2User.getAttribute("isNew");
+
+        if (isNew) {
+            final SignUpResponse signUpResponse = new SignUpResponse(id, name);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write(objectMapper.writeValueAsString(signUpResponse));
+
+            return;
+        }
 
         final String token =
                 jwtTokenProvider.generateAccessToken(UserPrincipal.generate(id, email, name));

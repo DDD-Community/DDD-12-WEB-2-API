@@ -3,7 +3,7 @@ package com.moyorak.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moyorak.api.auth.dto.SignInResponse;
 import com.moyorak.api.auth.dto.SignUpResponse;
-import com.moyorak.api.auth.service.TokenService;
+import com.moyorak.api.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final TokenService tokenService;
+    private final AuthService authService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -45,7 +45,7 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
-        final SignInResponse signInResponse = tokenService.generate(id);
+        final SignInResponse signInResponse = authService.generate(id);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

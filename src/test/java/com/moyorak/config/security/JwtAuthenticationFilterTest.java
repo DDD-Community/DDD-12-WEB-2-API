@@ -127,6 +127,37 @@ class JwtAuthenticationFilterTest {
         }
     }
 
+    @Nested
+    @DisplayName("특정 URI 경우 JWT 필터에 적용되지 않게 할 때,")
+    class shouldNotFilter {
+
+        @Test
+        @DisplayName("예외가 포함 되어 있으면 성공적으로 제외 된다.")
+        void isTrue() {
+            // given
+            MockHttpServletRequest request =
+                    new MockHttpServletRequest("POST", "/api/auth/sign-in");
+
+            // when
+            final Boolean result = jwtAuthenticationFilter.shouldNotFilter(request);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        @DisplayName("예외에 포함되지 않을 경우 필터 처리를 위해 false가 응답 된다.")
+        void isFalse() {
+            MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/sample");
+
+            // when
+            final Boolean result = jwtAuthenticationFilter.shouldNotFilter(request);
+
+            // then
+            assertThat(result).isFalse();
+        }
+    }
+
     private static String getResponseMessage(MockHttpServletResponse response) {
         try {
             return response.getContentAsString();

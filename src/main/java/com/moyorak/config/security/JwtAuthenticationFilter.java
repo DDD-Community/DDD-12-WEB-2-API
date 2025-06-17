@@ -54,4 +54,11 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
             authenticationEntryPoint.commence(request, response, e);
         }
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        final String uri = request.getRequestURI();
+
+        return uri.startsWith("/api/auth/sign-in");
+    }
 }

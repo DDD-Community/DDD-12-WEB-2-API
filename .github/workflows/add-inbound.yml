@@ -26,6 +26,7 @@ jobs:
       - name: Authorize IP on Security Group
         run: |
           PORT=${{ github.event.inputs.port }}
+          IP=${{ github.event.inputs.ip }}
           if [[ "$PORT" != "3306" && "$PORT" != "80" ]]; then
             echo "❌ 허용되지 않은 포트입니다. 3306 또는 80만 가능합니다."
             exit 1
@@ -50,4 +51,4 @@ jobs:
             --group-id ${{ secrets.AWS_SG_ID }} \
             --protocol tcp \
             --port ${PORT} \
-            --cidr ${{ github.event.inputs.ip }}/32
+            --cidr ${IP}/32

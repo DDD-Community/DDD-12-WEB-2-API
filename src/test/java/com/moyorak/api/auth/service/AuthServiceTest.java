@@ -2,9 +2,11 @@ package com.moyorak.api.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import com.moyorak.api.auth.domain.InvalidTokenException;
 import com.moyorak.api.auth.domain.User;
 import com.moyorak.api.auth.domain.UserFixture;
 import com.moyorak.api.auth.domain.UserNotFoundException;
@@ -151,5 +153,81 @@ class AuthServiceTest {
 
         // then
         assertThat(expectedUserToken.getAccessToken()).isNull();
+    }
+
+    @Nested
+    @DisplayName("입력받은 토큰이 저장 된 토큰과 같은지 비교할 때,")
+    class validToken {
+
+        @Test
+        @DisplayName("회원이 존재하지 않으면 오류가 발생합니다.")
+        void notFoundUser() {
+            // given
+            final Long userId = 1L;
+            final String token = "EXAMPLE-TOKEN";
+
+            given(userRepository.findById(userId)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> authService.validToken(userId, token))
+                    .isInstanceOf(UserNotFoundException.class)
+                    .hasMessage("유효하지 않은 회원 정보입니다.");
+        }
+
+        @Test
+        @DisplayName("저장 된 토큰 정보가 없다면 오류가 발생합니다.")
+        void notFoundToken() {
+            // given
+            final Long userId = 1L;
+            final String token = "EXAMPLE-TOKEN";
+
+            final User expectedUser = UserFixture.fixture(userId, "", "", "");
+
+            given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
+            given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> authService.validToken(userId, token))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("로그인 정보가 존재하지 않습니다.");
+        }
+
+        @Test
+        @DisplayName("동일하지 않으면 예외가 발생합니다.")
+        void invalid() {
+            // given
+            final Long userId = 1L;
+            final String token = "EXAMPLE-TOKEN";
+
+            final User expectedUser = UserFixture.fixture(userId, "", "", "");
+            final UserToken expectedUserToken = UserToken.create(userId, "X");
+
+            given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
+            given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
+                    .willReturn(Optional.of(expectedUserToken));
+
+            // when & then
+            assertThatThrownBy(() -> authService.validToken(userId, token))
+                    .isInstanceOf(InvalidTokenException.class);
+        }
+
+        @Test
+        @DisplayName("동일하면 예외가 발생하지 않습니다.")
+        void valid() {
+            // given
+            final Long userId = 1L;
+            final String token = "EXAMPLE-TOKEN";
+
+            final User expectedUser = UserFixture.fixture(userId, "", "", "");
+            final UserToken expectedUserToken = UserToken.create(userId, token);
+
+            given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
+            given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
+                    .willReturn(Optional.of(expectedUserToken));
+
+            // when & then
+            assertDoesNotThrow(() -> authService.validToken(userId, token));
+        }
     }
 }

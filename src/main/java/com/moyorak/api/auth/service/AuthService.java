@@ -1,5 +1,6 @@
 package com.moyorak.api.auth.service;
 
+import com.moyorak.api.auth.domain.InvalidTokenException;
 import com.moyorak.api.auth.domain.User;
 import com.moyorak.api.auth.domain.UserNotFoundException;
 import com.moyorak.api.auth.domain.UserPrincipal;
@@ -39,17 +40,29 @@ public class AuthService {
 
     @Transactional
     public void signOut(final Long userId) {
-        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-
-        UserToken userToken =
-                tokenRepository
-                        .findFirstByUserIdOrderByIdDesc(userId)
-                        .orElseThrow(() -> new BusinessException("로그인 정보가 존재하지 않습니다."));
+        UserToken userToken = getUserLastToken(userId);
 
         if (userToken.isInValidToken()) {
             throw new BusinessException("로그인 정보가 존재하지 않습니다.");
         }
 
         userToken.clear();
+    }
+
+    @Transactional(readOnly = true)
+    public void validToken(final Long userId, final String token) {
+        final UserToken userToken = getUserLastToken(userId);
+
+        if (!userToken.isEqualsToken(token)) {
+            throw new InvalidTokenException();
+        }
+    }
+
+    private UserToken getUserLastToken(final Long userId) {
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        return tokenRepository
+                .findFirstByUserIdOrderByIdDesc(userId)
+                .orElseThrow(() -> new BusinessException("로그인 정보가 존재하지 않습니다."));
     }
 }

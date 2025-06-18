@@ -1,5 +1,7 @@
 package com.moyorak.config.security;
 
+import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.auth.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +26,8 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
+    private final AuthService authService;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -47,6 +51,9 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             final Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+            validToken(authentication, token);
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
@@ -60,5 +67,10 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String uri = request.getRequestURI();
 
         return uri.startsWith("/api/auth/sign-in");
+    }
+
+    private void validToken(final Authentication authentication, final String token) {
+        final UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        authService.validToken(principal.getId(), token);
     }
 }

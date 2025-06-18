@@ -3,6 +3,9 @@ name: Add My IP And Port to Inbound Rules
 on:
   workflow_dispatch:
     inputs:
+      ip:
+        description: '본인의 현재 IP 주소 (예: 1.2.3.4)'
+        required: true
       port:
         description: '허용할 포트 (예: 3306)'
         required: true
@@ -13,12 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get My Public IP
-        id: ip
-        run: |
-            MY_IP=$(curl -s https://checkip.amazonaws.com | tr -d '\n')
-            echo "MY_IP=$MY_IP" >> $GITHUB_ENV
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -29,11 +26,23 @@ jobs:
       - name: Authorize IP on Security Group
         run: |
           PORT=${{ github.event.inputs.port }}
-          IP=${{ env.MY_IP }}
+          IP=${{ github.event.inputs.ip }}
           if [[ "$PORT" != "3306" && "$PORT" != "80" ]]; then
             echo "❌ 허용되지 않은 포트입니다. 3306 또는 80만 가능합니다."
             exit 1
           fi
+
+          if ! [[ "$IP" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+            echo "❌ 올바른 IPv4 형식이 아닙니다. 예: 123.45.67.89"
+            exit 1
+          fi
+          OCTETS=(${IP//./ })
+          for octet in "${OCTETS[@]}"; do
+            if ((octet < 0 || octet > 255)); then
+              echo "❌ IP 주소의 각 자리는 0~255 사이여야 합니다."
+              exit 1
+            fi
+          done
 
           EXISTS=$(aws ec2 describe-security-groups \
             --group-ids "${{ secrets.AWS_SG_ID }}" \

@@ -2,9 +2,15 @@ package com.moyorak.config.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.doThrow;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moyorak.api.auth.domain.InvalidTokenException;
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.auth.service.AuthService;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -27,8 +33,10 @@ class JwtAuthenticationFilterTest {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint =
             new CustomAuthenticationEntryPoint(objectMapper);
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter =
-            new JwtAuthenticationFilter(jwtTokenProvider, authenticationEntryPoint);
+    private AuthService authService = mock(AuthService.class);
+
+    private JwtAuthenticationFilter jwtAuthenticationFilter =
+            new JwtAuthenticationFilter(jwtTokenProvider, authenticationEntryPoint, authService);
 
     @Nested
     @DisplayName("요청의 토큰이 유효한지 검증할 때,")
@@ -103,6 +111,39 @@ class JwtAuthenticationFilterTest {
         }
 
         @Test
+        @DisplayName("저장 된 토큰과 일치하지 않으면 401를 반환합니다.")
+        void tokenIsNotEquals() throws ServletException, IOException {
+            // given
+            final String token =
+                    String.join(
+                            "",
+                            JWT_TOKEN_PREFIX,
+                            jwtTokenProvider.generateAccessToken(
+                                    UserPrincipal.generate(1L, "test@test.com", "홍길동")));
+
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.addHeader(HttpHeaders.AUTHORIZATION, token);
+
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            MockFilterChain filterChain = new MockFilterChain();
+
+            doThrow(new InvalidTokenException())
+                    .when(authService)
+                    .validToken(any(Long.class), any(String.class));
+
+            // when
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            // then
+            assertSoftly(
+                    it -> {
+                        it.assertThat(response.getStatus())
+                                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                        it.assertThat(getResponseMessage(response)).contains("유효하지 않은 로그인 정보입니다.");
+                    });
+        }
+
+        @Test
         @DisplayName("유효한 토큰이 들어왔을 때, 인증에 성공합니다.")
         void success() throws ServletException, IOException {
             // given
@@ -118,6 +159,8 @@ class JwtAuthenticationFilterTest {
 
             MockHttpServletResponse response = new MockHttpServletResponse();
             MockFilterChain filterChain = new MockFilterChain();
+
+            willDoNothing().given(authService).validToken(any(Long.class), any(String.class));
 
             // when
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);

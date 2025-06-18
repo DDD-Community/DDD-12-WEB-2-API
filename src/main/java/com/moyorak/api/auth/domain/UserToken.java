@@ -54,6 +54,10 @@ public class UserToken extends AuditInformation {
     }
 
     public boolean isEqualsToken(final String token) {
+        if (!StringUtils.hasText(token)) {
+            return false;
+        }
+
         return token.equals(this.accessToken);
     }
 }

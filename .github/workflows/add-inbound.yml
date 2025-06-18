@@ -52,3 +52,4 @@ jobs:
             --protocol tcp \
             --port ${PORT} \
             --cidr ${IP}/32
+            --output none

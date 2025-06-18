@@ -28,9 +28,11 @@ class JwtAuthenticationFilterTest {
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
     private final String secretKey = "this-is-a-longer-test-secret-key-123456";
+    private final Long expiration = 6000L;
 
     private final JwtTokenProvider jwtTokenProvider =
-            new JwtTokenProvider(new JwtTokenProperties(secretKey, secretKey));
+            new JwtTokenProvider(
+                    new JwtTokenProperties(secretKey, secretKey, expiration, expiration));
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final CustomAuthenticationEntryPoint authenticationEntryPoint =
             new CustomAuthenticationEntryPoint(objectMapper);

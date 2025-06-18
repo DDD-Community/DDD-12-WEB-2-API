@@ -23,13 +23,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    // TODO: 테스트를 위해 시간 짧게 유지 해야한다면, 환경 변수 처리가 필요합니다.
-    private static final long EXPIRATION_MILLIS = 1000 * 60 * 60;
-
     private final JwtTokenProperties jwtTokenProperties;
 
     public String generateAccessToken(final UserPrincipal user) {
-        final Key key = getSigningKey();
+        final Key key = getSigningKey(jwtTokenProperties.getSecretKey());
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -37,7 +34,8 @@ public class JwtTokenProvider {
                 .claim("email", user.getUsername())
                 .claim("name", user.getName())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MILLIS))
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + jwtTokenProperties.getExpiration()))
                 .signWith(key)
                 .compact();
     }
@@ -75,13 +73,15 @@ public class JwtTokenProvider {
     }
 
     private Claims parseClaims(final String token) {
-        final JwtParser parser = Jwts.parserBuilder().setSigningKey(getSigningKey()).build();
+        final JwtParser parser =
+                Jwts.parserBuilder()
+                        .setSigningKey(getSigningKey(jwtTokenProperties.getSecretKey()))
+                        .build();
 
         return parser.parseClaimsJws(token).getBody();
     }
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(
-                jwtTokenProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    private Key getSigningKey(final String key) {
+        return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 }

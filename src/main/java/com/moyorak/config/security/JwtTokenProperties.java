@@ -10,7 +10,12 @@ class JwtTokenProperties {
 
     private final String secretKey;
 
-    JwtTokenProperties(@Value("${jwt.secret}") final String secretKey) {
+    private final String refreshSecretKey;
+
+    JwtTokenProperties(
+            @Value("${jwt.secret}") final String secretKey,
+            @Value("${jwt.refresh-secret}") final String refreshSecretKey) {
         this.secretKey = secretKey;
+        this.refreshSecretKey = refreshSecretKey;
     }
 }

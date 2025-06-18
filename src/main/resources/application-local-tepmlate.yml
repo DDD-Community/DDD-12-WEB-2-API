@@ -14,3 +14,4 @@ spring:
 
 jwt:
   secret: jwt-secret
+  refresh-secret: jwt-refresh-secret

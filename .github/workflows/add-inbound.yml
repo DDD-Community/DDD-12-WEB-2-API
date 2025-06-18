@@ -45,6 +45,16 @@ jobs:
             fi
           done
 
+          EXISTS=$(aws ec2 describe-security-groups \
+            --group-ids ${{ secrets.AWS_SG_ID }} \
+            --query "SecurityGroups[0].IpPermissions[?ToPort==\`${PORT}\`].IpRanges[?CidrIp==\`${IP}/32\`]" \
+            --output text)
+
+          if [[ -n "$EXISTS" ]]; then
+            echo "✅ 이미 IP와 ${PORT} 규칙이 존재하여 등록을 생략합니다."
+            exit 0
+          fi
+
           echo "✅ 입력한 IP와 ${PORT} 포트로 인바운드 등록합니다."
 
           aws ec2 authorize-security-group-ingress \

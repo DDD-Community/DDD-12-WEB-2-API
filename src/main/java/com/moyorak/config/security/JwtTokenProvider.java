@@ -66,6 +66,12 @@ public class JwtTokenProvider {
                 userDetails, "", userDetails.getAuthorities());
     }
 
+    public Long getUserIdByRefreshToken(final String refreshToken) {
+        final Claims claims = parseClaims(jwtTokenProperties.getRefreshSecretKey(), refreshToken);
+
+        return Long.parseLong(claims.getSubject());
+    }
+
     public boolean isValidToken(final String token) {
         return validate(token, jwtTokenProperties.getSecretKey());
     }

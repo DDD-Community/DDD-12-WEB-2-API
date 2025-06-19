@@ -36,11 +36,13 @@ public class UserToken extends AuditInformation {
     @Column(name = "refresh_token", columnDefinition = "varchar(256)")
     private String refreshToken;
 
-    public static UserToken create(final Long userId, final String accessToken) {
+    public static UserToken create(
+            final Long userId, final String accessToken, final String refreshToken) {
         UserToken userToken = new UserToken();
 
         userToken.userId = userId;
         userToken.accessToken = accessToken;
+        userToken.refreshToken = refreshToken;
 
         return userToken;
     }
@@ -59,5 +61,18 @@ public class UserToken extends AuditInformation {
         }
 
         return token.equals(this.accessToken);
+    }
+
+    public boolean isEqualsRefreshToken(final String refreshToken) {
+        if (!StringUtils.hasText(refreshToken)) {
+            return false;
+        }
+
+        return refreshToken.equals(this.refreshToken);
+    }
+
+    public void refresh(final String accessToken, final String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

@@ -1,6 +1,8 @@
 package com.moyorak.api.auth.controller;
 
+import com.moyorak.api.auth.domain.RefreshToken;
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.auth.dto.RefreshResponse;
 import com.moyorak.api.auth.dto.SignInRequest;
 import com.moyorak.api.auth.dto.SignInResponse;
 import com.moyorak.api.auth.service.AuthService;
@@ -33,5 +35,11 @@ class AuthController {
     @Operation(summary = "[로그아웃] 토큰 초기화", description = "저장 된 토큰 정보를 초기화합니다.")
     public void signOut(@AuthenticationPrincipal final UserPrincipal userPrincipal) {
         authService.signOut(userPrincipal.getId());
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "[토큰 갱신] 토큰 갱신", description = "액세스 토큰을 재발급 합니다.")
+    public RefreshResponse refresh(@RefreshToken final String refreshToken) {
+        return authService.refresh(refreshToken);
     }
 }

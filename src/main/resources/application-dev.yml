@@ -12,5 +12,15 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET_ID}
 
+  datasource:
+    url: jdbc:mysql://${DB_URL}/${DB_USER_ID}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_NAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
 jwt:
   secret: ${JWT_SECRET}

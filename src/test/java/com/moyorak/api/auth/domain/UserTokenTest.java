@@ -20,7 +20,7 @@ class UserTokenTest {
         void validToken() {
             // given
             final String token = "EXAMPLE-TOKEN";
-            final UserToken userToken = UserToken.create(1L, token);
+            final UserToken userToken = UserTokenFixture.fixture(1L, token);
 
             // when
             final boolean result = userToken.isInValidToken();
@@ -34,7 +34,7 @@ class UserTokenTest {
         void invalidToken() {
             // given
             final String token = null;
-            final UserToken userToken = UserToken.create(1L, token);
+            final UserToken userToken = UserTokenFixture.fixture(1L, token);
 
             // when
             final boolean result = userToken.isInValidToken();
@@ -49,7 +49,7 @@ class UserTokenTest {
     void clear() {
         // given
         final String token = "EXAMPLE-TOKEN";
-        final UserToken userToken = UserToken.create(1L, token);
+        final UserToken userToken = UserTokenFixture.fixture(1L, token);
 
         // when
         userToken.clear();
@@ -67,7 +67,7 @@ class UserTokenTest {
         void isNull() {
             // given
             final String token = null;
-            final UserToken userToken = UserToken.create(1L, "EXAMPLE-TOKEN");
+            final UserToken userToken = UserTokenFixture.fixture(1L, "EXAMPLE-TOKEN");
 
             // when
             final boolean result = userToken.isEqualsToken(token);
@@ -82,7 +82,7 @@ class UserTokenTest {
         @DisplayName("서로 토큰이 다르다면, false를 반환합니다.")
         void notEquals(final String input) {
             // given
-            final UserToken userToken = UserToken.create(1L, "EXAMPLE-TOKEN");
+            final UserToken userToken = UserTokenFixture.fixture(1L, "EXAMPLE-TOKEN");
 
             // when
             final boolean result = userToken.isEqualsToken(input);
@@ -96,7 +96,7 @@ class UserTokenTest {
         void isEquals() {
             // given
             final String token = "EXAMPLE-TOKEN";
-            final UserToken userToken = UserToken.create(1L, token);
+            final UserToken userToken = UserTokenFixture.fixture(1L, token);
 
             // when
             final boolean result = userToken.isEqualsToken(token);

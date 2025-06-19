@@ -12,6 +12,7 @@ import com.moyorak.api.auth.domain.UserFixture;
 import com.moyorak.api.auth.domain.UserNotFoundException;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.domain.UserToken;
+import com.moyorak.api.auth.domain.UserTokenFixture;
 import com.moyorak.api.auth.dto.SignInResponse;
 import com.moyorak.api.auth.repository.TokenRepository;
 import com.moyorak.api.auth.repository.UserRepository;
@@ -65,7 +66,7 @@ class AuthServiceTest {
 
             final User expectedUser = UserFixture.fixture(userId, email, name, "");
             final String token = "TOKEN-EXAMPLE";
-            final UserToken expectedUserToken = UserToken.create(userId, token);
+            final UserToken expectedUserToken = UserTokenFixture.fixture(userId, token);
 
             given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
             given(jwtTokenProvider.generateAccessToken(any(UserPrincipal.class))).willReturn(token);
@@ -123,7 +124,7 @@ class AuthServiceTest {
         final Long userId = 10L;
 
         final User expectedUser = UserFixture.fixture(userId, "", "", "");
-        final UserToken expectedUserToken = UserToken.create(userId, null);
+        final UserToken expectedUserToken = UserTokenFixture.fixture(userId, null);
 
         given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
         given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -142,7 +143,7 @@ class AuthServiceTest {
         final Long userId = 10L;
 
         final User expectedUser = UserFixture.fixture(userId, "", "", "");
-        final UserToken expectedUserToken = UserToken.create(userId, "EXAMPLE-TOKEN");
+        final UserToken expectedUserToken = UserTokenFixture.fixture(userId, "EXAMPLE-TOKEN");
 
         given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
         given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -201,7 +202,7 @@ class AuthServiceTest {
             final String token = "EXAMPLE-TOKEN";
 
             final User expectedUser = UserFixture.fixture(userId, "", "", "");
-            final UserToken expectedUserToken = UserToken.create(userId, "X");
+            final UserToken expectedUserToken = UserTokenFixture.fixture(userId, "X");
 
             given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
             given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -220,7 +221,7 @@ class AuthServiceTest {
             final String token = "EXAMPLE-TOKEN";
 
             final User expectedUser = UserFixture.fixture(userId, "", "", "");
-            final UserToken expectedUserToken = UserToken.create(userId, token);
+            final UserToken expectedUserToken = UserTokenFixture.fixture(userId, token);
 
             given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
             given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))

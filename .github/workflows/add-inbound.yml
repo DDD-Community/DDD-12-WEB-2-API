@@ -15,10 +15,13 @@ on:
           - '22'
           - '80'
 
-
 jobs:
   authorize-ip:
     runs-on: ubuntu-latest
+
+    env:
+      IP: ${{ github.event.inputs.ip }}
+      PORT: ${{ github.event.inputs.port }}
 
     steps:
       - name: Configure AWS Credentials
@@ -28,10 +31,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Mask sensitive inputs
+        run: |
+          echo "::add-mask::$IP"
+          echo "::add-mask::$PORT"
+
       - name: Validate inputs (IP and PORT)
         run: |
-          PORT=${{ github.event.inputs.port }}
-          IP=${{ github.event.inputs.ip }}
           if [[ "$PORT" != "22" && "$PORT" != "80" ]]; then
             echo "❌ 허용되지 않은 포트입니다. 22 또는 80만 가능합니다."
             exit 1
@@ -51,9 +57,6 @@ jobs:
 
       - name: Check if rule already exists
         run: |
-          PORT=${{ github.event.inputs.port }}
-          IP=${{ github.event.inputs.ip }}
-
           EXISTS=$(aws ec2 describe-security-groups \
             --group-ids "${{ secrets.AWS_SG_ID }}" \
             --query "SecurityGroups[0].IpPermissions[?ToPort==\`${{ github.event.inputs.port }}` && IpRanges[?CidrIp=='${IP}/32']] | [0]" \
@@ -66,9 +69,6 @@ jobs:
 
       - name: Add inbound rule to Security Group
         run: |
-          PORT=${{ github.event.inputs.port }}
-          IP=${{ github.event.inputs.ip }}
-
           echo "✅ 입력한 IP와 ${PORT} 포트로 인바운드 등록합니다."
 
           aws ec2 authorize-security-group-ingress \

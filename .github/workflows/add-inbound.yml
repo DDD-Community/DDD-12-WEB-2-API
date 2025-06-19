@@ -7,9 +7,14 @@ on:
         description: '본인의 현재 IP 주소 (예: 1.2.3.4)'
         required: true
       port:
-        description: '허용할 포트 (예: 3306)'
+        description: '허용할 포트 (예: 80)'
         required: true
-        default: '3306'
+        default: '80'
+        type: choice
+        options:
+          - '22'
+          - '80'
+
 
 jobs:
   authorize-ip:
@@ -23,12 +28,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Authorize IP on Security Group
+      - name: Validate inputs (IP and PORT)
         run: |
           PORT=${{ github.event.inputs.port }}
           IP=${{ github.event.inputs.ip }}
-          if [[ "$PORT" != "3306" && "$PORT" != "80" ]]; then
-            echo "❌ 허용되지 않은 포트입니다. 3306 또는 80만 가능합니다."
+          if [[ "$PORT" != "22" && "$PORT" != "80" ]]; then
+            echo "❌ 허용되지 않은 포트입니다. 22 또는 80만 가능합니다."
             exit 1
           fi
 
@@ -44,15 +49,25 @@ jobs:
             fi
           done
 
+      - name: Check if rule already exists
+        run: |
+          PORT=${{ github.event.inputs.port }}
+          IP=${{ github.event.inputs.ip }}
+
           EXISTS=$(aws ec2 describe-security-groups \
             --group-ids "${{ secrets.AWS_SG_ID }}" \
-            --query "SecurityGroups[0].IpPermissions[?ToPort==\`${PORT}\`].IpRanges[?CidrIp=='${IP}/32']" \
+            --query "SecurityGroups[0].IpPermissions[?ToPort==\`${{ github.event.inputs.port }}` && IpRanges[?CidrIp=='${IP}/32']] | [0]" \
             --output text)
 
-          if [[ -n "$EXISTS" ]]; then
+          if [[ "$EXISTS" != "None" && -n "$EXISTS" ]]; then
             echo "✅ 이미 IP와 ${PORT} 규칙이 존재하여 등록을 생략합니다."
             exit 0
           fi
+
+      - name: Add inbound rule to Security Group
+        run: |
+          PORT=${{ github.event.inputs.port }}
+          IP=${{ github.event.inputs.ip }}
 
           echo "✅ 입력한 IP와 ${PORT} 포트로 인바운드 등록합니다."
 

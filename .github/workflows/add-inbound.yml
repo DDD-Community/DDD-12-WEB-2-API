@@ -61,7 +61,7 @@ jobs:
 
           EXISTS=$(aws ec2 describe-security-groups \
             --group-ids "${{ secrets.AWS_SG_ID }}" \
-            --query "SecurityGroups[0].IpPermissions[?ToPort==\`$PORT` && IpRanges[?CidrIp=='${IP}/32']] | [0]" \
+            --query "SecurityGroups[0].IpPermissions[?ToPort==`${PORT}` && IpRanges[?CidrIp=='${IP}/32']] | [0]" \
             --output text)
 
           if [[ "$EXISTS" != "None" && -n "$EXISTS" ]]; then

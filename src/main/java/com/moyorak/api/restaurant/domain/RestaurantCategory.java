@@ -1,9 +1,12 @@
 package com.moyorak.api.restaurant.domain;
 
+import com.moyorak.infra.orm.AbstractCommonEnumAttributeConverter;
+import com.moyorak.infra.orm.CommonEnum;
+import jakarta.persistence.Converter;
 import lombok.Getter;
 
 @Getter
-public enum RestaurantCategory {
+public enum RestaurantCategory implements CommonEnum {
     KOREAN("한식"),
     WESTERN("양식"),
     CHINESE("중식"),
@@ -18,5 +21,12 @@ public enum RestaurantCategory {
 
     RestaurantCategory(String description) {
         this.description = description;
+    }
+
+    @Converter(autoApply = true)
+    public static class Convert extends AbstractCommonEnumAttributeConverter<RestaurantCategory> {
+        public Convert() {
+            super(RestaurantCategory.class);
+        }
     }
 }

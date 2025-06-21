@@ -46,11 +46,9 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
             return UserPrincipal.generate(user.get().getId(), email, name, attributes);
         }
 
-        final User newUser = userRepository.save(User.registeredUser(email, name, picture));
-
         attributes.put("isNew", true);
 
-        return UserPrincipal.generate(newUser.getId(), email, name, attributes);
+        return UserPrincipal.newUserGenerate(email, name, attributes);
     }
 
     private void validEmail(final String email) {

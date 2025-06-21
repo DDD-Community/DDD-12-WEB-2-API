@@ -2,6 +2,7 @@ package com.moyorak.api.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -12,6 +13,8 @@ import com.moyorak.api.auth.domain.UserFixture;
 import com.moyorak.api.auth.domain.UserNotFoundException;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.domain.UserToken;
+import com.moyorak.api.auth.domain.UserTokenFixture;
+import com.moyorak.api.auth.dto.RefreshResponse;
 import com.moyorak.api.auth.dto.SignInResponse;
 import com.moyorak.api.auth.repository.TokenRepository;
 import com.moyorak.api.auth.repository.UserRepository;
@@ -22,6 +25,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -65,7 +71,7 @@ class AuthServiceTest {
 
             final User expectedUser = UserFixture.fixture(userId, email, name, "");
             final String token = "TOKEN-EXAMPLE";
-            final UserToken expectedUserToken = UserToken.create(userId, token);
+            final UserToken expectedUserToken = UserTokenFixture.fixture(userId, token);
 
             given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
             given(jwtTokenProvider.generateAccessToken(any(UserPrincipal.class))).willReturn(token);
@@ -123,7 +129,7 @@ class AuthServiceTest {
         final Long userId = 10L;
 
         final User expectedUser = UserFixture.fixture(userId, "", "", "");
-        final UserToken expectedUserToken = UserToken.create(userId, null);
+        final UserToken expectedUserToken = UserTokenFixture.fixture(userId, null);
 
         given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
         given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -142,7 +148,7 @@ class AuthServiceTest {
         final Long userId = 10L;
 
         final User expectedUser = UserFixture.fixture(userId, "", "", "");
-        final UserToken expectedUserToken = UserToken.create(userId, "EXAMPLE-TOKEN");
+        final UserToken expectedUserToken = UserTokenFixture.fixture(userId, "EXAMPLE-TOKEN");
 
         given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
         given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -201,7 +207,7 @@ class AuthServiceTest {
             final String token = "EXAMPLE-TOKEN";
 
             final User expectedUser = UserFixture.fixture(userId, "", "", "");
-            final UserToken expectedUserToken = UserToken.create(userId, "X");
+            final UserToken expectedUserToken = UserTokenFixture.fixture(userId, "X");
 
             given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
             given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -220,7 +226,7 @@ class AuthServiceTest {
             final String token = "EXAMPLE-TOKEN";
 
             final User expectedUser = UserFixture.fixture(userId, "", "", "");
-            final UserToken expectedUserToken = UserToken.create(userId, token);
+            final UserToken expectedUserToken = UserTokenFixture.fixture(userId, token);
 
             given(userRepository.findById(userId)).willReturn(Optional.of(expectedUser));
             given(tokenRepository.findFirstByUserIdOrderByIdDesc(userId))
@@ -228,6 +234,153 @@ class AuthServiceTest {
 
             // when & then
             assertDoesNotThrow(() -> authService.validToken(userId, token));
+        }
+    }
+
+    @Nested
+    @DisplayName("토큰을 새로 갱신할 때,")
+    class refresh {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = " ")
+        @DisplayName("입력된 Refresh Token이 빈 값이면 오류가 발생합니다.")
+        void isNull(final String input) {
+            // when & then
+            assertThatThrownBy(() -> authService.refresh(input))
+                    .isInstanceOf(InvalidTokenException.class)
+                    .hasMessage("유효하지 않은 로그인 정보입니다.");
+        }
+
+        @Test
+        @DisplayName("Refresh Token이 유효한지 확인할 때, 유효하지 않으면 오류가 발생합니다.")
+        void isValidRefreshToken() {
+            // given
+            final String refreshToken = "INVALID-TOKEN";
+
+            given(jwtTokenProvider.isValidRefreshToken(refreshToken)).willReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> authService.refresh(refreshToken))
+                    .isInstanceOf(InvalidTokenException.class)
+                    .hasMessage("유효하지 않은 로그인 정보입니다.");
+        }
+
+        @Nested
+        @DisplayName("회원이 유효한지 확인할 때,")
+        class validUser {
+
+            @Test
+            @DisplayName("유효하지 않은 회원이면 오류가 발생합니다.")
+            void invalidUser() {
+                // given
+                final String refreshToken = "VALID-TOKEN";
+
+                final Long expectedUserId = 1L;
+
+                given(jwtTokenProvider.isValidRefreshToken(refreshToken)).willReturn(true);
+                given((jwtTokenProvider.getUserIdByRefreshToken(refreshToken)))
+                        .willReturn(expectedUserId);
+                given(userRepository.findById(expectedUserId)).willReturn(Optional.empty());
+
+                // when & then
+                assertThatThrownBy(() -> authService.refresh(refreshToken))
+                        .isInstanceOf(UserNotFoundException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("토큰 정보가 있는지 확인할 때,")
+        class checkTokenInfo {
+
+            @Test
+            @DisplayName("토큰 정보가 없으면, 오류가 발생합니다.")
+            void invalidTokenInfo() {
+                // given
+                final String refreshToken = "VALID-TOKEN";
+
+                final Long expectedUserId = 1L;
+                final User expectedUser = UserFixture.fixture(expectedUserId, "", "", "");
+
+                given(jwtTokenProvider.isValidRefreshToken(refreshToken)).willReturn(true);
+                given((jwtTokenProvider.getUserIdByRefreshToken(refreshToken)))
+                        .willReturn(expectedUserId);
+                given(userRepository.findById(expectedUserId))
+                        .willReturn(Optional.of(expectedUser));
+                given((tokenRepository.findFirstByUserIdOrderByIdDesc(expectedUserId)))
+                        .willReturn(Optional.empty());
+
+                // when & then
+                assertThatThrownBy(() -> authService.refresh(refreshToken))
+                        .isInstanceOf(BusinessException.class)
+                        .hasMessage("로그인 정보가 존재하지 않습니다.");
+            }
+        }
+
+        @Nested
+        @DisplayName("입력된 Refresh Token과 저장된 RefreshToken이 동일한지 비교할 때,")
+        class isNotEquals {
+
+            @Test
+            @DisplayName("동일하지 않으면 오류가 발생합니다.")
+            void notEquals() {
+                // given
+                final String refreshToken = "VALID-TOKEN";
+
+                final Long expectedUserId = 1L;
+                final User expectedUser = UserFixture.fixture(expectedUserId, "", "", "");
+                final UserToken expectedUserToken =
+                        UserTokenFixture.fixture(expectedUserId, "", "TOKEN");
+
+                given(jwtTokenProvider.isValidRefreshToken(refreshToken)).willReturn(true);
+                given((jwtTokenProvider.getUserIdByRefreshToken(refreshToken)))
+                        .willReturn(expectedUserId);
+                given(userRepository.findById(expectedUserId))
+                        .willReturn(Optional.of(expectedUser));
+                given((tokenRepository.findFirstByUserIdOrderByIdDesc(expectedUserId)))
+                        .willReturn(Optional.of(expectedUserToken));
+
+                // when & then
+                assertThatThrownBy(() -> authService.refresh(refreshToken))
+                        .isInstanceOf(InvalidTokenException.class)
+                        .hasMessage("유효하지 않은 로그인 정보입니다.");
+            }
+        }
+
+        @Test
+        @DisplayName("토큰 재발급에 성공합니다.")
+        void success() {
+            // given
+            final String refreshToken = "VALID-TOKEN";
+
+            final String newToken = "NEW-VALID-TOKEN";
+            final String newRefreshToken = "NEW-VALID-REFRESH-TOKEN";
+
+            final Long expectedUserId = 1L;
+            final User expectedUser = UserFixture.fixture(expectedUserId, "", "", "");
+            final UserToken expectedUserToken =
+                    UserTokenFixture.fixture(expectedUserId, "", refreshToken);
+
+            given(jwtTokenProvider.isValidRefreshToken(refreshToken)).willReturn(true);
+            given((jwtTokenProvider.getUserIdByRefreshToken(refreshToken)))
+                    .willReturn(expectedUserId);
+            given(userRepository.findById(expectedUserId)).willReturn(Optional.of(expectedUser));
+            given((tokenRepository.findFirstByUserIdOrderByIdDesc(expectedUserId)))
+                    .willReturn(Optional.of(expectedUserToken));
+            given(jwtTokenProvider.generateAccessToken(any(UserPrincipal.class)))
+                    .willReturn(newToken);
+            given(jwtTokenProvider.generateRefreshToken(any(UserPrincipal.class)))
+                    .willReturn(newRefreshToken);
+
+            // when
+            final RefreshResponse result = authService.refresh(refreshToken);
+
+            // then
+            assertSoftly(
+                    it -> {
+                        it.assertThat(result.accessToken()).isEqualTo(newToken);
+                        it.assertThat(result.refreshToken()).isEqualTo(newRefreshToken);
+                    });
         }
     }
 }

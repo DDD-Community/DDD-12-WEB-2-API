@@ -1,6 +1,7 @@
 package com.moyorak.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.dto.SignInResponse;
 import com.moyorak.api.auth.dto.SignUpResponse;
 import com.moyorak.api.auth.service.AuthService;
@@ -11,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -27,15 +27,13 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
             HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
 
-        final OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        final UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-        final String name = oAuth2User.getAttribute("name");
-        final Long id = oAuth2User.getAttribute("id");
-
-        final Boolean isNew = oAuth2User.getAttribute("isNew");
+        final Boolean isNew = userPrincipal.getAttribute("isNew");
 
         if (isNew) {
-            final SignUpResponse signUpResponse = new SignUpResponse(id, name);
+            final SignUpResponse signUpResponse =
+                    new SignUpResponse(userPrincipal.getId(), userPrincipal.getName());
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -45,7 +43,7 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
-        final SignInResponse signInResponse = authService.generate(id);
+        final SignInResponse signInResponse = authService.generate(userPrincipal.getId());
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

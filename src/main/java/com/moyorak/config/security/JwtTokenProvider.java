@@ -23,13 +23,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    // TODO: 테스트를 위해 시간 짧게 유지 해야한다면, 환경 변수 처리가 필요합니다.
-    private static final long EXPIRATION_MILLIS = 1000 * 60 * 60;
-
     private final JwtTokenProperties jwtTokenProperties;
 
     public String generateAccessToken(final UserPrincipal user) {
-        final Key key = getSigningKey();
+        final Key key = getSigningKey(jwtTokenProperties.getSecretKey());
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -37,13 +34,28 @@ public class JwtTokenProvider {
                 .claim("email", user.getUsername())
                 .claim("name", user.getName())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MILLIS))
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + jwtTokenProperties.getExpiration()))
                 .signWith(key)
                 .compact();
     }
 
+    public String generateRefreshToken(final UserPrincipal user) {
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setSubject(user.getId().toString())
+                .claim("type", "refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + jwtTokenProperties.getRefreshExpiration()))
+                .signWith(getSigningKey(jwtTokenProperties.getRefreshSecretKey()))
+                .compact();
+    }
+
     public Authentication getAuthentication(final String token) {
-        final Claims claims = parseClaims(token);
+        final Claims claims = parseClaims(jwtTokenProperties.getSecretKey(), token);
 
         final Long id = Long.parseLong(claims.getSubject());
         final String email = claims.get("email", String.class);
@@ -54,9 +66,23 @@ public class JwtTokenProvider {
                 userDetails, "", userDetails.getAuthorities());
     }
 
+    public Long getUserIdByRefreshToken(final String refreshToken) {
+        final Claims claims = parseClaims(jwtTokenProperties.getRefreshSecretKey(), refreshToken);
+
+        return Long.parseLong(claims.getSubject());
+    }
+
     public boolean isValidToken(final String token) {
+        return validate(token, jwtTokenProperties.getSecretKey());
+    }
+
+    public boolean isValidRefreshToken(final String token) {
+        return validate(token, jwtTokenProperties.getRefreshSecretKey());
+    }
+
+    private boolean validate(final String token, final String secretKey) {
         try {
-            parseClaims(token);
+            parseClaims(secretKey, token);
 
             return true;
         } catch (ExpiredJwtException e) {
@@ -74,14 +100,14 @@ public class JwtTokenProvider {
         return false;
     }
 
-    private Claims parseClaims(final String token) {
-        final JwtParser parser = Jwts.parserBuilder().setSigningKey(getSigningKey()).build();
+    private Claims parseClaims(final String secretKey, final String token) {
+        final JwtParser parser =
+                Jwts.parserBuilder().setSigningKey(getSigningKey(secretKey)).build();
 
         return parser.parseClaimsJws(token).getBody();
     }
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(
-                jwtTokenProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    private Key getSigningKey(final String key) {
+        return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 }

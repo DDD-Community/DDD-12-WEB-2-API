@@ -1,10 +1,12 @@
 package com.moyorak.api.auth.domain;
 
 import java.util.Collection;
+import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
-public class UserPrincipal implements UserDetails {
+public class UserPrincipal implements OAuth2User, UserDetails {
 
     private Long id;
 
@@ -12,14 +14,30 @@ public class UserPrincipal implements UserDetails {
 
     private String name;
 
-    public static UserPrincipal generate(final Long id, final String email, final String name) {
+    private Map<String, Object> attributes;
+
+    public static UserPrincipal generate(
+            final Long id,
+            final String email,
+            final String name,
+            final Map<String, Object> attributes) {
         UserPrincipal userPrincipal = new UserPrincipal();
 
         userPrincipal.id = id;
         userPrincipal.email = email;
         userPrincipal.name = name;
+        userPrincipal.attributes = attributes;
 
         return userPrincipal;
+    }
+
+    public static UserPrincipal generate(final Long id, final String email, final String name) {
+        return generate(id, email, name, Map.of());
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     @Override

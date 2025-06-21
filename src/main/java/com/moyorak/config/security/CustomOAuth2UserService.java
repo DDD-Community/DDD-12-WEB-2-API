@@ -1,18 +1,16 @@
 package com.moyorak.config.security;
 
 import com.moyorak.api.auth.domain.User;
+import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.repository.UserRepository;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,24 +41,16 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
         Map<String, Object> attributes = new HashMap<>(oauth2User.getAttributes());
 
         if (user.isPresent()) {
-            attributes.put("id", user.get().getId());
             attributes.put("isNew", false);
 
-            return new DefaultOAuth2User(
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                    attributes,
-                    "email");
+            return UserPrincipal.generate(user.get().getId(), email, name, attributes);
         }
 
         final User newUser = userRepository.save(User.registeredUser(email, name, picture));
 
-        attributes.put("id", newUser.getId());
         attributes.put("isNew", true);
 
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                attributes,
-                "email");
+        return UserPrincipal.generate(newUser.getId(), email, name, attributes);
     }
 
     private void validEmail(final String email) {

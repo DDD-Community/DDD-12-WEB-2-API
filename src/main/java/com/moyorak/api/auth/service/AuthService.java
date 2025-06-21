@@ -14,6 +14,7 @@ import com.moyorak.config.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +63,11 @@ public class AuthService {
 
     @Transactional
     public RefreshResponse refresh(final String refreshToken) {
+        // TODO: 분리할 수 있으면 분리하기
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new InvalidTokenException();
+        }
+
         // 1. Refersh Token이 유효한지 확인
         if (!jwtTokenProvider.isValidRefreshToken(refreshToken)) {
             // TODO: exception handler 추가하기

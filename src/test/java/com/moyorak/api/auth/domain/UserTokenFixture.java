@@ -9,6 +9,11 @@ public class UserTokenFixture {
     }
 
     public static UserToken fixture(
+            final Long userId, final String accessToken, final String refreshToken) {
+        return fixture(null, userId, accessToken, refreshToken);
+    }
+
+    public static UserToken fixture(
             final Long id, final Long userId, final String accessToken, final String refreshToken) {
         UserToken userToken = new UserToken();
 

@@ -4,6 +4,7 @@ import com.moyorak.api.auth.dto.SignUpRequest;
 import com.moyorak.api.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ class UserController {
 
     @PostMapping("/sign-up")
     @Operation(summary = "[회원] 회원 가입", description = "회원 가입을 요청합니다.")
-    public void signUp(@RequestBody final SignUpRequest request) {
+    public void signUp(@RequestBody @Valid final SignUpRequest request) {
         userService.signUp(request);
     }
 }

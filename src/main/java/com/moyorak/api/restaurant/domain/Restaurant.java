@@ -3,8 +3,8 @@ package com.moyorak.api.restaurant.domain;
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -36,7 +36,7 @@ public class Restaurant extends AuditInformation {
     private String address;
 
     @Comment("식당 카테고리")
-    @Column(name = "category", nullable = false)
+    @Column(name = "category", nullable = false, length = 32)
     private RestaurantCategory category;
 
     @Comment("경도")
@@ -47,9 +47,45 @@ public class Restaurant extends AuditInformation {
     @Column(name = "latitude", nullable = false)
     private double latitude;
 
-    @NotNull
     @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Restaurant(
+            String kakaoPlaceId,
+            String kakaoPlaceUrl,
+            String name,
+            String address,
+            RestaurantCategory category,
+            double longitude,
+            double latitude) {
+        this.kakaoPlaceId = kakaoPlaceId;
+        this.kakaoPlaceUrl = kakaoPlaceUrl;
+        this.name = name;
+        this.address = address;
+        this.category = category;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public static Restaurant create(
+            String kakaoPlaceId,
+            String kakaoPlaceUrl,
+            String name,
+            String address,
+            RestaurantCategory category,
+            double longitude,
+            double latitude) {
+        return Restaurant.builder()
+                .kakaoPlaceId(kakaoPlaceId)
+                .kakaoPlaceUrl(kakaoPlaceUrl)
+                .name(name)
+                .address(address)
+                .category(category)
+                .longitude(longitude)
+                .latitude(latitude)
+                .build();
+    }
 }

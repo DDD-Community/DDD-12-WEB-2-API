@@ -1,6 +1,7 @@
 package com.moyorak.api.restaurant.controller;
 
 import com.moyorak.api.restaurant.dto.RestaurantResponse;
+import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
 import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.api.restaurant.service.RestaurantService;
 import com.moyorak.global.domain.ListResponse;
@@ -9,9 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +26,11 @@ class RestaurantController {
     public ListResponse<RestaurantResponse> searchRestaurants(
             @Valid RestaurantSearchRequest searchRequest) {
         return restaurantService.searchRestaurants(searchRequest);
+    }
+
+    @PostMapping
+    @Operation(summary = "음식점 데이터 저장", description = "음식점 데이터를 저장합니다.")
+    public void save(@Valid @RequestBody final RestaurantSaveRequest restaurantSaveRequest) {
+        restaurantService.save(restaurantSaveRequest);
     }
 }

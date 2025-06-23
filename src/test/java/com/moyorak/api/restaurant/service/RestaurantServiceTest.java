@@ -28,7 +28,7 @@ class RestaurantServiceTest {
     @Mock private RestaurantRepository restaurantRepository;
 
     @Nested
-    @DisplayName("음식점 등록")
+    @DisplayName("음식점 등록 시")
     class Save {
 
         private RestaurantSaveRequest request;
@@ -37,7 +37,6 @@ class RestaurantServiceTest {
         void setUp() {
             request =
                     new RestaurantSaveRequest(
-                            "123456",
                             "http://place.map.kakao.com/123456",
                             "우가우가 차차차",
                             "우가우가시 차차차동 24번길",
@@ -47,10 +46,16 @@ class RestaurantServiceTest {
         }
 
         @Test
-        @DisplayName("음식점 등록 성공")
+        @DisplayName("저장을 성공합니다.")
         void success() {
             // given
-            given(restaurantRepository.findByKakaoPlaceIdAndUseTrue(request.kakaoPlaceId()))
+            Restaurant restaurant = request.toRestaurant();
+            given(
+                            restaurantRepository
+                                    .findByNameAndRoundedLongitudeAndRoundedLatitudeAndUseTrue(
+                                            restaurant.getName(),
+                                            restaurant.getRoundedLongitude(),
+                                            restaurant.getRoundedLatitude()))
                     .willReturn(Optional.empty());
 
             // when
@@ -61,22 +66,28 @@ class RestaurantServiceTest {
         }
 
         @Test
-        @DisplayName("이미 등록된 카카오 ID가 있습니다.")
+        @DisplayName("이미 등록된 식당이 있습니다.")
         void fail() {
             // given
-            final Restaurant alreadyExist =
+            final Restaurant newRestaurant = request.toRestaurant();
+            final Restaurant existingRestaurant =
                     Restaurant.create(
-                            request.kakaoPlaceId(),
-                            request.kakaoPlaceUrl(),
-                            request.name(),
-                            request.address(),
-                            request.category(),
-                            request.longitude(),
-                            request.latitude());
+                            "http://place.map.kakao.com/123456",
+                            "우가우가 차차차",
+                            "우가우가시 차차차동 24번길",
+                            RestaurantCategory.KOREAN,
+                            127.043616,
+                            37.503095);
 
-            given(restaurantRepository.findByKakaoPlaceIdAndUseTrue(request.kakaoPlaceId()))
-                    .willReturn(Optional.of(alreadyExist));
+            given(
+                            restaurantRepository
+                                    .findByNameAndRoundedLongitudeAndRoundedLatitudeAndUseTrue(
+                                            newRestaurant.getName(),
+                                            newRestaurant.getRoundedLongitude(),
+                                            newRestaurant.getRoundedLatitude()))
+                    .willReturn(Optional.of(existingRestaurant));
 
+            // when & then
             assertThatThrownBy(() -> restaurantService.save(request))
                     .isInstanceOf(BusinessException.class);
         }

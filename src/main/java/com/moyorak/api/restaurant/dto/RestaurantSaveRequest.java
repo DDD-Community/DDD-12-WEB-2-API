@@ -3,19 +3,17 @@ package com.moyorak.api.restaurant.dto;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Schema(title = "[식당] 모여락 DB에 식당 저장 DTO")
 public record RestaurantSaveRequest(
-        @NotBlank(message = "장소 ID를 입력해주세요.")
-                @Size(max = 30, message = "장소 ID는 {max}자 이하여야 합니다.")
-                @Schema(description = "카카오 고유 장소 ID", example = "12345")
-                String kakaoPlaceId,
         @Size(max = 512, message = "url은 {max}자 이하여야 합니다.")
-                @Schema(
-                        description = "카카오 식당 외부 링크",
-                        example = "http://place.map.kakao.com/26338954")
-                String kakaoPlaceUrl,
+                @Schema(description = "식당 외부 링크", example = "http://place.map.kakao.com/26338954")
+                String placeUrl,
         @NotBlank(message = "식당 이름을 입력해주세요.")
                 @Size(max = 255, message = "식당 이름은 {max}자 이하여야 합니다.")
                 @Schema(description = "식당 이름", example = "우가우가 차차차")
@@ -37,7 +35,6 @@ public record RestaurantSaveRequest(
                 @Schema(description = "위도", example = "37.503095")
                 Double latitude) {
     public Restaurant toRestaurant() {
-        return Restaurant.create(
-                kakaoPlaceId, kakaoPlaceUrl, name, address, category, longitude, latitude);
+        return Restaurant.create(placeUrl, name, address, category, longitude, latitude);
     }
 }

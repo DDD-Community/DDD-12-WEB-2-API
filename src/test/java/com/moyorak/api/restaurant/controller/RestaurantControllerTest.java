@@ -40,105 +40,8 @@ class RestaurantControllerTest {
     class Save {
 
         @Nested
-        @DisplayName("kakaPlaceId가")
-        class KakaPlaceId {
-            @Test
-            @DisplayName("빈 문자열이면 400을 반환합니다.")
-            void isEmpty() throws Exception {
-                final String requestBody =
-                        """
-                    {
-                      "kakaoPlaceId": "",
-                      "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
-                      "name": "우가우가 차차차",
-                      "address": "우가우가시 차차차동 24번길",
-                      "category": "KOREAN",
-                      "longitude": 127.043616,
-                      "latitude": 37.503095
-                    }
-                    """;
-
-                mockMvc.perform(
-                                post(BASE_URL)
-                                        .content(requestBody)
-                                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isBadRequest());
-            }
-
-            @Test
-            @DisplayName("공백 문자열이면 400을 반환합니다.")
-            void isBlackSpace() throws Exception {
-                final String requestBody =
-                        """
-                    {
-                      "kakaoPlaceId": "     ",
-                      "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
-                      "name": "우가우가 차차차",
-                      "address": "우가우가시 차차차동 24번길",
-                      "category": "KOREAN",
-                      "longitude": 127.043616,
-                      "latitude": 37.503095
-                    }
-                    """;
-
-                mockMvc.perform(
-                                post(BASE_URL)
-                                        .content(requestBody)
-                                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isBadRequest());
-            }
-
-            @Test
-            @DisplayName("null이면 400을 반환합니다.")
-            void isNull() throws Exception {
-                final String requestBody =
-                        """
-                    {
-                      "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
-                      "name": "우가우가 차차차",
-                      "address": "우가우가시 차차차동 24번길",
-                      "category": "KOREAN",
-                      "longitude": 127.043616,
-                      "latitude": 37.503095
-                    }
-                    """;
-
-                mockMvc.perform(
-                                post(BASE_URL)
-                                        .content(requestBody)
-                                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isBadRequest());
-            }
-
-            @Test
-            @DisplayName("30자를 초과하면 400을 반환합니다.")
-            void isTooLong() throws Exception {
-                final String kakaoPlaceId = TestFixtureUtils.createStringWithLength(31);
-                final String requestBody =
-                        """
-                    {
-                      "kakaoPlaceId": "%s",
-                      "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
-                      "name": "우가우가 차차차",
-                      "address": "우가우가시 차차차동 24번길",
-                      "category": "KOREAN",
-                      "longitude": 127.043616,
-                      "latitude": 37.503095
-                    }
-                    """
-                                .formatted(kakaoPlaceId);
-
-                mockMvc.perform(
-                                post(BASE_URL)
-                                        .content(requestBody)
-                                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isBadRequest());
-            }
-        }
-
-        @Nested
-        @DisplayName("kakaoPlaceUrl가")
-        class KakaPlaceUrl {
+        @DisplayName("placeUrl이")
+        class PlaceUrl {
             @Test
             @DisplayName("512자를 초과하면 400을 반환합니다.")
             void isTooLong() throws Exception {
@@ -146,8 +49,7 @@ class RestaurantControllerTest {
                 final String requestBody =
                         """
                     {
-                      "kakaoPlaceId": "12345",
-                      "kakaoPlaceUrl": "%s",
+                      "placeUrl": "%s",
                       "name": "우가우가 차차차",
                       "address": "우가우가시 차차차동 24번길",
                       "category": "KOREAN",
@@ -175,7 +77,6 @@ class RestaurantControllerTest {
                 final String requestBody =
                         """
                     {
-                      "kakaoPlaceId": "12345",
                       "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                       "name": "%s",
                       "address": "우가우가시 차차차동 24번길",
@@ -204,7 +105,6 @@ class RestaurantControllerTest {
                 final String requestBody =
                         """
                     {
-                      "kakaoPlaceId": "12345",
                       "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                       "name": "우가우가 차차차",
                       "address": "%s",
@@ -232,7 +132,6 @@ class RestaurantControllerTest {
                 final String requestBody =
                         """
                     {
-                      "kakaoPlaceId": "12345",
                       "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                       "name": "우가우가 차차차",
                       "address": "우가우가시 차차차동 24번길",
@@ -258,7 +157,6 @@ class RestaurantControllerTest {
                 final String request =
                         """
                         {
-                          "kakaoPlaceId": "123456",
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
@@ -280,7 +178,6 @@ class RestaurantControllerTest {
                 final String request =
                         """
                         {
-                          "kakaoPlaceId": "123456",
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
@@ -303,7 +200,6 @@ class RestaurantControllerTest {
                 final String request =
                         """
                         {
-                          "kakaoPlaceId": "123456",
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
@@ -331,7 +227,6 @@ class RestaurantControllerTest {
                 final String request =
                         """
                         {
-                          "kakaoPlaceId": "123456",
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
@@ -353,7 +248,6 @@ class RestaurantControllerTest {
                 final String request =
                         """
                         {
-                          "kakaoPlaceId": "123456",
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
@@ -376,7 +270,6 @@ class RestaurantControllerTest {
                 final String request =
                         """
                         {
-                          "kakaoPlaceId": "123456",
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",

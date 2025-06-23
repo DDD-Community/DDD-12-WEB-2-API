@@ -1,5 +1,6 @@
 package com.moyorak.api.restaurant.service;
 
+import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.dto.RestaurantResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
 import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RestaurantService {
 
+    private static final int SCALE = 5;
     private final KakaoSearcher kakaoSearcher;
     private final RestaurantRepository restaurantRepository;
 
@@ -31,12 +33,21 @@ public class RestaurantService {
     // TODO 검색용 디비에 저장 추가
     @Transactional
     public void save(final RestaurantSaveRequest restaurantSaveRequest) {
-        restaurantRepository
-                .findByKakaoPlaceIdAndUseTrue(restaurantSaveRequest.kakaoPlaceId())
-                .ifPresent(
-                        restaurant -> {
-                            throw new BusinessException("이미 등록된 식당입니다.");
-                        });
-        restaurantRepository.save(restaurantSaveRequest.toRestaurant());
+
+        Restaurant restaurant = restaurantSaveRequest.toRestaurant();
+
+        final boolean isSaved =
+                restaurantRepository
+                        .findByNameAndRoundedLongitudeAndRoundedLatitudeAndUseTrue(
+                                restaurantSaveRequest.name(),
+                                restaurant.getRoundedLongitude(),
+                                restaurant.getRoundedLatitude())
+                        .isPresent();
+
+        if (isSaved) {
+            throw new BusinessException("식당이 이미 등록되어 있습니다.");
+        }
+
+        restaurantRepository.save(restaurant);
     }
 }

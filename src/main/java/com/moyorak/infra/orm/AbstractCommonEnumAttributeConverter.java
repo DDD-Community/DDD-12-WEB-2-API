@@ -3,6 +3,7 @@ package com.moyorak.infra.orm;
 import jakarta.persistence.AttributeConverter;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommonEnumAttributeConverter<T extends Enum<T> & CommonEnum>
@@ -14,8 +15,11 @@ public abstract class AbstractCommonEnumAttributeConverter<T extends Enum<T> & C
     protected AbstractCommonEnumAttributeConverter(Class<T> enumClass) {
         this.enumClass = enumClass;
         this.enumMap =
-                Arrays.stream(enumClass.getEnumConstants())
-                        .collect(Collectors.toMap(CommonEnum::getDescription, e -> e));
+                Map.copyOf(
+                        Arrays.stream(enumClass.getEnumConstants())
+                                .collect(
+                                        Collectors.toMap(
+                                                CommonEnum::getDescription, Function.identity())));
     }
 
     @Override

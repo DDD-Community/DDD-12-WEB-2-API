@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RestaurantService {
 
-    private static final int SCALE = 5;
     private final KakaoSearcher kakaoSearcher;
     private final RestaurantRepository restaurantRepository;
 

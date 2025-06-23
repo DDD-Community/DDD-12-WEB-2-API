@@ -1,6 +1,6 @@
 package com.moyorak.api.restaurant.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -77,7 +77,8 @@ class RestaurantServiceTest {
             given(restaurantRepository.findByKakaoPlaceIdAndUseTrue(request.kakaoPlaceId()))
                     .willReturn(Optional.of(alreadyExist));
 
-            assertThrows(BusinessException.class, () -> restaurantService.save(request));
+            assertThatThrownBy(() -> restaurantService.save(request))
+                    .isInstanceOf(BusinessException.class);
         }
     }
 }

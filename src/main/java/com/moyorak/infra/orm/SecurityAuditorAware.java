@@ -3,6 +3,7 @@ package com.moyorak.infra.orm;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,10 @@ class SecurityAuditorAware implements AuditorAware<Long> {
                 SecurityContextHolder.getContext().getAuthentication();
 
         if (ObjectUtils.isEmpty(authentication) || !authentication.isAuthenticated()) {
+            return Optional.of(0L);
+        }
+
+        if (authentication instanceof AnonymousAuthenticationToken) {
             return Optional.of(0L);
         }
 

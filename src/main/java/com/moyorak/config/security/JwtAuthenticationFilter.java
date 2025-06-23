@@ -66,7 +66,9 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         final String uri = request.getRequestURI();
 
-        return uri.startsWith("/api/auth/sign-in") || uri.startsWith("/api/auth/refresh");
+        return uri.startsWith("/api/auth/sign-in")
+                || uri.startsWith("/api/auth/refresh")
+                || uri.startsWith("/api/user/sign-up");
     }
 
     private void validToken(final Authentication authentication, final String token) {

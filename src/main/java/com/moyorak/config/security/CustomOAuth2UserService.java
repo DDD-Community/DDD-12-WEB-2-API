@@ -34,9 +34,7 @@ class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OA
         final String provider = userRequest.getClientRegistration().getRegistrationId();
         validProvider(provider);
 
-        final String picture = oauth2User.getAttribute("picture");
-
-        final Optional<User> user = userRepository.findByEmail(email);
+        final Optional<User> user = userRepository.findByEmailAndUse(email, true);
 
         Map<String, Object> attributes = new HashMap<>(oauth2User.getAttributes());
 

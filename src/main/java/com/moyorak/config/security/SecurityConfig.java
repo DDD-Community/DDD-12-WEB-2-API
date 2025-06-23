@@ -38,7 +38,8 @@ class SecurityConfig {
                                                 "/h2-console/**",
                                                 "/swagger-ui/**",
                                                 "/v3/api-docs/**",
-                                                "/api/auth/refresh")
+                                                "/api/auth/refresh",
+                                                "/api/user/sign-up")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())

@@ -32,8 +32,11 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
         final Boolean isNew = userPrincipal.getAttribute("isNew");
 
         if (isNew) {
+            final String profileImage = userPrincipal.getAttribute("picture");
+
             final SignUpResponse signUpResponse =
-                    new SignUpResponse(userPrincipal.getId(), userPrincipal.getName());
+                    SignUpResponse.create(
+                            userPrincipal.getUsername(), userPrincipal.getName(), profileImage);
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -2,6 +2,7 @@ package com.moyorak.api.restaurant.domain;
 
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;
+import com.moyorak.infra.orm.RestaurantCategoryConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,6 +37,7 @@ public class Restaurant extends AuditInformation {
     private String address;
 
     @Comment("식당 카테고리")
+    @Convert(converter = RestaurantCategoryConverter.class)
     @Column(name = "category", nullable = false, length = 32)
     private RestaurantCategory category;
 

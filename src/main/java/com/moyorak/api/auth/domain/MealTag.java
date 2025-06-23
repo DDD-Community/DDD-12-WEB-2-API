@@ -21,7 +21,7 @@ import org.hibernate.annotations.Comment;
 @Entity
 @Table(name = "food_flags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FoodFlag extends AuditInformation {
+public class MealTag extends AuditInformation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +37,7 @@ public class FoodFlag extends AuditInformation {
     @Comment("구분")
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, columnDefinition = "varchar(16)")
-    private FoodFlagType type;
+    private MealTagType type;
 
     @NotNull
     @Comment("항목")
@@ -50,13 +50,13 @@ public class FoodFlag extends AuditInformation {
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
 
-    public static FoodFlag create(final Long userId, final FoodFlagType type, final String item) {
-        FoodFlag foodFlag = new FoodFlag();
+    public static MealTag create(final Long userId, final MealTagType type, final String item) {
+        MealTag mealTag = new MealTag();
 
-        foodFlag.userId = userId;
-        foodFlag.type = type;
-        foodFlag.item = item;
+        mealTag.userId = userId;
+        mealTag.type = type;
+        mealTag.item = item;
 
-        return foodFlag;
+        return mealTag;
     }
 }

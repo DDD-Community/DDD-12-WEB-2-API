@@ -2,7 +2,7 @@ package com.moyorak.api.auth.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.moyorak.api.auth.domain.FoodFlagType;
+import com.moyorak.api.auth.domain.MealTagType;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -12,17 +12,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
-class FoodFlagSaveRequestTest {
+class MealTagSaveRequestTest {
 
     @Test
     @DisplayName("음식 구분 객체 생성시, 중복 데이터가 제거 된 상태로 생성 됩니다.")
     void isNotDuplicate() {
         // given
-        final FoodFlagDetailsSaveRequest detail =
-                new FoodFlagDetailsSaveRequest(1L, FoodFlagType.ALLERGY, "우유");
+        final MealTagDetailsSaveRequest detail =
+                new MealTagDetailsSaveRequest(1L, MealTagType.ALLERGY, "우유");
 
         // when
-        final FoodFlagSaveRequest result = new FoodFlagSaveRequest(List.of(detail, detail));
+        final MealTagSaveRequest result = new MealTagSaveRequest(List.of(detail, detail));
 
         // then
         assertThat(result.details()).size().isEqualTo(1);
@@ -36,7 +36,7 @@ class FoodFlagSaveRequestTest {
         @DisplayName("빈 값의 경우, true를 반환합니다.")
         void isNull() {
             // given
-            final FoodFlagSaveRequest request = new FoodFlagSaveRequest(null);
+            final MealTagSaveRequest request = new MealTagSaveRequest(null);
 
             // when
             final boolean result = request.isTypeItemCountValid();
@@ -46,24 +46,24 @@ class FoodFlagSaveRequestTest {
         }
 
         @ParameterizedTest
-        @EnumSource(FoodFlagType.class)
+        @EnumSource(MealTagType.class)
         @DisplayName("최대 입력 수인 10개를 초과하는 경우, false를 반환합니다.")
-        void isInvalidItemSize(final FoodFlagType input) {
+        void isInvalidItemSize(final MealTagType input) {
             // given
-            final FoodFlagSaveRequest request =
-                    new FoodFlagSaveRequest(
+            final MealTagSaveRequest request =
+                    new MealTagSaveRequest(
                             List.of(
-                                    new FoodFlagDetailsSaveRequest(1L, input, "1"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "2"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "3"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "4"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "5"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "6"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "7"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "8"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "9"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "10"),
-                                    new FoodFlagDetailsSaveRequest(1L, input, "11")));
+                                    new MealTagDetailsSaveRequest(1L, input, "1"),
+                                    new MealTagDetailsSaveRequest(1L, input, "2"),
+                                    new MealTagDetailsSaveRequest(1L, input, "3"),
+                                    new MealTagDetailsSaveRequest(1L, input, "4"),
+                                    new MealTagDetailsSaveRequest(1L, input, "5"),
+                                    new MealTagDetailsSaveRequest(1L, input, "6"),
+                                    new MealTagDetailsSaveRequest(1L, input, "7"),
+                                    new MealTagDetailsSaveRequest(1L, input, "8"),
+                                    new MealTagDetailsSaveRequest(1L, input, "9"),
+                                    new MealTagDetailsSaveRequest(1L, input, "10"),
+                                    new MealTagDetailsSaveRequest(1L, input, "11")));
 
             // when
             final boolean result = request.isTypeItemCountValid();
@@ -77,14 +77,14 @@ class FoodFlagSaveRequestTest {
         @DisplayName("적거나 같은 경우에는 true를 반환합니다.")
         void success(final int size, final String inputType) {
             // given
-            final FoodFlagType type = FoodFlagType.valueOf(FoodFlagType.class, inputType);
+            final MealTagType type = MealTagType.valueOf(MealTagType.class, inputType);
 
-            List<FoodFlagDetailsSaveRequest> details = new ArrayList<>();
+            List<MealTagDetailsSaveRequest> details = new ArrayList<>();
             for (int i = 0; i < size; i++) {
-                details.add(new FoodFlagDetailsSaveRequest(1L, type, String.valueOf(i)));
+                details.add(new MealTagDetailsSaveRequest(1L, type, String.valueOf(i)));
             }
 
-            final FoodFlagSaveRequest request = new FoodFlagSaveRequest(details);
+            final MealTagSaveRequest request = new MealTagSaveRequest(details);
 
             // when
             final boolean result = request.isTypeItemCountValid();
@@ -100,12 +100,12 @@ class FoodFlagSaveRequestTest {
         // given
         final long expectedResult = 1L;
 
-        final FoodFlagSaveRequest request =
-                new FoodFlagSaveRequest(
-                        List.of(new FoodFlagDetailsSaveRequest(1L, FoodFlagType.ALLERGY, "1")));
+        final MealTagSaveRequest request =
+                new MealTagSaveRequest(
+                        List.of(new MealTagDetailsSaveRequest(1L, MealTagType.ALLERGY, "1")));
 
         // when
-        final long result = request.getCountByType(FoodFlagType.ALLERGY);
+        final long result = request.getCountByType(MealTagType.ALLERGY);
 
         // then
         assertThat(result).isEqualTo(expectedResult);

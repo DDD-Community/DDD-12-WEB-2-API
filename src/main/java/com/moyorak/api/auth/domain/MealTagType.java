@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FoodFlagType {
+public enum MealTagType {
     DISLIKE("비선호 음식"),
     ALLERGY("알러지");
 

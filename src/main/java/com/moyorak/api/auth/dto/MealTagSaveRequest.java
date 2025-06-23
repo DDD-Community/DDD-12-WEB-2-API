@@ -1,7 +1,7 @@
 package com.moyorak.api.auth.dto;
 
-import com.moyorak.api.auth.domain.FoodFlag;
-import com.moyorak.api.auth.domain.FoodFlagType;
+import com.moyorak.api.auth.domain.MealTag;
+import com.moyorak.api.auth.domain.MealTagType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import org.springframework.util.ObjectUtils;
 
 @Schema(title = "[마이] 알러지, 비선호 음식 상세 저장 요청 DTO")
-public record FoodFlagSaveRequest(@Valid List<FoodFlagDetailsSaveRequest> details) {
+public record MealTagSaveRequest(@Valid List<MealTagDetailsSaveRequest> details) {
     public static final long MAX_ITEMS_PER_TYPE = 10;
 
-    public FoodFlagSaveRequest {
+    public MealTagSaveRequest {
         // 중복 제거를 하기위해 생성자에 입력 받은 List를 Set으로 대입하여 처리
         details =
                 ObjectUtils.isEmpty(details)
@@ -30,21 +30,21 @@ public record FoodFlagSaveRequest(@Valid List<FoodFlagDetailsSaveRequest> detail
             return true;
         }
 
-        Map<FoodFlagType, Long> typeCountMap =
+        Map<MealTagType, Long> typeCountMap =
                 details.stream()
                         .filter(Objects::nonNull)
                         .collect(
                                 Collectors.groupingBy(
-                                        FoodFlagDetailsSaveRequest::type, Collectors.counting()));
+                                        MealTagDetailsSaveRequest::type, Collectors.counting()));
 
         return typeCountMap.values().stream().allMatch(count -> count <= MAX_ITEMS_PER_TYPE);
     }
 
-    public List<FoodFlag> toEntities() {
-        return details.stream().map(FoodFlagDetailsSaveRequest::toEntity).toList();
+    public List<MealTag> toEntities() {
+        return details.stream().map(MealTagDetailsSaveRequest::toEntity).toList();
     }
 
-    public long getCountByType(final FoodFlagType type) {
+    public long getCountByType(final MealTagType type) {
         return details.stream().filter(detail -> detail.type() == type).count();
     }
 }

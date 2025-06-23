@@ -1,10 +1,14 @@
 package com.moyorak.api.auth.service;
 
+import com.moyorak.api.auth.domain.MealTag;
 import com.moyorak.api.auth.domain.MealTagSummary;
 import com.moyorak.api.auth.domain.MealTagType;
 import com.moyorak.api.auth.dto.MealTagSaveRequest;
 import com.moyorak.api.auth.repository.MealTagRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +29,22 @@ public class MealTagService {
             validateWithinLimit(count, request, type);
         }
 
-        // 2. 저장
-        mealTagRepository.saveAll(request.toEntities());
+        // 2. 기존 저장된 항목과, 신규 등록 항목이 중복되는 것은 제외
+        final List<MealTag> existingTags = mealTagRepository.findByUserIdAndUse(userId, true);
+        final Set<MealTagType> existingTypes =
+                existingTags.stream().map(MealTag::getType).collect(Collectors.toSet());
+
+        final List<MealTag> newEntities =
+                request.toEntities().stream()
+                        .filter(mealTag -> !existingTypes.contains(mealTag.getType()))
+                        .toList();
+
+        // 3. 저장
+        mealTagRepository.saveAll(newEntities);
     }
 
     private void validateWithinLimit(
-        MealTagSummary count, MealTagSaveRequest request, MealTagType type) {
+            MealTagSummary count, MealTagSaveRequest request, MealTagType type) {
         if (!count.isWithinLimit(type, request.getCountByType(type))) {
             throw new BusinessException(
                     String.format(

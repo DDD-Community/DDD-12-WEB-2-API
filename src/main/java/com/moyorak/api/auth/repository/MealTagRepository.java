@@ -25,4 +25,10 @@ public interface MealTagRepository extends CrudRepository<MealTag, Long> {
                     value =
                             "FoodFlagRepository.findTypeCountByUserId : 각 타입별 아이템 갯수를 DTO 형식으로 조회합니다."))
     List<MealTagTypeCount> findTypeCountByUserId(@Param("userId") Long userId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "FoodFlagRepository.findByUserIdAndUse : 회원 ID별 등록된 항목을 조회합니다."))
+    List<MealTag> findByUserIdAndUse(Long userId, boolean use);
 }

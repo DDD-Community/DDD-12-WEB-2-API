@@ -2,8 +2,11 @@ package com.moyorak.api.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
+import com.moyorak.api.auth.domain.MealTag;
 import com.moyorak.api.auth.domain.MealTagType;
 import com.moyorak.api.auth.dto.MealTagDetailsSaveRequest;
 import com.moyorak.api.auth.dto.MealTagSaveRequest;
@@ -66,6 +69,39 @@ class MealTagServiceTest {
             }
         }
 
+        @Test
+        @DisplayName("이미 등록된 항목을 중복 등록하려고 하면, 중복 제거가 됩니다.")
+        void removeDuplicate() {
+            // given
+            final Long userId = 1L;
+            final String item = "계란";
+
+            List<MealTagDetailsSaveRequest> details = new ArrayList<>();
+            for (int i = 0; i < 1; i++) {
+                details.add(new MealTagDetailsSaveRequest(userId, MealTagType.ALLERGY, item));
+            }
+
+            final MealTagSaveRequest request = new MealTagSaveRequest(details);
+
+            final List<MealTagTypeCount> counts =
+                    List.of(new MealTagTypeCount(MealTagType.ALLERGY, 1));
+
+            final List<MealTag> expectedMealTagList =
+                    List.of(MealTag.create(userId, MealTagType.ALLERGY, item));
+
+            given(mealTagRepository.findTypeCountByUserId(userId)).willReturn(counts);
+            given(mealTagRepository.findByUserIdAndUse(userId, true))
+                    .willReturn(expectedMealTagList);
+
+            // when
+            mealTagService.foodFlagRegister(userId, request);
+
+            // then
+            then(mealTagRepository)
+                    .should()
+                    .saveAll(argThat((List<MealTag> list) -> list.isEmpty()));
+        }
+
         @ParameterizedTest
         @ValueSource(ints = {0, 1, 5, 9})
         @DisplayName("성공적으로 저장합니다.")
@@ -86,6 +122,7 @@ class MealTagServiceTest {
                     List.of(new MealTagTypeCount(MealTagType.ALLERGY, size));
 
             given(mealTagRepository.findTypeCountByUserId(userId)).willReturn(counts);
+            given(mealTagRepository.findByUserIdAndUse(userId, true)).willReturn(List.of());
 
             // when & then
             assertDoesNotThrow(() -> mealTagService.foodFlagRegister(userId, request));

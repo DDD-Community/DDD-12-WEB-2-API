@@ -11,7 +11,7 @@ import java.util.Objects;
 public record MealTagDetailsSaveRequest(
         @NotNull @Schema(description = "회원 고유 ID", example = "13") Long userId,
         @NotNull @Schema(description = "구분 [DISLIKE | ALLERGY]", example = "DISLIKE")
-        MealTagType type,
+                MealTagType type,
         @NotBlank @Schema(description = "항목", example = "우유, 계란, 갑각류") String item) {
 
     public MealTag toEntity() {

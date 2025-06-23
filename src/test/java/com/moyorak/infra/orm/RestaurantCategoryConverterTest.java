@@ -38,10 +38,10 @@ class RestaurantCategoryConverterTest {
         @DisplayName("문자열을 enum으로 정상적으로 변환한다.")
         void success() {
             // Given
-            String dbData = "한식";
+            final String dbData = "한식";
 
             // When
-            RestaurantCategory result = converter.convertToEntityAttribute(dbData);
+            final RestaurantCategory result = converter.convertToEntityAttribute(dbData);
 
             // Then
             assertThat(result).isEqualTo(RestaurantCategory.KOREAN);
@@ -51,7 +51,7 @@ class RestaurantCategoryConverterTest {
         @DisplayName("존재하지 않는 문자열이면 예외를 던진다.")
         void IsNotMatched() {
             // Given
-            String dbData = "우가우가";
+            final String dbData = "우가우가";
 
             // When & Then
             assertThatThrownBy(() -> converter.convertToEntityAttribute(dbData))

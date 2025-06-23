@@ -34,7 +34,7 @@ public class RestaurantService {
     @Transactional
     public void save(final RestaurantSaveRequest restaurantSaveRequest) {
 
-        Restaurant restaurant = restaurantSaveRequest.toRestaurant();
+        final Restaurant restaurant = restaurantSaveRequest.toRestaurant();
 
         final boolean isSaved =
                 restaurantRepository

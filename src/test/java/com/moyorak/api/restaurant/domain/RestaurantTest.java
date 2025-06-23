@@ -12,8 +12,8 @@ class RestaurantTest {
     @DisplayName("Restaurant 생성 시 위도, 경도가 5자리로 반올림되어 저장된다")
     void create() {
         // given
-        double longitude = 127.9876543;
-        double latitude = 37.1234567;
+        final double longitude = 127.9876543;
+        final double latitude = 37.1234567;
 
         // when
         Restaurant restaurant =

@@ -17,16 +17,15 @@ public class MyService {
 
     @Transactional
     public void foodFlagRegister(final Long userId, final FoodFlagSaveRequest request) {
-        // 1. 각 항목들이 최대 값을 초과하는지 확인
+        // 1. 저장 된 항목 갯수와, 저장하고자 하는 갯수가 최대 값을 초과하는지 확인
         final FoodFlagSummary count =
                 FoodFlagSummary.create(foodFlagRepository.findTypeCountByUserId(userId));
 
-        // 2. 저장 된 항목 갯수와, 저장하고자 하는 갯수가 최대 값을 초과하는지 확인
         for (FoodFlagType type : FoodFlagType.values()) {
             validateWithinLimit(count, request, type);
         }
 
-        // 3. 저장
+        // 2. 저장
         foodFlagRepository.saveAll(request.toEntities());
     }
 

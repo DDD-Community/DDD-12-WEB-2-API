@@ -1,10 +1,12 @@
 package com.moyorak.api.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.moyorak.api.auth.domain.MealTag;
 import com.moyorak.api.auth.domain.MealTagType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,9 @@ import java.util.stream.Collectors;
 import org.springframework.util.ObjectUtils;
 
 @Schema(title = "[마이] 알러지, 비선호 음식 상세 저장 요청 DTO")
-public record MealTagSaveRequest(@Valid List<MealTagDetailsSaveRequest> details) {
+public record MealTagSaveRequest(
+        @NotNull @Schema(description = "회원 고유 ID", example = "13") Long userId,
+        @Valid List<MealTagDetailsSaveRequest> details) {
     public static final long MAX_ITEMS_PER_TYPE = 10;
 
     public MealTagSaveRequest {
@@ -24,6 +28,7 @@ public record MealTagSaveRequest(@Valid List<MealTagDetailsSaveRequest> details)
                         : List.copyOf(new LinkedHashSet<>(details));
     }
 
+    @JsonIgnore
     @AssertTrue(message = "각 type 별로 최대 " + MAX_ITEMS_PER_TYPE + "개 까지만 등록할 수 있습니다.")
     public boolean isTypeItemCountValid() {
         if (ObjectUtils.isEmpty(details)) {
@@ -41,7 +46,7 @@ public record MealTagSaveRequest(@Valid List<MealTagDetailsSaveRequest> details)
     }
 
     public List<MealTag> toEntities() {
-        return details.stream().map(MealTagDetailsSaveRequest::toEntity).toList();
+        return details.stream().map(it -> it.toEntity(userId)).toList();
     }
 
     public long getCountByType(final MealTagType type) {

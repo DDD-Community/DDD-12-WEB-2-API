@@ -51,11 +51,10 @@ class MealTagServiceTest {
                 List<MealTagDetailsSaveRequest> details = new ArrayList<>();
                 for (int i = 0; i < maxSize; i++) {
                     details.add(
-                            new MealTagDetailsSaveRequest(
-                                    userId, MealTagType.ALLERGY, String.valueOf(i)));
+                            new MealTagDetailsSaveRequest(MealTagType.ALLERGY, String.valueOf(i)));
                 }
 
-                final MealTagSaveRequest request = new MealTagSaveRequest(details);
+                final MealTagSaveRequest request = new MealTagSaveRequest(1L, details);
 
                 final List<MealTagTypeCount> counts =
                         List.of(new MealTagTypeCount(MealTagType.ALLERGY, maxSize));
@@ -78,10 +77,10 @@ class MealTagServiceTest {
 
             List<MealTagDetailsSaveRequest> details = new ArrayList<>();
             for (int i = 0; i < 1; i++) {
-                details.add(new MealTagDetailsSaveRequest(userId, MealTagType.ALLERGY, item));
+                details.add(new MealTagDetailsSaveRequest(MealTagType.ALLERGY, item));
             }
 
-            final MealTagSaveRequest request = new MealTagSaveRequest(details);
+            final MealTagSaveRequest request = new MealTagSaveRequest(1L, details);
 
             final List<MealTagTypeCount> counts =
                     List.of(new MealTagTypeCount(MealTagType.ALLERGY, 1));
@@ -111,12 +110,10 @@ class MealTagServiceTest {
 
             List<MealTagDetailsSaveRequest> details = new ArrayList<>();
             for (int i = 0; i < 1; i++) {
-                details.add(
-                        new MealTagDetailsSaveRequest(
-                                userId, MealTagType.ALLERGY, String.valueOf(i)));
+                details.add(new MealTagDetailsSaveRequest(MealTagType.ALLERGY, String.valueOf(i)));
             }
 
-            final MealTagSaveRequest request = new MealTagSaveRequest(details);
+            final MealTagSaveRequest request = new MealTagSaveRequest(1L, details);
 
             final List<MealTagTypeCount> counts =
                     List.of(new MealTagTypeCount(MealTagType.ALLERGY, size));

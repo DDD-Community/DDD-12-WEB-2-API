@@ -18,11 +18,12 @@ class MealTagSaveRequestTest {
     @DisplayName("음식 구분 객체 생성시, 중복 데이터가 제거 된 상태로 생성 됩니다.")
     void isNotDuplicate() {
         // given
+        final Long userId = 1L;
         final MealTagDetailsSaveRequest detail =
-                new MealTagDetailsSaveRequest(1L, MealTagType.ALLERGY, "우유");
+                new MealTagDetailsSaveRequest(MealTagType.ALLERGY, "우유");
 
         // when
-        final MealTagSaveRequest result = new MealTagSaveRequest(List.of(detail, detail));
+        final MealTagSaveRequest result = new MealTagSaveRequest(userId, List.of(detail, detail));
 
         // then
         assertThat(result.details()).size().isEqualTo(1);
@@ -36,7 +37,7 @@ class MealTagSaveRequestTest {
         @DisplayName("빈 값의 경우, true를 반환합니다.")
         void isNull() {
             // given
-            final MealTagSaveRequest request = new MealTagSaveRequest(null);
+            final MealTagSaveRequest request = new MealTagSaveRequest(1L, null);
 
             // when
             final boolean result = request.isTypeItemCountValid();
@@ -50,20 +51,22 @@ class MealTagSaveRequestTest {
         @DisplayName("최대 입력 수인 10개를 초과하는 경우, false를 반환합니다.")
         void isInvalidItemSize(final MealTagType input) {
             // given
+            final Long userId = 1L;
             final MealTagSaveRequest request =
                     new MealTagSaveRequest(
+                            userId,
                             List.of(
-                                    new MealTagDetailsSaveRequest(1L, input, "1"),
-                                    new MealTagDetailsSaveRequest(1L, input, "2"),
-                                    new MealTagDetailsSaveRequest(1L, input, "3"),
-                                    new MealTagDetailsSaveRequest(1L, input, "4"),
-                                    new MealTagDetailsSaveRequest(1L, input, "5"),
-                                    new MealTagDetailsSaveRequest(1L, input, "6"),
-                                    new MealTagDetailsSaveRequest(1L, input, "7"),
-                                    new MealTagDetailsSaveRequest(1L, input, "8"),
-                                    new MealTagDetailsSaveRequest(1L, input, "9"),
-                                    new MealTagDetailsSaveRequest(1L, input, "10"),
-                                    new MealTagDetailsSaveRequest(1L, input, "11")));
+                                    new MealTagDetailsSaveRequest(input, "1"),
+                                    new MealTagDetailsSaveRequest(input, "2"),
+                                    new MealTagDetailsSaveRequest(input, "3"),
+                                    new MealTagDetailsSaveRequest(input, "4"),
+                                    new MealTagDetailsSaveRequest(input, "5"),
+                                    new MealTagDetailsSaveRequest(input, "6"),
+                                    new MealTagDetailsSaveRequest(input, "7"),
+                                    new MealTagDetailsSaveRequest(input, "8"),
+                                    new MealTagDetailsSaveRequest(input, "9"),
+                                    new MealTagDetailsSaveRequest(input, "10"),
+                                    new MealTagDetailsSaveRequest(input, "11")));
 
             // when
             final boolean result = request.isTypeItemCountValid();
@@ -81,10 +84,11 @@ class MealTagSaveRequestTest {
 
             List<MealTagDetailsSaveRequest> details = new ArrayList<>();
             for (int i = 0; i < size; i++) {
-                details.add(new MealTagDetailsSaveRequest(1L, type, String.valueOf(i)));
+                details.add(new MealTagDetailsSaveRequest(type, String.valueOf(i)));
             }
 
-            final MealTagSaveRequest request = new MealTagSaveRequest(details);
+            final Long userId = 1L;
+            final MealTagSaveRequest request = new MealTagSaveRequest(userId, details);
 
             // when
             final boolean result = request.isTypeItemCountValid();
@@ -100,9 +104,10 @@ class MealTagSaveRequestTest {
         // given
         final long expectedResult = 1L;
 
+        final Long userId = 1L;
         final MealTagSaveRequest request =
                 new MealTagSaveRequest(
-                        List.of(new MealTagDetailsSaveRequest(1L, MealTagType.ALLERGY, "1")));
+                        userId, List.of(new MealTagDetailsSaveRequest(MealTagType.ALLERGY, "1")));
 
         // when
         final long result = request.getCountByType(MealTagType.ALLERGY);

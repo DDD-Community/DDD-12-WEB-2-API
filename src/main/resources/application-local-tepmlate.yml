@@ -17,3 +17,9 @@ jwt:
   expiration: 900000
   refresh-secret: jwt-refresh-secret
   refresh-expiration: 604800000
+
+aws:
+  s3:
+    bucket: bucket-name
+    uri: bucket-uri
+    directory: bucket-directory

@@ -1,5 +1,6 @@
 package com.moyorak.api.restaurant.domain;
 
+import com.moyorak.infra.orm.AuditInformation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,11 +14,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "restaurant_search")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RestaurantSearch {
+public class RestaurantSearch extends AuditInformation {
 
-    @Id private Long restaurantId;
+    @Id
+    @Column(name = "restaurant_id")
+    private Long restaurantId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "name")
     private String name;
 
     @Builder(access = AccessLevel.PRIVATE)

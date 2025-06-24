@@ -7,8 +7,10 @@ import static org.mockito.BDDMockito.then;
 
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
+import com.moyorak.api.restaurant.domain.RestaurantSearch;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
 import com.moyorak.api.restaurant.repository.RestaurantRepository;
+import com.moyorak.api.restaurant.repository.RestaurantSearchRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantServiceTest {
@@ -26,6 +29,8 @@ class RestaurantServiceTest {
     @InjectMocks private RestaurantService restaurantService;
 
     @Mock private RestaurantRepository restaurantRepository;
+
+    @Mock private RestaurantSearchRepository restaurantSearchRepository;
 
     @Nested
     @DisplayName("음식점 등록 시")
@@ -49,7 +54,7 @@ class RestaurantServiceTest {
         @DisplayName("저장을 성공합니다.")
         void success() {
             // given
-            Restaurant restaurant = request.toRestaurant();
+            final Restaurant restaurant = request.toRestaurant();
             given(
                             restaurantRepository
                                     .findByNameAndRoundedLongitudeAndRoundedLatitudeAndUseTrue(
@@ -58,11 +63,25 @@ class RestaurantServiceTest {
                                             restaurant.getRoundedLatitude()))
                     .willReturn(Optional.empty());
 
+            // 식당 저장 시 ID가 포함된 객체 반환되도록 설정
+            final Restaurant savedRestaurant =
+                    Restaurant.create(
+                            restaurant.getPlaceUrl(),
+                            restaurant.getName(),
+                            restaurant.getAddress(),
+                            restaurant.getCategory(),
+                            restaurant.getLongitude(),
+                            restaurant.getLatitude());
+            ReflectionTestUtils.setField(savedRestaurant, "id", 1L);
+
+            given(restaurantRepository.save(any(Restaurant.class))).willReturn(savedRestaurant);
+
             // when
             restaurantService.save(request);
 
             // then
             then(restaurantRepository).should().save(any(Restaurant.class));
+            then(restaurantSearchRepository).should().save(any(RestaurantSearch.class));
         }
 
         @Test

@@ -10,6 +10,8 @@ on:
           - zinzoddari
           - Jiwon-cho
           - myeongha
+          - dlantjdgkgk
+          - sy-paik
       port:
         description: '허용할 포트 (예: 80)'
         required: true

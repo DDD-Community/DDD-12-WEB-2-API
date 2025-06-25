@@ -35,7 +35,7 @@ public class UserDailyStateService {
                 .findByUserIdAndRecordDate(userId, today)
                 .ifPresentOrElse(
                         existing -> {
-                            existing.changeState(request.state());
+                            existing.toggleState();
                             userDailyStateRepository.save(existing);
                         },
                         () -> userDailyStateRepository.save(request.toUserDailyState(today)));

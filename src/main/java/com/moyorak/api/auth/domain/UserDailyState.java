@@ -54,7 +54,7 @@ public class UserDailyState extends AuditInformation {
         return dailyState;
     }
 
-    public void changeState(final State state) {
-        this.state = state;
+    public void toggleState() {
+        this.state = (this.state == State.ON) ? State.OFF : State.ON;
     }
 }

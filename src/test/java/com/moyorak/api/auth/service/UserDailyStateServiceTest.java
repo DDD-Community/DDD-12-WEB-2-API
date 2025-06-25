@@ -10,6 +10,7 @@ import com.moyorak.api.auth.domain.State;
 import com.moyorak.api.auth.domain.UserDailyState;
 import com.moyorak.api.auth.domain.UserDailyStateFixture;
 import com.moyorak.api.auth.dto.UserDailyStateRequest;
+import com.moyorak.api.auth.dto.UserDailyStateResponse;
 import com.moyorak.api.auth.repository.UserDailyStateRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.time.LocalDate;
@@ -55,8 +56,11 @@ class UserDailyStateServiceTest {
             given(userDailyStateRepository.findByUserIdAndRecordDate(userId, today))
                     .willReturn(Optional.empty());
 
-            // when & then
-            assertThat(userDailyStateService.getDailyState(userId).state()).isEqualTo(State.OFF);
+            // when
+            final UserDailyStateResponse response = userDailyStateService.getDailyState(userId);
+
+            // then
+            assertThat(response.state()).isEqualTo(State.OFF);
         }
     }
 
@@ -68,7 +72,7 @@ class UserDailyStateServiceTest {
         @DisplayName("요청한 유저 ID와 실제 유저 ID가 다르면 예외가 발생합니다.")
         void userIdMismatchThrowsException() {
             // given
-            final UserDailyStateRequest request = new UserDailyStateRequest(2L, State.ON);
+            final UserDailyStateRequest request = new UserDailyStateRequest(2L);
 
             // when & then
             assertThatThrownBy(() -> userDailyStateService.updateDailyState(userId, request))
@@ -81,7 +85,7 @@ class UserDailyStateServiceTest {
         void updateExistingStateAndSave() {
             // given
             final UserDailyState existing = UserDailyStateFixture.fixture(userId, State.OFF, today);
-            final UserDailyStateRequest request = new UserDailyStateRequest(userId, State.ON);
+            final UserDailyStateRequest request = new UserDailyStateRequest(userId);
 
             given(userDailyStateRepository.findByUserIdAndRecordDate(userId, today))
                     .willReturn(Optional.of(existing));
@@ -98,7 +102,7 @@ class UserDailyStateServiceTest {
         @DisplayName("혼밥 상태가 없다면 새로 저장합니다.")
         void saveNewState() {
             // given
-            final UserDailyStateRequest request = new UserDailyStateRequest(userId, State.ON);
+            final UserDailyStateRequest request = new UserDailyStateRequest(userId);
 
             given(userDailyStateRepository.findByUserIdAndRecordDate(userId, today))
                     .willReturn(Optional.empty());

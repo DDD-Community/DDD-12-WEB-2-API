@@ -45,6 +45,9 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> .env
+          echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> .env
+          echo "S3_BUCKET_URI=${{ secrets.S3_BUCKET_URI }}" >> .env
+          echo "S3_BUCKET_DIRECTORY=${{ secrets.S3_BUCKET_DIRECTORY }}" >> .env
           echo "SPRING_PROFILES_ACTIVE=${{ github.event.inputs.springProfile }}" >> .env
 
       - name: Copy .env to EC2

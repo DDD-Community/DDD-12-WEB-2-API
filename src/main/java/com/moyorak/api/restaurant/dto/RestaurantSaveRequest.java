@@ -24,7 +24,7 @@ public record RestaurantSaveRequest(
                 String address,
         @NotBlank(message = "식당 도로명 주소를 입력해주세요.")
                 @Size(max = 255, message = "식당 도로명 주소는 {max}자 이하여야 합니다.")
-                @Schema(description = "식당 도로명 주소", example = "우가우가시 차차차동 24번길")
+                @Schema(description = "식당 도로명 주소", example = "우가우가 차차로 1234")
                 String roadAddress,
         @NotNull(message = "식당 카테고리를 선택해주세요.") @Schema(description = "식당 카테고리", example = "KOREAN")
                 RestaurantCategory category,

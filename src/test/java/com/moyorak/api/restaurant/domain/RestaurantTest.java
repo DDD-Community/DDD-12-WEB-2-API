@@ -21,6 +21,7 @@ class RestaurantTest {
                         "http://place.map.kakao.com/123456",
                         "우가우가 차차차",
                         "서울시 차차차동 24번길",
+                        "우가우가 차차로 123",
                         RestaurantCategory.KOREAN,
                         longitude,
                         latitude);

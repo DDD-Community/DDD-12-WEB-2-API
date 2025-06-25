@@ -8,10 +8,12 @@ public class RestaurantFixture {
             final String placeUrl,
             final String name,
             final String address,
+            final String roadAddress,
             final RestaurantCategory category,
             final double longitude,
             final double latitude) {
-        return Restaurant.create(placeUrl, name, address, category, longitude, latitude);
+        return Restaurant.create(
+                placeUrl, name, address, roadAddress, category, longitude, latitude);
     }
 
     public static Restaurant fixtureWithId(
@@ -19,10 +21,12 @@ public class RestaurantFixture {
             final String placeUrl,
             final String name,
             final String address,
+            final String roadAddress,
             final RestaurantCategory category,
             final double longitude,
             final double latitude) {
-        Restaurant restaurant = fixture(placeUrl, name, address, category, longitude, latitude);
+        Restaurant restaurant =
+                fixture(placeUrl, name, address, roadAddress, category, longitude, latitude);
         ReflectionTestUtils.setField(restaurant, "id", id);
         return restaurant;
     }

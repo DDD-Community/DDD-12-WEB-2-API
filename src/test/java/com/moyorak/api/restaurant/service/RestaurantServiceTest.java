@@ -45,6 +45,7 @@ class RestaurantServiceTest {
                             "http://place.map.kakao.com/123456",
                             "우가우가 차차차",
                             "우가우가시 차차차동 24번길",
+                            "우가우가 차차로 123",
                             RestaurantCategory.KOREAN,
                             127.043616,
                             37.503095);
@@ -70,6 +71,7 @@ class RestaurantServiceTest {
                             restaurant.getPlaceUrl(),
                             restaurant.getName(),
                             restaurant.getAddress(),
+                            restaurant.getRoadAddress(),
                             restaurant.getCategory(),
                             restaurant.getLongitude(),
                             restaurant.getLatitude());
@@ -94,6 +96,7 @@ class RestaurantServiceTest {
                             "http://place.map.kakao.com/123456",
                             "우가우가 차차차",
                             "우가우가시 차차차동 24번길",
+                            "우가우가 차차로 123",
                             RestaurantCategory.KOREAN,
                             127.043616,
                             37.503095);

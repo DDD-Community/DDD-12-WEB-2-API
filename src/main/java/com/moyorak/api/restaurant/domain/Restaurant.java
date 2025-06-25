@@ -47,6 +47,10 @@ public class Restaurant extends AuditInformation {
     @Column(name = "address", nullable = false)
     private String address;
 
+    @Comment("식당 주소")
+    @Column(name = "road_address", nullable = false)
+    private String roadAddress;
+
     @Comment("식당 카테고리")
     @Convert(converter = RestaurantCategoryConverter.class)
     @Column(name = "category", nullable = false, length = 32)
@@ -78,6 +82,7 @@ public class Restaurant extends AuditInformation {
             String placeUrl,
             String name,
             String address,
+            String roadAddress,
             RestaurantCategory category,
             double longitude,
             double latitude) {
@@ -87,6 +92,7 @@ public class Restaurant extends AuditInformation {
         this.category = category;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.roadAddress = roadAddress;
         roundedLongitude = roundToScale(longitude);
         roundedLatitude = roundToScale(latitude);
     }
@@ -95,6 +101,7 @@ public class Restaurant extends AuditInformation {
             String placeUrl,
             String name,
             String address,
+            String roadAddress,
             RestaurantCategory category,
             double longitude,
             double latitude) {
@@ -102,6 +109,7 @@ public class Restaurant extends AuditInformation {
                 .placeUrl(placeUrl)
                 .name(name)
                 .address(address)
+                .roadAddress(roadAddress)
                 .category(category)
                 .longitude(longitude)
                 .latitude(latitude)

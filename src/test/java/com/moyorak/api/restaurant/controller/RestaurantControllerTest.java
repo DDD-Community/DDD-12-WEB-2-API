@@ -52,6 +52,7 @@ class RestaurantControllerTest {
                       "placeUrl": "%s",
                       "name": "우가우가 차차차",
                       "address": "우가우가시 차차차동 24번길",
+                      "roadAddress": "우가우가 차차로 123"
                       "category": "KOREAN",
                       "longitude": 127.043616,
                       "latitude": 37.503095
@@ -80,6 +81,7 @@ class RestaurantControllerTest {
                       "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                       "name": "%s",
                       "address": "우가우가시 차차차동 24번길",
+                      "roadAddress": "우가우가 차차로 123"
                       "category": "KOREAN",
                       "longitude": 127.043616,
                       "latitude": 37.503095
@@ -96,7 +98,7 @@ class RestaurantControllerTest {
         }
 
         @Nested
-        @DisplayName("식당 주소가")
+        @DisplayName("식당 지번 주소가")
         class Address {
             @Test
             @DisplayName("255자를 초과하면")
@@ -108,6 +110,7 @@ class RestaurantControllerTest {
                       "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                       "name": "우가우가 차차차",
                       "address": "%s",
+                      "roadAddress": "우가우가 차차로 123"
                       "category": "KOREAN",
                       "longitude": 127.043616,
                       "latitude": 37.503095
@@ -135,6 +138,7 @@ class RestaurantControllerTest {
                       "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                       "name": "우가우가 차차차",
                       "address": "우가우가시 차차차동 24번길",
+                      "roadAddress": "우가우가 차차로 123"
                       "longitude": 127.043616,
                       "latitude": 37.503095
                     }
@@ -160,6 +164,7 @@ class RestaurantControllerTest {
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
+                          "roadAddress": "우가우가 차차로 123"
                           "category": "KOREAN",
                           "latitude": 37.503095
                         }
@@ -181,6 +186,7 @@ class RestaurantControllerTest {
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
+                          "roadAddress": "우가우가 차차로 123"
                           "category": "KOREAN",
                           "longitude": -180.1,
                           "latitude": 37.503095
@@ -203,6 +209,7 @@ class RestaurantControllerTest {
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
+                          "roadAddress": "우가우가 차차로 123"
                           "category": "KOREAN",
                           "longitude": 180.1,
                           "latitude": 37.503095
@@ -230,6 +237,7 @@ class RestaurantControllerTest {
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
+                          "roadAddress": "우가우가 차차로 123"
                           "category": "KOREAN",
                           "longitude": 127.043616
                         }
@@ -251,6 +259,7 @@ class RestaurantControllerTest {
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
+                          "roadAddress": "우가우가 차차로 123"
                           "category": "KOREAN",
                           "longitude": 127.043616,
                           "latitude": -90.1
@@ -273,6 +282,7 @@ class RestaurantControllerTest {
                           "kakaoPlaceUrl": "http://place.map.kakao.com/123456",
                           "name": "식당이름",
                           "address": "서울시 어딘가",
+                          "roadAddress": "우가우가 차차로 123"
                           "category": "KOREAN",
                           "longitude": 127.043616,
                           "latitude": 90.1

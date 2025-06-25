@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/me")
 @SecurityRequirement(name = "JWT")
 @Tag(name = "[마이] 마이페이지 API", description = "마이페이지 API 입니다.")
-public class UserDailyStateController {
+class UserDailyStateController {
 
     private final UserDailyStateService userDailyStateService;
 

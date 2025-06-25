@@ -1,10 +1,12 @@
 package com.moyorak.api.restaurant.service;
 
 import com.moyorak.api.restaurant.domain.Restaurant;
+import com.moyorak.api.restaurant.domain.RestaurantSearch;
 import com.moyorak.api.restaurant.dto.RestaurantResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
 import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.api.restaurant.repository.RestaurantRepository;
+import com.moyorak.api.restaurant.repository.RestaurantSearchRepository;
 import com.moyorak.config.exception.BusinessException;
 import com.moyorak.global.domain.ListResponse;
 import com.moyorak.infra.client.kakao.KakaoSearcher;
@@ -22,6 +24,7 @@ public class RestaurantService {
 
     private final KakaoSearcher kakaoSearcher;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantSearchRepository restaurantSearchRepository;
 
     public ListResponse<RestaurantResponse> searchRestaurants(
             RestaurantSearchRequest searchRequest) {
@@ -29,7 +32,6 @@ public class RestaurantService {
         return ListResponse.from(page, RestaurantResponse::fromKakaoPlace);
     }
 
-    // TODO 검색용 디비에 저장 추가
     @Transactional
     public void save(final RestaurantSaveRequest restaurantSaveRequest) {
 
@@ -47,6 +49,7 @@ public class RestaurantService {
             throw new BusinessException("식당이 이미 등록되어 있습니다.");
         }
 
-        restaurantRepository.save(restaurant);
+        final Restaurant saved = restaurantRepository.save(restaurant);
+        restaurantSearchRepository.save(RestaurantSearch.create(saved.getId(), saved.getName()));
     }
 }

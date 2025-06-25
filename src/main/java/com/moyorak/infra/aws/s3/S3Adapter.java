@@ -2,6 +2,8 @@ package com.moyorak.infra.aws.s3;
 
 import com.moyorak.config.exception.BusinessException;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -56,6 +58,22 @@ public class S3Adapter {
         } catch (RuntimeException e) {
             throw new BusinessException("PrisignedUrl 생성에 실패하였습니다.", e);
         }
+    }
+
+    /**
+     * 파일이 저장 될 path를 생성합니다.
+     *
+     * @param now 파일명의 중복을 최소화 하기 위한 장치
+     * @param extensionName 확장자명
+     * @return path
+     */
+    public String createFilePath(
+            final LocalDateTime now, final String uuid, final String extensionName) {
+        final String date = now.format(DateTimeFormatter.BASIC_ISO_DATE);
+        final String time = now.format(DateTimeFormatter.ofPattern("HH_mm_ss"));
+
+        return String.format(
+                "%s%s/%s-%s.%s", s3Properties.getDirectory(), date, uuid, time, extensionName);
     }
 
     /** 입력값의 유효성 검증을 합니다. null, 빈 문자열(''), 공백 문자열(' ')의 경우 false를 반환합니다. */

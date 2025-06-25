@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/me")
 @SecurityRequirement(name = "JWT")
-@Tag(name = "마이페이지 API", description = "마이페이지 API 입니다.")
+@Tag(name = "[마이] 마이페이지 API", description = "마이페이지 API 입니다.")
 public class UserDailyStateController {
 
     private final UserDailyStateService userDailyStateService;
@@ -32,7 +32,7 @@ public class UserDailyStateController {
         return userDailyStateService.getDailyState(userPrincipal.getId());
     }
 
-    @PutMapping("/meal/alone")
+    @PostMapping("/meal/alone")
     @Operation(summary = "혼밥 모드 변경(on/off)", description = "혼밥 모드를 변경 합니다(on/off).")
     public void changeMealStatus(
             @AuthenticationPrincipal final UserPrincipal userPrincipal,

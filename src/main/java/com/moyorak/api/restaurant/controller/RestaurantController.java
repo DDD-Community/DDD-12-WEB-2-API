@@ -26,7 +26,7 @@ class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping
-    @Operation(summary = "음식점 데이터 조회", description = "음식점 데이터 리스트를 검색합니다.")
+    @Operation(summary = "음식점 데이터 조회 (카카오 api)", description = "음식점 데이터 리스트를 카카오 api를 통해 검색합니다.")
     public ListResponse<RestaurantResponse> searchRestaurants(
             @Valid RestaurantSearchRequest searchRequest) {
         return restaurantService.searchRestaurants(searchRequest);

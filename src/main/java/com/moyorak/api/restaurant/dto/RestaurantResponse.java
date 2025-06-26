@@ -5,19 +5,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(title = "음식점 정보 DTO")
 public record RestaurantResponse(
-        @Schema(description = "장소명", example = "곱창고 을지로점") String placeName,
-        @Schema(description = "전체 지번 주소", example = "서울 중구 을지로3가 95-1") String addressName,
-        @Schema(description = "전체 도로명 주소", example = "서울 중구 을지로 108") String roadAddressName,
-        @Schema(description = "전화번호", example = "02-1234-5678") String phone,
-        @Schema(description = "경도(Longitude, X좌표)", example = "126.990774") String x,
-        @Schema(description = "위도(Latitude, Y좌표)", example = "37.566345") String y) {
+        @Schema(description = "장소명", example = "곱창고 을지로점") String name,
+        @Schema(description = "장소 url", example = "http://place.map.kakao.com/26338954")
+                String placeUrl,
+        @Schema(description = "전체 지번 주소", example = "서울 중구 을지로3가 95-1") String address,
+        @Schema(description = "전체 도로명 주소", example = "서울 중구 을지로 108") String roadAddress,
+        @Schema(description = "경도", example = "126.990774") Double longitude,
+        @Schema(description = "위도", example = "37.566345") Double latitude) {
 
     public static RestaurantResponse fromKakaoPlace(KakaoPlace kakaoPlace) {
         return new RestaurantResponse(
                 kakaoPlace.placeName(),
+                kakaoPlace.placeUrl(),
                 kakaoPlace.addressName(),
                 kakaoPlace.roadAddressName(),
-                kakaoPlace.phone(),
                 kakaoPlace.x(),
                 kakaoPlace.y());
     }

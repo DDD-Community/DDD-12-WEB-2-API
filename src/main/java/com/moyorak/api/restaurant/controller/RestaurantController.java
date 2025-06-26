@@ -1,8 +1,8 @@
 package com.moyorak.api.restaurant.controller;
 
-import com.moyorak.api.restaurant.dto.RestaurantResponse;
+import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchRequest;
+import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
-import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.api.restaurant.service.RestaurantService;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +27,8 @@ class RestaurantController {
 
     @GetMapping
     @Operation(summary = "음식점 데이터 조회", description = "음식점 데이터 리스트를 검색합니다.")
-    public ListResponse<RestaurantResponse> searchRestaurants(
-            @Valid RestaurantSearchRequest searchRequest) {
+    public ListResponse<ExternalRestaurantSearchResponse> searchRestaurants(
+            @Valid ExternalRestaurantSearchRequest searchRequest) {
         return restaurantService.searchRestaurants(searchRequest);
     }
 

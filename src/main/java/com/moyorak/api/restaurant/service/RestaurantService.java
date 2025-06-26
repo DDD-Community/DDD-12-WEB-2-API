@@ -2,9 +2,9 @@ package com.moyorak.api.restaurant.service;
 
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantSearch;
-import com.moyorak.api.restaurant.dto.RestaurantResponse;
+import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchRequest;
+import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
-import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.api.restaurant.repository.RestaurantRepository;
 import com.moyorak.api.restaurant.repository.RestaurantSearchRepository;
 import com.moyorak.config.exception.BusinessException;
@@ -26,10 +26,10 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantSearchRepository restaurantSearchRepository;
 
-    public ListResponse<RestaurantResponse> searchRestaurants(
-            RestaurantSearchRequest searchRequest) {
+    public ListResponse<ExternalRestaurantSearchResponse> searchRestaurants(
+            ExternalRestaurantSearchRequest searchRequest) {
         Page<KakaoPlace> page = kakaoSearcher.search(searchRequest.toKakaoSearchRequest());
-        return ListResponse.from(page, RestaurantResponse::fromKakaoPlace);
+        return ListResponse.from(page, ExternalRestaurantSearchResponse::fromKakaoPlace);
     }
 
     @Transactional

@@ -12,7 +12,7 @@ import org.springdoc.core.annotations.ParameterObject;
 
 @ParameterObject
 @Schema(title = "음식점 조회 요청 DTO")
-public record RestaurantSearchRequest(
+public record ExternalRestaurantSearchRequest(
         @NotBlank(message = "키워드를 입력해주세요.") @Parameter(description = "키워드", example = "맥도날드")
                 String query,
         @DecimalMin(value = "-180.0", message = "경도는 {value} 이상이어야 합니다.")

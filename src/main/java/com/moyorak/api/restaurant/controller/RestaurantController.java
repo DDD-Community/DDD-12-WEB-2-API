@@ -31,9 +31,9 @@ class RestaurantController {
 
     @GetMapping("/external/search")
     @Operation(summary = "음식점 데이터 검색 (카카오 api)", description = "음식점 데이터 리스트를 카카오 api를 통해 검색합니다.")
-    public ListResponse<ExternalRestaurantSearchResponse> searchRestaurants(
-            @Valid ExternalRestaurantSearchRequest searchRequest) {
-        return restaurantService.searchRestaurants(searchRequest);
+    public ListResponse<ExternalRestaurantSearchResponse> searchFromExternal(
+            @Valid final ExternalRestaurantSearchRequest searchRequest) {
+        return restaurantSearchService.searchFromExternal(searchRequest);
     }
 
     @PostMapping
@@ -44,8 +44,8 @@ class RestaurantController {
 
     @GetMapping("/search")
     @Operation(summary = "음식점 데이터 검색 (모여락)", description = "음식점 데이터 리스트를 검색합니다.")
-    public ListResponse<RestaurantSearchResponse> searchRestaurants(
-            @Valid RestaurantSearchRequest searchRequest) {
+    public ListResponse<RestaurantSearchResponse> search(
+            @Valid final RestaurantSearchRequest searchRequest) {
         return restaurantSearchService.search(searchRequest);
     }
 }

@@ -50,6 +50,7 @@ public class RestaurantService {
         }
 
         final Restaurant saved = restaurantRepository.save(restaurant);
-        restaurantSearchRepository.save(RestaurantSearch.create(saved.getId(), saved.getName()));
+        restaurantSearchRepository.save(
+                RestaurantSearch.create(saved.getId(), saved.getName(), saved.getRoadAddress()));
     }
 }

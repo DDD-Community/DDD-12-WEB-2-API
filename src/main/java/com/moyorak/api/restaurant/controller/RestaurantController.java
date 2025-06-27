@@ -3,6 +3,9 @@ package com.moyorak.api.restaurant.controller;
 import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchRequest;
 import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
+import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
+import com.moyorak.api.restaurant.dto.RestaurantSearchResponse;
+import com.moyorak.api.restaurant.service.RestaurantSearchService;
 import com.moyorak.api.restaurant.service.RestaurantService;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 class RestaurantController {
 
     private final RestaurantService restaurantService;
+    private final RestaurantSearchService restaurantSearchService;
 
     @GetMapping
     @Operation(summary = "음식점 데이터 조회", description = "음식점 데이터 리스트를 검색합니다.")
@@ -36,5 +40,12 @@ class RestaurantController {
     @Operation(summary = "음식점 데이터 저장", description = "음식점 데이터를 저장합니다.")
     public void save(@Valid @RequestBody final RestaurantSaveRequest restaurantSaveRequest) {
         restaurantService.save(restaurantSaveRequest);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "음식점 데이터 검색 (모여락)", description = "음식점 데이터 리스트를 검색합니다.")
+    public ListResponse<RestaurantSearchResponse> searchRestaurants(
+            @Valid RestaurantSearchRequest searchRequest) {
+        return restaurantSearchService.search(searchRequest);
     }
 }

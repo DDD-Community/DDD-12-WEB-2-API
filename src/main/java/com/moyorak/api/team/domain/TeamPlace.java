@@ -29,7 +29,7 @@ public class TeamPlace extends AuditInformation {
     private Long id;
 
     @Comment("한줄 소개")
-    @Column(name = "summary", columnDefinition = "varchar(32")
+    @Column(name = "summary", columnDefinition = "varchar(32)")
     private String summary;
 
     @Comment("사용 여부")
@@ -37,7 +37,7 @@ public class TeamPlace extends AuditInformation {
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
 
-    @Comment("team 고우 ID")
+    @Comment("team 고유 ID")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;

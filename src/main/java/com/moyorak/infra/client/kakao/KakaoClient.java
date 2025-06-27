@@ -10,7 +10,7 @@ import org.springframework.web.client.RestClient;
 
 @RequiredArgsConstructor
 @Slf4j
-public class KakoClient {
+public class KakaoClient {
 
     private final RestClient restClient;
 

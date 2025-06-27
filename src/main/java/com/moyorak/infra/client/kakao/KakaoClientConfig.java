@@ -15,7 +15,7 @@ class KakaoClientConfig {
     private final RestClient.Builder restClientBuilder;
 
     @Bean
-    KakoClient kakoClient(
+    KakaoClient kakaoClient(
             @Value("${kakao.api.base-url}") final String baseUrl,
             @Value("${kakao.api.key}") final String apiKey) {
         RestClient restClient =
@@ -24,6 +24,6 @@ class KakaoClientConfig {
                         .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + apiKey)
                         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .build();
-        return new KakoClient(restClient);
+        return new KakaoClient(restClient);
     }
 }

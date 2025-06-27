@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record KakaoPlace(
         @JsonProperty("place_name") String placeName,
+        @JsonProperty("place_url") String placeUrl,
         @JsonProperty("address_name") String addressName,
         @JsonProperty("road_address_name") String roadAddressName,
-        @JsonProperty("phone") String phone,
-        @JsonProperty("x") String x,
-        @JsonProperty("y") String y) {}
+        @JsonProperty("x") Double x,
+        @JsonProperty("y") Double y) {}

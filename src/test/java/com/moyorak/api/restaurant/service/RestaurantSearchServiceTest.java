@@ -3,7 +3,8 @@ package com.moyorak.api.restaurant.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import com.moyorak.api.restaurant.domain.RestaurantSearch;
+import com.moyorak.api.restaurant.dto.RestaurantSearchProjection;
+import com.moyorak.api.restaurant.dto.RestaurantSearchProjectionFixture;
 import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.api.restaurant.dto.RestaurantSearchResponse;
 import com.moyorak.api.restaurant.repository.RestaurantSearchRepository;
@@ -35,10 +36,11 @@ class RestaurantSearchServiceTest {
         final int size = 10;
         final RestaurantSearchRequest request = new RestaurantSearchRequest(keyword, page, size);
 
-        final RestaurantSearch restaurantSearch = RestaurantSearch.create(1L, "김밥천국", "도로명 주소");
+        final RestaurantSearchProjection restaurantSearchProjection =
+                RestaurantSearchProjectionFixture.fixture(1L, "김밥천국", "도로명 주소");
 
-        Page<RestaurantSearch> restaurantSearchPage =
-                new PageImpl<>(List.of(restaurantSearch), PageRequest.of(page, size), 1);
+        final Page<RestaurantSearchProjection> restaurantSearchPage =
+                new PageImpl<>(List.of(restaurantSearchProjection), PageRequest.of(page, size), 1);
 
         given(
                         restaurantSearchRepository.searchByKeyword(

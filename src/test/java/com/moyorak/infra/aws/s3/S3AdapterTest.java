@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 class S3AdapterTest {
@@ -14,7 +15,8 @@ class S3AdapterTest {
     private final S3Properties s3Properties =
             new S3Properties("moyorak", "http://localhost/", "stg/");
 
-    private final S3Adapter s3Adapter = new S3Adapter(mock(S3Presigner.class), s3Properties);
+    private final S3Adapter s3Adapter =
+            new S3Adapter(mock(S3Presigner.class), mock(S3Client.class), s3Properties);
 
     @Nested
     @DisplayName("path 생성할 때,")

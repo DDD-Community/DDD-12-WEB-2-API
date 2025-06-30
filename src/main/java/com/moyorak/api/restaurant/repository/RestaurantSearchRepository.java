@@ -1,6 +1,7 @@
 package com.moyorak.api.restaurant.repository;
 
 import com.moyorak.api.restaurant.domain.RestaurantSearch;
+import com.moyorak.api.restaurant.dto.RestaurantSearchProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,11 +12,19 @@ public interface RestaurantSearchRepository extends JpaRepository<RestaurantSear
 
     @Query(
             value =
-                    "SELECT * FROM restaurant_search "
-                            + "WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)",
+                    """
+                        SELECT restaurant_id AS restaurantId,
+                               name AS name,
+                               road_address AS roadAddress
+                        FROM restaurant_search
+                        WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)
+                    """,
             countQuery =
-                    "SELECT COUNT(*) FROM restaurant_search "
-                            + "WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)",
+                    """
+                    SELECT COUNT(*) FROM restaurant_search
+                    WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)
+                """,
             nativeQuery = true)
-    Page<RestaurantSearch> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    Page<RestaurantSearchProjection> searchByKeyword(
+            @Param("keyword") String keyword, Pageable pageable);
 }

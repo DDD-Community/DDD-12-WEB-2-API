@@ -1,6 +1,5 @@
 package com.moyorak.api.restaurant.service;
 
-import com.moyorak.api.restaurant.domain.RestaurantSearch;
 import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchRequest;
 import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
@@ -30,9 +29,11 @@ public class RestaurantSearchService {
     @Transactional(readOnly = true)
     public ListResponse<RestaurantSearchResponse> search(
             final RestaurantSearchRequest restaurantSearchRequest) {
-        final Page<RestaurantSearch> restaurantSearches =
-                restaurantSearchRepository.searchByKeyword(
-                        restaurantSearchRequest.getKeyword(), restaurantSearchRequest.toPageable());
-        return ListResponse.from(restaurantSearches, RestaurantSearchResponse::from);
+        final Page<RestaurantSearchResponse> restaurantSearchResponses =
+                RestaurantSearchResponse.from(
+                        restaurantSearchRepository.searchByKeyword(
+                                restaurantSearchRequest.getKeyword(),
+                                restaurantSearchRequest.toPageable()));
+        return ListResponse.from(restaurantSearchResponses);
     }
 }

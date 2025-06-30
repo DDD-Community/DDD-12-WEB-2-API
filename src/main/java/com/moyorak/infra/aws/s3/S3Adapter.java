@@ -8,7 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -21,6 +25,7 @@ public class S3Adapter {
     public static final Duration IMAGE_URL_EXPIRATION = Duration.ofMinutes(3);
 
     private final S3Presigner s3Presigner;
+    private final S3Client s3Client;
     private final S3Properties s3Properties;
 
     /**
@@ -74,6 +79,26 @@ public class S3Adapter {
 
         return String.format(
                 "%s%s/%s-%s.%s", s3Properties.getDirectory(), date, uuid, time, extensionName);
+    }
+
+    /**
+     * 입력된 path의 이미지를 제거합니다.
+     *
+     * @param path 파일 경로
+     */
+    public void delete(final String path) {
+        try {
+            DeleteObjectRequest deleteObjectRequest =
+                    DeleteObjectRequest.builder()
+                            .bucket(s3Properties.getBucketName())
+                            .key(path)
+                            .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+        } catch (SdkClientException | S3Exception e) {
+            log.error("S3 오류 발생 : {} ", e.getMessage());
+            throw new BusinessException("오류가 발생 하였습니다.", e);
+        }
     }
 
     /** 입력값의 유효성 검증을 합니다. null, 빈 문자열(''), 공백 문자열(' ')의 경우 false를 반환합니다. */

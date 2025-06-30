@@ -1,5 +1,6 @@
 package com.moyorak.api.image.service;
 
+import com.moyorak.api.image.dto.ImageDeleteRequest;
 import com.moyorak.api.image.dto.ImageSaveRequest;
 import com.moyorak.api.image.dto.ImageSaveResponse;
 import com.moyorak.infra.aws.s3.S3Adapter;
@@ -21,5 +22,9 @@ public class ImageService {
         final String url = s3Adapter.createPreSignUrl(path, request.extensionName());
 
         return ImageSaveResponse.from(url, path);
+    }
+
+    public void remove(final ImageDeleteRequest request) {
+        s3Adapter.delete(request.path());
     }
 }

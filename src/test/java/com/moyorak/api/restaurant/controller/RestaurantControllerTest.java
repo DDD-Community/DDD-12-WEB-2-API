@@ -1,15 +1,20 @@
 package com.moyorak.api.restaurant.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.moyorak.api.helper.TestFixtureUtils;
+import com.moyorak.api.restaurant.service.RestaurantSearchService;
 import com.moyorak.api.restaurant.service.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
@@ -25,9 +30,12 @@ class RestaurantControllerTest {
 
     @Mock private RestaurantService restaurantService;
 
+    @Mock private RestaurantSearchService restaurantSearchService;
+
     @BeforeEach
     void setup() {
-        RestaurantController controller = new RestaurantController(restaurantService);
+        RestaurantController controller =
+                new RestaurantController(restaurantService, restaurantSearchService);
 
         mockMvc =
                 MockMvcBuilders.standaloneSetup(controller) // Spring 없이 순수하게 컨트롤러만 테스트
@@ -295,6 +303,26 @@ class RestaurantControllerTest {
                                         .content(request))
                         .andExpect(status().isBadRequest());
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("식당 검색 요청 시 (모여락 DB용)")
+    class Search {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"  ", "\t", "\n"})
+        @DisplayName("keyword가 Blank면 400을 반환합니다.")
+        void fail(final String keyword) throws Exception {
+
+            mockMvc.perform(
+                            get(BASE_URL + "/search")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .param("keyword", keyword)
+                                    .param("currentPage", "1")
+                                    .param("size", "10"))
+                    .andExpect(status().isBadRequest());
         }
     }
 }

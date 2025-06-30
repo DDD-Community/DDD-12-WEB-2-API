@@ -25,6 +25,11 @@ public abstract class ListRequest {
         this.currentPage = DEFAULT_PAGE;
     }
 
+    protected ListRequest(Integer size, Integer currentPage) {
+        this.size = size;
+        this.currentPage = currentPage;
+    }
+
     public Pageable toPageableAndDateSorted() {
         final Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
         return PageRequest.of(currentPage - 1, size, sort);

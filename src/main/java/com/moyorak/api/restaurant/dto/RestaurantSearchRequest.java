@@ -1,7 +1,5 @@
 package com.moyorak.api.restaurant.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.moyorak.global.domain.ListRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,11 +18,7 @@ public class RestaurantSearchRequest extends ListRequest {
     @Parameter(description = "키워드", example = "맥도날드")
     private final String keyword;
 
-    @JsonCreator
-    public RestaurantSearchRequest(
-            @JsonProperty("keyword") String keyword,
-            @JsonProperty("currentPage") Integer currentPage,
-            @JsonProperty("size") Integer size) {
+    public RestaurantSearchRequest(String keyword, Integer currentPage, Integer size) {
         super(size, currentPage);
         this.keyword = keyword;
     }

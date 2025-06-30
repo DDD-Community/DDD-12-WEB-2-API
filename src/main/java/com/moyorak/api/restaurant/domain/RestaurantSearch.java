@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Getter
@@ -23,13 +24,23 @@ public class RestaurantSearch extends AuditInformation {
     @Column(nullable = false, name = "name")
     private String name;
 
+    @Comment("식당 주소")
+    @Column(name = "road_address", nullable = false)
+    private String roadAddress;
+
     @Builder(access = AccessLevel.PRIVATE)
-    private RestaurantSearch(Long restaurantId, String name) {
+    private RestaurantSearch(Long restaurantId, String name, String roadAddress) {
         this.restaurantId = restaurantId;
         this.name = name;
+        this.roadAddress = roadAddress;
     }
 
-    public static RestaurantSearch create(final Long restaurantId, final String name) {
-        return RestaurantSearch.builder().restaurantId(restaurantId).name(name).build();
+    public static RestaurantSearch create(
+            final Long restaurantId, final String name, final String roadAddress) {
+        return RestaurantSearch.builder()
+                .restaurantId(restaurantId)
+                .name(name)
+                .roadAddress(roadAddress)
+                .build();
     }
 }

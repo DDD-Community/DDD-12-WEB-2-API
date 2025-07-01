@@ -18,7 +18,7 @@ public class TeamRestaurantService {
     public TeamRestaurantResponse getTeamRestaurant(Long teamId, Long teamRestaurantId) {
         final TeamRestaurant teamRestaurant =
                 teamRestaurantRepository
-                        .findByTeamIdAndId(teamId, teamRestaurantId)
+                        .findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true)
                         .orElseThrow(TeamRestaurantNotFoundException::new);
         if (teamRestaurant.getRestaurant() == null) {
             throw new BusinessException("연결된 식당 정보가 존재하지 않습니다.");

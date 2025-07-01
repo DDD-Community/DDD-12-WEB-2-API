@@ -52,7 +52,7 @@ class TeamRestaurantServiceTest {
             final TeamRestaurant teamRestaurant =
                     TeamRestaurantFixture.fixture(
                             teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
-            given(teamRestaurantRepository.findByTeamIdAndId(teamId, teamRestaurantId))
+            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
                     .willReturn(Optional.of(teamRestaurant));
 
             // when
@@ -67,7 +67,7 @@ class TeamRestaurantServiceTest {
         @DisplayName("팀 맛집이 존재하지 않으면 예외가 발생합니다.")
         void throwsWhenTeamRestaurantNotFound() {
             // given
-            given(teamRestaurantRepository.findByTeamIdAndId(teamId, teamRestaurantId))
+            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
                     .willReturn(Optional.empty());
 
             // when & then
@@ -77,14 +77,14 @@ class TeamRestaurantServiceTest {
         }
 
         @Test
-        @DisplayName("Restaurant가 null이면 예외가 발생합니다.")
+        @DisplayName("식당이 null이면 예외가 발생합니다.")
         void throwsWhenRestaurantIsNull() {
             // given
             final TeamRestaurant teamRestaurant =
                     TeamRestaurantFixture.fixture(
                             teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, null);
 
-            given(teamRestaurantRepository.findByTeamIdAndId(teamId, teamRestaurantId))
+            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
                     .willReturn(Optional.of(teamRestaurant));
 
             // when & then
@@ -92,6 +92,40 @@ class TeamRestaurantServiceTest {
                             () -> teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("연결된 식당 정보가 존재하지 않습니다.");
+        }
+
+        @Test
+        @DisplayName("use_yn이 'N'인 경우 조회되지 않아 예외가 발생합니다.")
+        void throwsWhenUseIsFalse() {
+            // given
+            final Restaurant restaurant =
+                    RestaurantFixture.fixture(
+                            "http://place.map.kakao.com/000000",
+                            "쓰지 않는 식당",
+                            "서울시 어디구",
+                            "서울로 456",
+                            RestaurantCategory.KOREAN,
+                            127.0,
+                            37.0);
+            final TeamRestaurant disabled =
+                    TeamRestaurantFixture.fixture(
+                            teamRestaurantId,
+                            "쓰지 않는 식당",
+                            4.0,
+                            5,
+                            5,
+                            5.0,
+                            5,
+                            false,
+                            teamId,
+                            restaurant);
+            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(
+                            () -> teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId))
+                    .isInstanceOf(TeamRestaurantNotFoundException.class);
         }
     }
 }

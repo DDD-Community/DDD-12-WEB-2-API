@@ -1,5 +1,6 @@
 package com.moyorak.api.image.controller;
 
+import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.image.dto.ImageDeleteRequest;
 import com.moyorak.api.image.dto.ImageSaveRequest;
 import com.moyorak.api.image.dto.ImageSaveResponse;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +34,9 @@ class ImageController {
 
     @DeleteMapping
     @Operation(summary = "[이미지] 이미지 삭제", description = "입력 된 path의 이미지를 삭제합니다.")
-    public void imageRemove(@RequestBody @Valid final ImageDeleteRequest request) {
-        imageService.remove(request);
+    public void imageRemove(
+            @AuthenticationPrincipal final UserPrincipal userPrincipal,
+            @RequestBody @Valid final ImageDeleteRequest request) {
+        imageService.remove(userPrincipal.getId(), request);
     }
 }

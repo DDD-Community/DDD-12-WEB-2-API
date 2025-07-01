@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface TeamRestaurantRepository extends CrudRepository<TeamRestaurant, Long> {
     @EntityGraph(attributePaths = "restaurant")
-    Optional<TeamRestaurant> findByTeamIdAndId(Long teamId, Long id);
+    Optional<TeamRestaurant> findByTeamIdAndIdAndUse(Long teamId, Long id, boolean use);
 }

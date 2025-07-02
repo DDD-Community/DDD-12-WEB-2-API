@@ -37,4 +37,16 @@ public class ListResponse<T> {
 
         return response;
     }
+
+    public static <T> ListResponse<T> from(Page<T> page) {
+
+        ListResponse<T> response = new ListResponse<>();
+
+        response.size = page.getSize();
+        response.currentPage = page.getNumber() + 1;
+        response.data = page.getContent();
+        response.totalCount = page.getTotalElements();
+
+        return response;
+    }
 }

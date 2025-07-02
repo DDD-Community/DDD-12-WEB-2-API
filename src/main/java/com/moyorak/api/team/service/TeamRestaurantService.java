@@ -3,27 +3,43 @@ package com.moyorak.api.team.service;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.repository.RestaurantRepository;
 import com.moyorak.api.team.domain.GeoPoint;
-import com.moyorak.api.team.domain.TeamPlace;
-import com.moyorak.api.team.domain.TeamPlaceDistance;
+import com.moyorak.api.team.domain.TeamRestaurant;
+import com.moyorak.api.team.domain.TeamRestaurantDistance;
+import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
 import com.moyorak.api.team.domain.TeamRestaurantSearch;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.dto.TeamPlaceSaveRequest;
-import com.moyorak.api.team.repository.TeamPlaceRepository;
+import com.moyorak.api.team.dto.TeamRestaurantResponse;
+import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class TeamPlaceService {
-
-    private final TeamPlaceRepository teamPlaceRepository;
+public class TeamRestaurantService {
+    private final TeamRestaurantRepository teamRestaurantRepository;
     private final TeamUserRepository teamUserRepository;
     private final RestaurantRepository restaurantRepository;
     private final TeamRestaurantSearchRepository teamRestaurantSearchRepository;
 
+    @Transactional(readOnly = true)
+    public TeamRestaurantResponse getTeamRestaurant(Long teamId, Long teamRestaurantId) {
+        final TeamRestaurant teamRestaurant =
+                teamRestaurantRepository
+                        .findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true)
+                        .orElseThrow(TeamRestaurantNotFoundException::new);
+        if (teamRestaurant.isRestaurantNull()) {
+            throw new BusinessException("연결된 식당 정보가 존재하지 않습니다.");
+        }
+
+        return TeamRestaurantResponse.from(teamRestaurant);
+    }
+
+    @Transactional
     public void save(
             Long userId,
             Long teamId,
@@ -41,7 +57,7 @@ public class TeamPlaceService {
 
         // 팀 맛집에 있는지 체크
         boolean isPresent =
-                teamPlaceRepository
+                teamRestaurantRepository
                         .findByTeamIdAndRestaurantIdAndUse(teamId, restaurantId, true)
                         .isPresent();
         if (isPresent) {
@@ -49,14 +65,15 @@ public class TeamPlaceService {
         }
 
         // 거리 계산
-        TeamPlaceDistance teamPlaceDistance = createTeamPlaceDistance(teamUser, restaurant);
-        double distance = teamPlaceDistance.calculateDistance();
+        TeamRestaurantDistance teamRestaurantDistance =
+                createTeamPlaceDistance(teamUser, restaurant);
+        double distance = teamRestaurantDistance.calculateDistance();
 
         // 팀 맛집 디비와 서치용 디비에 저장
-        TeamPlace teamPlace =
-                teamPlaceRepository.save(
-                        teamPlaceSaveRequest.toTeamPlace(teamId, restaurantId, distance));
-        teamRestaurantSearchRepository.save(TeamRestaurantSearch.from(teamPlace, restaurant));
+        TeamRestaurant TeamRestaurant =
+                teamRestaurantRepository.save(
+                        teamPlaceSaveRequest.toTeamRestaurant(teamId, restaurant, distance));
+        teamRestaurantSearchRepository.save(TeamRestaurantSearch.from(TeamRestaurant, restaurant));
     }
 
     private TeamUser validateTeamUser(Long userId, Long teamId) {
@@ -71,7 +88,8 @@ public class TeamPlaceService {
         return teamUser;
     }
 
-    private TeamPlaceDistance createTeamPlaceDistance(TeamUser teamUser, Restaurant restaurant) {
+    private TeamRestaurantDistance createTeamPlaceDistance(
+            TeamUser teamUser, Restaurant restaurant) {
         GeoPoint companyPoint =
                 GeoPoint.of(
                         teamUser.getTeam().getCompany().getLongitude(),
@@ -79,6 +97,6 @@ public class TeamPlaceService {
 
         GeoPoint restaurantPoint = GeoPoint.of(restaurant.getLongitude(), restaurant.getLatitude());
 
-        return TeamPlaceDistance.of(companyPoint, restaurantPoint);
+        return TeamRestaurantDistance.of(companyPoint, restaurantPoint);
     }
 }

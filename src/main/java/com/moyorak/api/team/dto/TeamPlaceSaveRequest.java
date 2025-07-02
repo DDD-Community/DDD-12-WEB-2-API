@@ -1,9 +1,11 @@
 package com.moyorak.api.team.dto;
 
-import com.moyorak.api.team.domain.TeamPlace;
+import com.moyorak.api.restaurant.domain.Restaurant;
+import com.moyorak.api.team.domain.TeamRestaurant;
 
 public record TeamPlaceSaveRequest(String summary) {
-    public TeamPlace toTeamPlace(Long teamId, Long restaurantId, double distanceFromTeam) {
-        return TeamPlace.create(summary, teamId, restaurantId, distanceFromTeam);
+    public TeamRestaurant toTeamRestaurant(
+            Long teamId, Restaurant restaurant, double distanceFromTeam) {
+        return TeamRestaurant.create(teamId, restaurant, summary, distanceFromTeam);
     }
 }

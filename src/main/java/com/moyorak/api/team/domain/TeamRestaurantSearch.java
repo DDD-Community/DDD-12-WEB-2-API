@@ -52,11 +52,11 @@ public class TeamRestaurantSearch extends AuditInformation {
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
 
-    public static TeamRestaurantSearch from(TeamPlace teamPlace, Restaurant restaurant) {
+    public static TeamRestaurantSearch from(TeamRestaurant teamRestaurant, Restaurant restaurant) {
         TeamRestaurantSearch teamRestaurantSearch = new TeamRestaurantSearch();
 
-        teamRestaurantSearch.teamRestaurantId = teamPlace.getId();
-        teamRestaurantSearch.teamId = teamPlace.getTeamId();
+        teamRestaurantSearch.teamRestaurantId = teamRestaurant.getId();
+        teamRestaurantSearch.teamId = teamRestaurant.getTeamId();
         teamRestaurantSearch.name = restaurant.getName();
         teamRestaurantSearch.longitude = restaurant.getLongitude();
         teamRestaurantSearch.latitude = restaurant.getLatitude();

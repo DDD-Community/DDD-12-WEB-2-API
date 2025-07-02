@@ -20,7 +20,7 @@ public class TeamRestaurantService {
                 teamRestaurantRepository
                         .findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true)
                         .orElseThrow(TeamRestaurantNotFoundException::new);
-        if (teamRestaurant.getRestaurant() == null) {
+        if (teamRestaurant.isRestaurantNull()) {
             throw new BusinessException("연결된 식당 정보가 존재하지 않습니다.");
         }
 

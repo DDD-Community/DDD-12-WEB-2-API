@@ -65,4 +65,8 @@ public class TeamRestaurant extends AuditInformation {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public boolean isRestaurantNull() {
+        return this.restaurant == null;
+    }
 }

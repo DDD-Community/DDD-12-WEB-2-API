@@ -11,9 +11,12 @@ import org.springframework.util.ObjectUtils;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -22,7 +25,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 @RequiredArgsConstructor
 public class S3Adapter {
 
-    public static final Duration IMAGE_URL_EXPIRATION = Duration.ofMinutes(3);
+    public static final Duration CREATE_IMAGE_URL_EXPIRATION = Duration.ofMinutes(3);
+    public static final Duration READ_IMAGE_URL_EXPIRATION = Duration.ofSeconds(30);
 
     private final S3Presigner s3Presigner;
     private final S3Client s3Client;
@@ -51,7 +55,7 @@ public class S3Adapter {
 
         PutObjectPresignRequest putObjectPresignRequest =
                 PutObjectPresignRequest.builder()
-                        .signatureDuration(IMAGE_URL_EXPIRATION)
+                        .signatureDuration(CREATE_IMAGE_URL_EXPIRATION)
                         .putObjectRequest(request)
                         .build();
 
@@ -98,6 +102,32 @@ public class S3Adapter {
         } catch (SdkClientException | S3Exception e) {
             log.error("S3 오류 발생 : {} ", e.getMessage());
             throw new BusinessException("오류가 발생 하였습니다.", e);
+        }
+    }
+
+    /**
+     * 이미지 조회를 위한 Presigned URL을 생성합니다. URL의 유효시가은 30초입니다.
+     *
+     * @param path S3로부터 조회할 파일 경로
+     * @return 이미지 조회 url
+     */
+    public String getPresignedUrl(final String path) {
+        GetObjectRequest objectRequest =
+                GetObjectRequest.builder().bucket(s3Properties.getBucketName()).key(path).build();
+
+        GetObjectPresignRequest presignRequest =
+                GetObjectPresignRequest.builder()
+                        .signatureDuration(READ_IMAGE_URL_EXPIRATION)
+                        .getObjectRequest(objectRequest)
+                        .build();
+
+        try {
+            PresignedGetObjectRequest presignedRequest =
+                    s3Presigner.presignGetObject(presignRequest);
+
+            return presignedRequest.url().toExternalForm();
+        } catch (RuntimeException e) {
+            throw new BusinessException("PresignedUrl 생성에 실패하였습니다.", e);
         }
     }
 

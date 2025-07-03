@@ -29,7 +29,7 @@ public class TeamRestaurant extends AuditInformation {
     private Long id;
 
     @Comment("한줄 소개")
-    @Column(name = "summary", columnDefinition = "varchar(32)")
+    @Column(name = "summary", columnDefinition = "varchar(20)")
     private String summary;
 
     @Comment("리뷰 평균 점수")

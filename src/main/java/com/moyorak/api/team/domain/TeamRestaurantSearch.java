@@ -60,6 +60,8 @@ public class TeamRestaurantSearch extends AuditInformation {
         teamRestaurantSearch.name = restaurant.getName();
         teamRestaurantSearch.longitude = restaurant.getLongitude();
         teamRestaurantSearch.latitude = restaurant.getLatitude();
+        teamRestaurantSearch.distanceFromTeam = teamRestaurant.getDistanceFromTeam();
+        teamRestaurantSearch.averageReviewScore = teamRestaurant.getAverageReviewScore();
 
         return teamRestaurantSearch;
     }

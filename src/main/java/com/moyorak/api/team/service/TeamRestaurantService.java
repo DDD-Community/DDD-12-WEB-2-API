@@ -8,8 +8,8 @@ import com.moyorak.api.team.domain.TeamRestaurantDistance;
 import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
 import com.moyorak.api.team.domain.TeamRestaurantSearch;
 import com.moyorak.api.team.domain.TeamUser;
-import com.moyorak.api.team.dto.TeamPlaceSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
+import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
@@ -41,43 +41,43 @@ public class TeamRestaurantService {
 
     @Transactional
     public void save(
-            Long userId,
-            Long teamId,
-            Long restaurantId,
-            TeamPlaceSaveRequest teamPlaceSaveRequest) {
+            final Long userId,
+            final Long teamId,
+            final TeamRestaurantSaveRequest teamRestaurantSaveRequest) {
 
         // 팀원인지 확인
-        TeamUser teamUser = validateTeamUser(userId, teamId);
+        final TeamUser teamUser = validateTeamUser(userId, teamId);
 
         // 식당 조회
-        Restaurant restaurant =
+        final Restaurant restaurant =
                 restaurantRepository
-                        .findByIdAndUse(restaurantId, true)
+                        .findByIdAndUse(teamRestaurantSaveRequest.restaurantId(), true)
                         .orElseThrow(() -> new BusinessException("식당이 존재하지 않습니다."));
 
         // 팀 맛집에 있는지 체크
-        boolean isPresent =
+        final boolean isPresent =
                 teamRestaurantRepository
-                        .findByTeamIdAndRestaurantIdAndUse(teamId, restaurantId, true)
+                        .findByTeamIdAndRestaurantIdAndUse(
+                                teamId, teamRestaurantSaveRequest.restaurantId(), true)
                         .isPresent();
         if (isPresent) {
             throw new BusinessException("이미 등록된 팀 맛집입니다.");
         }
 
         // 거리 계산
-        TeamRestaurantDistance teamRestaurantDistance =
+        final TeamRestaurantDistance teamRestaurantDistance =
                 createTeamPlaceDistance(teamUser, restaurant);
-        double distance = teamRestaurantDistance.calculateDistance();
+        final double distance = teamRestaurantDistance.calculateDistance();
 
         // 팀 맛집 디비와 서치용 디비에 저장
-        TeamRestaurant TeamRestaurant =
+        final TeamRestaurant TeamRestaurant =
                 teamRestaurantRepository.save(
-                        teamPlaceSaveRequest.toTeamRestaurant(teamId, restaurant, distance));
+                        teamRestaurantSaveRequest.toTeamRestaurant(teamId, restaurant, distance));
         teamRestaurantSearchRepository.save(TeamRestaurantSearch.from(TeamRestaurant, restaurant));
     }
 
-    private TeamUser validateTeamUser(Long userId, Long teamId) {
-        TeamUser teamUser =
+    private TeamUser validateTeamUser(final Long userId, final Long teamId) {
+        final TeamUser teamUser =
                 teamUserRepository
                         .findWithTeamAndCompany(teamId, userId, true)
                         .orElseThrow(() -> new BusinessException("팀원이 아닙니다."));
@@ -89,13 +89,14 @@ public class TeamRestaurantService {
     }
 
     private TeamRestaurantDistance createTeamPlaceDistance(
-            TeamUser teamUser, Restaurant restaurant) {
-        GeoPoint companyPoint =
+            final TeamUser teamUser, final Restaurant restaurant) {
+        final GeoPoint companyPoint =
                 GeoPoint.of(
                         teamUser.getTeam().getCompany().getLongitude(),
                         teamUser.getTeam().getCompany().getLatitude());
 
-        GeoPoint restaurantPoint = GeoPoint.of(restaurant.getLongitude(), restaurant.getLatitude());
+        final GeoPoint restaurantPoint =
+                GeoPoint.of(restaurant.getLongitude(), restaurant.getLatitude());
 
         return TeamRestaurantDistance.of(companyPoint, restaurantPoint);
     }

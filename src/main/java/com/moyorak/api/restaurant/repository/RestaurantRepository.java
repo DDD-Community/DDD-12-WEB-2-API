@@ -9,4 +9,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     Optional<Restaurant> findByNameAndRoundedLongitudeAndRoundedLatitudeAndUseTrue(
             String name, BigDecimal roundedLongitude, BigDecimal roundedLatitude);
+
+    Optional<Restaurant> findByIdAndUse(Long id, boolean use);
 }

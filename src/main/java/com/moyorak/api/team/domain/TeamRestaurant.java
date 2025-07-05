@@ -29,7 +29,7 @@ public class TeamRestaurant extends AuditInformation {
     private Long id;
 
     @Comment("한줄 소개")
-    @Column(name = "summary", columnDefinition = "varchar(32)")
+    @Column(name = "summary", columnDefinition = "varchar(20)")
     private String summary;
 
     @Comment("리뷰 평균 점수")
@@ -68,5 +68,19 @@ public class TeamRestaurant extends AuditInformation {
 
     public boolean isRestaurantNull() {
         return this.restaurant == null;
+    }
+
+    public static TeamRestaurant create(
+            Long teamId, Restaurant restaurant, String summary, double distanceFromTeam) {
+        TeamRestaurant teamRestaurant = new TeamRestaurant();
+        teamRestaurant.teamId = teamId;
+        teamRestaurant.restaurant = restaurant;
+        teamRestaurant.summary = summary;
+        teamRestaurant.distanceFromTeam = distanceFromTeam;
+        teamRestaurant.averageReviewScore = 0.0;
+        teamRestaurant.reviewCount = 0;
+        teamRestaurant.averageServingTime = 0;
+        teamRestaurant.averageWaitingTime = 0;
+        return teamRestaurant;
     }
 }

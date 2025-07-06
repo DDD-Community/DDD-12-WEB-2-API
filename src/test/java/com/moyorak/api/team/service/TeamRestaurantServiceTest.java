@@ -203,7 +203,8 @@ class TeamRestaurantServiceTest {
                     .willReturn(Optional.of(notApproved));
 
             assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
-                    .isInstanceOf(BusinessException.class);
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("팀원이 아닙니다.");
         }
 
         @Test
@@ -230,7 +231,8 @@ class TeamRestaurantServiceTest {
 
             // when & then
             assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
-                    .isInstanceOf(BusinessException.class);
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이미 등록된 팀 맛집입니다.");
         }
 
         @Test
@@ -250,7 +252,8 @@ class TeamRestaurantServiceTest {
 
             // when & then
             assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
-                    .isInstanceOf(BusinessException.class);
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("식당이 존재하지 않습니다.");
         }
     }
 }

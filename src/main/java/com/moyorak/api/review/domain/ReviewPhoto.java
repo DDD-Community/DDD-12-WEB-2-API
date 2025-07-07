@@ -1,13 +1,16 @@
-package com.moyorak.api.review;
+package com.moyorak.api.review.domain;
 
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +36,7 @@ public class ReviewPhoto extends AuditInformation {
     private boolean use = true;
 
     @Comment("리뷰 고유 ID")
-    @Column(name = "review_id", nullable = false)
-    private Long reviewId;
+    @JoinColumn(name = "review_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Review review;
 }

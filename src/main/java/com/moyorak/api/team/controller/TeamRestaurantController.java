@@ -2,6 +2,7 @@ package com.moyorak.api.team.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
+import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.service.TeamRestaurantService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,5 +43,22 @@ class TeamRestaurantController {
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         teamRestaurantService.save(userPrincipal.getId(), teamId, teamRestaurantSaveRequest);
+    }
+
+    @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews")
+    @Operation(summary = "음식점 데이터 검색 (카카오 api)", description = "음식점 데이터 리스트를 카카오 api를 통해 검색합니다.")
+    public void getTeamRestaurantReviews(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @Valid final TeamRestaurantReviewRequest request) {
+        teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
+    }
+
+    @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews/photos")
+    @Operation(summary = "음식점 데이터 검색 (카카오 api)", description = "음식점 데이터 리스트를 카카오 api를 통해 검색합니다.")
+    public void getTeamRestaurantPhotos(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId) {
+        teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
     }
 }

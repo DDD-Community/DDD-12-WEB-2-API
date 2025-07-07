@@ -39,7 +39,7 @@ public class TeamRestaurantSearch extends AuditInformation {
     @Column(name = "latitude", nullable = false, columnDefinition = "double")
     private double latitude;
 
-    @Comment("리퓨 평균 점수")
+    @Comment("리뷰 평균 점수")
     @Column(name = "average_review_score", nullable = false, columnDefinition = "double")
     private double averageReviewScore;
 

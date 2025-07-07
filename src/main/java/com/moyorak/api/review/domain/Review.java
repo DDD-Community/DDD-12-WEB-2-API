@@ -1,14 +1,20 @@
 package com.moyorak.api.review.domain;
 
+import com.moyorak.api.review.domain.ReviewPhoto;
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,15 +36,15 @@ public class Review extends AuditInformation {
 
     @Comment("음식 나오는 시간")
     @Column(name = "serving_time", nullable = false)
-    private Integer serving_time;
+    private Integer servingTime;
 
     @Comment("대기 시간")
     @Column(name = "waiting_time", nullable = false)
-    private Integer waiting_time;
+    private Integer waitingTime;
 
     @Comment("추가 텍스트")
     @Column(name = "extra_text", nullable = false, columnDefinition = "varchar(512)")
-    private String extra_text;
+    private String extraText;
 
     @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
@@ -52,4 +58,7 @@ public class Review extends AuditInformation {
     @Comment("식당 고유 ID")
     @Column(name = "team_restaurant_id", nullable = false)
     private Long teamRestaurantId;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewPhoto> reviewPhotos = new ArrayList<>();
 }

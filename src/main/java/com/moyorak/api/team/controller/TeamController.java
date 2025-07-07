@@ -5,6 +5,7 @@ import com.moyorak.api.team.dto.TeamSearchRequest;
 import com.moyorak.api.team.service.TeamService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,7 @@ class TeamController {
 
     @GetMapping("/api/companies/{companyId}")
     public TeamSearchListResponse searchTeamsInfo(
-            @PathVariable @Positive final Long companyId, final TeamSearchRequest request) {
+            @PathVariable @Positive final Long companyId, @Valid final TeamSearchRequest request) {
         return teamService.search(companyId, request);
     }
 }

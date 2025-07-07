@@ -5,6 +5,23 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class RestaurantFixture {
 
     public static Restaurant fixture(
+            final Long id,
+            final String name,
+            final double longitude,
+            final double latitude,
+            final boolean use) {
+        Restaurant restaurant = new Restaurant();
+
+        ReflectionTestUtils.setField(restaurant, "id", id);
+        ReflectionTestUtils.setField(restaurant, "name", name);
+        ReflectionTestUtils.setField(restaurant, "longitude", longitude);
+        ReflectionTestUtils.setField(restaurant, "latitude", latitude);
+        ReflectionTestUtils.setField(restaurant, "use", use);
+
+        return restaurant;
+    }
+
+    public static Restaurant fixture(
             final String placeUrl,
             final String name,
             final String address,

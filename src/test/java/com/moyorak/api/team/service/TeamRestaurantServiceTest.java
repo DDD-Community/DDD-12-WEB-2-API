@@ -2,16 +2,31 @@ package com.moyorak.api.team.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
+import com.moyorak.api.company.domain.Company;
+import com.moyorak.api.company.domain.CompanyFixture;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
+import com.moyorak.api.restaurant.repository.RestaurantRepository;
+import com.moyorak.api.team.domain.Team;
+import com.moyorak.api.team.domain.TeamFixture;
 import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantFixture;
 import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
+import com.moyorak.api.team.domain.TeamRestaurantSearch;
+import com.moyorak.api.team.domain.TeamUser;
+import com.moyorak.api.team.domain.TeamUserFixture;
+import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
+import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
+import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
+import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +43,9 @@ class TeamRestaurantServiceTest {
     @InjectMocks private TeamRestaurantService teamRestaurantService;
 
     @Mock private TeamRestaurantRepository teamRestaurantRepository;
+    @Mock private TeamUserRepository teamUserRepository;
+    @Mock private RestaurantRepository restaurantRepository;
+    @Mock private TeamRestaurantSearchRepository teamRestaurantSearchRepository;
 
     final Long teamId = 1L;
     final Long teamRestaurantId = 1L;
@@ -126,6 +144,116 @@ class TeamRestaurantServiceTest {
             assertThatThrownBy(
                             () -> teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId))
                     .isInstanceOf(TeamRestaurantNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 맛집 저장 시")
+    class Save {
+
+        private final Long userId = 1L;
+        private final Long teamId = 1L;
+        private final Long restaurantId = 1L;
+
+        @Test
+        @DisplayName("정상 등록된다.")
+        void success() {
+            // given
+            final TeamRestaurantSaveRequest request =
+                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+            final Company company = CompanyFixture.fixture(1L, 127.0, 37.5, true);
+            final Team team = TeamFixture.fixture(teamId, company, true);
+            final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
+            final Restaurant restaurant =
+                    RestaurantFixture.fixture(restaurantId, "우가우가", 127.0, 37.5, true);
+
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(approvedTeamUser));
+
+            given(restaurantRepository.findByIdAndUse(request.restaurantId(), true))
+                    .willReturn(Optional.of(restaurant));
+
+            given(
+                            teamRestaurantRepository.findByTeamIdAndRestaurantIdAndUse(
+                                    teamId, request.restaurantId(), true))
+                    .willReturn(Optional.empty());
+
+            given(teamRestaurantRepository.save(any())).willReturn(mock(TeamRestaurant.class));
+
+            // when
+            teamRestaurantService.save(userId, teamId, request);
+
+            // then
+            then(teamRestaurantRepository).should().save(any(TeamRestaurant.class));
+            then(teamRestaurantSearchRepository).should().save(any(TeamRestaurantSearch.class));
+        }
+
+        @Test
+        @DisplayName("회원이 아닌 경우 예외가 발생한다.")
+        void isInvalidTeamUser() {
+            // given
+            final TeamRestaurantSaveRequest request =
+                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser notApproved =
+                    TeamUserFixture.fixture(userId, team, TeamUserStatus.PENDING, true);
+
+            // when & then
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(notApproved));
+
+            assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("팀원이 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("이미 등록된 맛집이면 예외가 발생한다.")
+        void isAlreadyExisting() {
+            // given
+            final TeamRestaurantSaveRequest request =
+                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
+            final Restaurant restaurant =
+                    RestaurantFixture.fixture(restaurantId, "우가우가", 127.0, 37.5, true);
+
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(approvedTeamUser));
+
+            given(restaurantRepository.findByIdAndUse(restaurantId, true))
+                    .willReturn(Optional.of(restaurant));
+
+            given(
+                            teamRestaurantRepository.findByTeamIdAndRestaurantIdAndUse(
+                                    teamId, restaurantId, true))
+                    .willReturn(Optional.of(mock(TeamRestaurant.class)));
+
+            // when & then
+            assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이미 등록된 팀 맛집입니다.");
+        }
+
+        @Test
+        @DisplayName("식당이 존재하지 않을 경우 예외가 발생한다")
+        void restaurantNotFound() {
+            // given
+            final TeamRestaurantSaveRequest request =
+                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
+
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(approvedTeamUser));
+
+            given(restaurantRepository.findByIdAndUse(restaurantId, true))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("식당이 존재하지 않습니다.");
         }
     }
 }

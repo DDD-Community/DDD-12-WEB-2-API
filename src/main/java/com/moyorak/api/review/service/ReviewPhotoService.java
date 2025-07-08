@@ -18,7 +18,8 @@ public class ReviewPhotoService {
     private final ReviewPhotoRepository reviewPhotoRepository;
 
     @Transactional(readOnly = true)
-    public List<FirstReviewPhotoPath> findFirstReviewPhotoPaths(final List<Long> teamRestaurantIds) {
+    public List<FirstReviewPhotoPath> findFirstReviewPhotoPaths(
+            final List<Long> teamRestaurantIds) {
 
         // 팀식당ID -> 포토 ID
         final List<FirstReviewPhotoId> firstReviewPhotoIds =

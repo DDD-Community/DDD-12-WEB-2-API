@@ -6,9 +6,8 @@ import static org.mockito.BDDMockito.given;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
-import java.util.List;
-
 import com.moyorak.api.review.service.ReviewPhotoService;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

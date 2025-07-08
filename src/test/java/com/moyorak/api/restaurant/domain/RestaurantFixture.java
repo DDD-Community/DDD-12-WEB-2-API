@@ -21,6 +21,13 @@ public class RestaurantFixture {
         return restaurant;
     }
 
+    public static Restaurant fixture(final String name, final RestaurantCategory category) {
+        Restaurant restaurant = new Restaurant();
+        ReflectionTestUtils.setField(restaurant, "name", name);
+        ReflectionTestUtils.setField(restaurant, "category", category);
+        return restaurant;
+    }
+
     public static Restaurant fixture(
             final String placeUrl,
             final String name,

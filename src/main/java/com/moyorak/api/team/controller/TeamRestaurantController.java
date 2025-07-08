@@ -3,7 +3,11 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
+import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
+import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
+import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
+import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 class TeamRestaurantController {
 
     private final TeamRestaurantService teamRestaurantService;
+    private final TeamRestaurantSearchFacade teamRestaurantSearchFacade;
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}")
     @Operation(summary = "팀 맛집 상세 조회", description = "팀 맛집 상세 조회를 합니다.")
@@ -42,5 +47,13 @@ class TeamRestaurantController {
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         teamRestaurantService.save(userPrincipal.getId(), teamId, teamRestaurantSaveRequest);
+    }
+
+    @GetMapping("/{teamId}/restaurants/search")
+    @Operation(summary = "팀 맛집 검색", description = "팀 맛집 검색을 합니다.")
+    public ListResponse<TeamRestaurantSearchResponse> searchTeamRestaurants(
+            @PathVariable @Positive final Long teamId,
+            @Valid final TeamRestaurantSearchRequest teamRestaurantSearchRequest) {
+        return teamRestaurantSearchFacade.search(teamId, teamRestaurantSearchRequest);
     }
 }

@@ -3,13 +3,20 @@ package com.moyorak.api.review.repository;
 import com.moyorak.api.review.domain.ReviewPhoto;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import jakarta.persistence.QueryHint;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> {
 
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "ReviewPhotoRepository.findFirstReviewPhotoPathsByIdIn : 리뷰 사진 ID 리스트로 팀 식당별 첫 번째 리뷰 사진 경로 조회"))
     @Query(
             """
     SELECT new com.moyorak.api.review.dto.FirstReviewPhotoPath(r.teamRestaurantId, rp.path)
@@ -20,6 +27,11 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
     List<FirstReviewPhotoPath> findFirstReviewPhotoPathsByIdIn(
             @Param("reviewPhotoIds") List<Long> reviewPhotoIds);
 
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "ReviewPhotoRepository.findFirstReviewPhotoIdsByTeamRestaurantIds: 팀 식당 ID 리스트로 팀 식당별 첫 번째 리뷰 사진 ID 조회"))
     @Query(
             """
         SELECT new com.moyorak.api.review.dto.FirstReviewPhotoId(r.teamRestaurantId, MIN(rp.id))

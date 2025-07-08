@@ -3,6 +3,7 @@ package com.moyorak.api.review;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
@@ -46,14 +47,12 @@ class ReviewPhotoServiceTest {
                     .willReturn(List.of());
 
             // when
-            final List<FirstReviewPhotoPath> result =
+            final FirstReviewPhotoPaths result =
                     reviewPhotoService.findFirstReviewPhotoPaths(teamRestaurantIds);
 
             // then
-            assertThat(result).hasSize(1);
-            final FirstReviewPhotoPath photo = result.get(0);
-            assertThat(photo.teamRestaurantId()).isEqualTo(teamRestaurantId);
-            assertThat(photo.path()).isNull();
+            final String reviewPhotoPath = result.getPhotoPath(teamRestaurantId);
+            assertThat(reviewPhotoPath).isNull();
         }
 
         @Test
@@ -71,14 +70,12 @@ class ReviewPhotoServiceTest {
                     .willReturn(List.of(new FirstReviewPhotoPath(teamRestaurantId, photoPath)));
 
             // when
-            final List<FirstReviewPhotoPath> result =
+            final FirstReviewPhotoPaths result =
                     reviewPhotoService.findFirstReviewPhotoPaths(teamRestaurantIds);
 
-            // then
-            assertThat(result).hasSize(1);
-            final FirstReviewPhotoPath photo = result.get(0);
-            assertThat(photo.teamRestaurantId()).isEqualTo(teamRestaurantId);
-            assertThat(photo.path()).isEqualTo(photoPath);
+            // then\
+            final String reviewPhotoPath = result.getPhotoPath(teamRestaurantId);
+            assertThat(reviewPhotoPath).isEqualTo(photoPath);
         }
     }
 }

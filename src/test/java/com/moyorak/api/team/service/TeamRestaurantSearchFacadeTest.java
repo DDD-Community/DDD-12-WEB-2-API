@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
+import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.team.domain.SortOption;
+import com.moyorak.api.team.domain.TeamRestaurantSearchSummaries;
 import com.moyorak.api.team.dto.SearchResult;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequestFixture;
@@ -58,15 +60,18 @@ class TeamRestaurantSearchFacadeTest {
             final FirstReviewPhotoPath photo =
                     new FirstReviewPhotoPath(teamRestaurantId, photoPath);
             final TeamRestaurantSearchResponse response =
-                    TeamRestaurantSearchResponse.from(teamRestaurantSearchSummary, photo);
+                    TeamRestaurantSearchResponse.from(teamRestaurantSearchSummary, photoPath);
 
             given(
                             teamRestaurantSearchService.search(
                                     teamId, request.getKeyword(), request.toPageable()))
                     .willReturn(searchResult);
             given(teamRestaurantService.findByIdsAndUse(ids, true))
-                    .willReturn(List.of(teamRestaurantSearchSummary));
-            given(reviewPhotoService.findFirstReviewPhotoPaths(ids)).willReturn(List.of(photo));
+                    .willReturn(
+                            TeamRestaurantSearchSummaries.create(
+                                    List.of(teamRestaurantSearchSummary)));
+            given(reviewPhotoService.findFirstReviewPhotoPaths(ids))
+                    .willReturn(FirstReviewPhotoPaths.create(ids, List.of(photo)));
 
             // when
             ListResponse<TeamRestaurantSearchResponse> result =

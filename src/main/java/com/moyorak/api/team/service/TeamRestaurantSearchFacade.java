@@ -1,16 +1,13 @@
 package com.moyorak.api.team.service;
 
-import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.service.ReviewPhotoService;
+import com.moyorak.api.team.domain.TeamRestaurantSearchSummaries;
 import com.moyorak.api.team.dto.SearchResult;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
-import com.moyorak.api.team.dto.TeamRestaurantSearchSummary;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,33 +32,17 @@ public class TeamRestaurantSearchFacade {
                         teamRestaurantSearchRequest.toPageable());
 
         // 팀 식당 id로 필요한 정보 가져오기
-        final List<TeamRestaurantSearchSummary> teamRestaurantSearchSummaries =
+        final TeamRestaurantSearchSummaries teamRestaurantSearchSummaries =
                 teamRestaurantService.findByIdsAndUse(searchResult.ids(), true);
-        final List<Long> teamRestaurantIds =
-                teamRestaurantSearchSummaries.stream()
-                        .map(TeamRestaurantSearchSummary::teamRestaurantId)
-                        .toList();
 
         // 팀 식당별로 리뷰 첫 사진 정보 가져오기
-        final List<FirstReviewPhotoPath> firstReviewPhotoPaths =
-                reviewPhotoService.findFirstReviewPhotoPaths(teamRestaurantIds);
-        final Map<Long, FirstReviewPhotoPath> teamRestaurantIdToPhotoPaths =
-                firstReviewPhotoPaths.stream()
-                        .collect(
-                                Collectors.toUnmodifiableMap(
-                                        FirstReviewPhotoPath::teamRestaurantId,
-                                        Function.identity()));
+        final FirstReviewPhotoPaths firstReviewPhotoPaths =
+                reviewPhotoService.findFirstReviewPhotoPaths(
+                        teamRestaurantSearchSummaries.getTeamRestaurantIds());
 
+        // 팀 식당 정보로 응답 조합
         final List<TeamRestaurantSearchResponse> teamRestaurantSearchResponses =
-                teamRestaurantSearchSummaries.stream()
-                        .map(
-                                teamRestaurantSearchSummary ->
-                                        TeamRestaurantSearchResponse.from(
-                                                teamRestaurantSearchSummary,
-                                                teamRestaurantIdToPhotoPaths.get(
-                                                        teamRestaurantSearchSummary
-                                                                .teamRestaurantId())))
-                        .toList();
+                teamRestaurantSearchSummaries.toResponse(firstReviewPhotoPaths);
 
         return ListResponse.from(searchResult.toPage(teamRestaurantSearchResponses));
     }

@@ -1,4 +1,4 @@
-package com.moyorak.api.review;
+package com.moyorak.api.review.service;
 
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class ReviewReader {
+public class ReviewPhotoService {
 
     private final ReviewPhotoRepository reviewPhotoRepository;
 
     @Transactional(readOnly = true)
-    public List<FirstReviewPhotoPath> findFirstReviewSummaries(final List<Long> teamRestaurantIds) {
+    public List<FirstReviewPhotoPath> findFirstReviewPhotoPaths(final List<Long> teamRestaurantIds) {
 
         // 팀식당ID -> 포토 ID
         final List<FirstReviewPhotoId> firstReviewPhotoIds =

@@ -10,10 +10,12 @@ import com.moyorak.api.team.domain.TeamRestaurantSearch;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
+import com.moyorak.api.team.dto.TeamRestaurantSearchSummary;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,5 +101,10 @@ public class TeamRestaurantService {
                 GeoPoint.of(restaurant.getLongitude(), restaurant.getLatitude());
 
         return TeamRestaurantDistance.of(companyPoint, restaurantPoint);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TeamRestaurantSearchSummary> findByIdsAndUse(List<Long> ids, boolean use) {
+        return teamRestaurantRepository.findByIdInAndUse(ids, use);
     }
 }

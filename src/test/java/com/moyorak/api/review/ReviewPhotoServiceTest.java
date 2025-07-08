@@ -7,6 +7,8 @@ import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
 import java.util.List;
+
+import com.moyorak.api.review.service.ReviewPhotoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,9 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ReviewReaderTest {
+class ReviewPhotoServiceTest {
 
-    @InjectMocks private ReviewReader reviewReader;
+    @InjectMocks private ReviewPhotoService reviewPhotoService;
 
     @Mock private ReviewPhotoRepository reviewPhotoRepository;
 
@@ -46,7 +48,7 @@ class ReviewReaderTest {
 
             // when
             final List<FirstReviewPhotoPath> result =
-                    reviewReader.findFirstReviewSummaries(teamRestaurantIds);
+                    reviewPhotoService.findFirstReviewPhotoPaths(teamRestaurantIds);
 
             // then
             assertThat(result).hasSize(1);
@@ -71,7 +73,7 @@ class ReviewReaderTest {
 
             // when
             final List<FirstReviewPhotoPath> result =
-                    reviewReader.findFirstReviewSummaries(teamRestaurantIds);
+                    reviewPhotoService.findFirstReviewPhotoPaths(teamRestaurantIds);
 
             // then
             assertThat(result).hasSize(1);

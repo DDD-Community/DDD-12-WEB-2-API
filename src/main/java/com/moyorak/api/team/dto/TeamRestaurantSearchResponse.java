@@ -2,7 +2,6 @@ package com.moyorak.api.team.dto;
 
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
-import com.moyorak.api.team.domain.TeamRestaurant;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(title = "[팀 맛집] 팀 맛집 검색 응답 DTO")
@@ -15,13 +14,14 @@ public record TeamRestaurantSearchResponse(
         @Schema(description = "리뷰 이미지 path", example = "https://somepath/review.jpg")
                 String reviewImagePath) {
     public static TeamRestaurantSearchResponse from(
-            TeamRestaurant teamRestaurant, FirstReviewPhotoPath firstReviewPhotoPath) {
+            TeamRestaurantSearchSummary teamRestaurantSearchSummary,
+            FirstReviewPhotoPath firstReviewPhotoPath) {
         return new TeamRestaurantSearchResponse(
-                teamRestaurant.getId(),
-                teamRestaurant.getRestaurant().getName(),
-                teamRestaurant.getRestaurant().getCategory(),
-                teamRestaurant.getAverageReviewScore(),
-                teamRestaurant.getReviewCount(),
+                teamRestaurantSearchSummary.teamRestaurantId(),
+                teamRestaurantSearchSummary.restaurantName(),
+                teamRestaurantSearchSummary.restaurantCategory(),
+                teamRestaurantSearchSummary.averageReviewScore(),
+                teamRestaurantSearchSummary.reviewCount(),
                 firstReviewPhotoPath.path());
     }
 }

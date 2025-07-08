@@ -5,7 +5,7 @@ import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
-import com.moyorak.api.team.service.TeamRestaurantSearchService;
+import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 class TeamRestaurantController {
 
     private final TeamRestaurantService teamRestaurantService;
-    private final TeamRestaurantSearchService teamRestaurantSearchService;
+    private final TeamRestaurantSearchFacade teamRestaurantSearchFacade;
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}")
     @Operation(summary = "팀 맛집 상세 조회", description = "팀 맛집 상세 조회를 합니다.")
@@ -54,7 +54,6 @@ class TeamRestaurantController {
     public ListResponse<TeamRestaurantSearchResponse> searchTeamRestaurants(
             @PathVariable @Positive final Long teamId,
             @Valid final TeamRestaurantSearchRequest teamRestaurantSearchRequest) {
-        return teamRestaurantSearchService.search(
-                teamId, teamRestaurantSearchRequest, teamRestaurantSearchRequest.toPageable());
+        return teamRestaurantSearchFacade.search(teamId, teamRestaurantSearchRequest);
     }
 }

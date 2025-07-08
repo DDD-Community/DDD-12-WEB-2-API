@@ -24,7 +24,7 @@ class TeamController {
 
     private final TeamService teamService;
 
-    @GetMapping("/api/companies/{companyId}")
+    @GetMapping("/companies/{companyId}")
     public TeamSearchListResponse searchTeamsInfo(
             @PathVariable @Positive final Long companyId, @Valid final TeamSearchRequest request) {
         return teamService.search(companyId, request);

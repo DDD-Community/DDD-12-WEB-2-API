@@ -1,4 +1,4 @@
-package com.moyorak.api.review;
+package com.moyorak.api.review.domain;
 
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;

@@ -1,4 +1,4 @@
-package com.moyorak.api.review;
+package com.moyorak.api.review.domain;
 
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;
@@ -50,6 +50,6 @@ public class Review extends AuditInformation {
     private Long userId;
 
     @Comment("식당 고유 ID")
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @Column(name = "team_restaurant_id", nullable = false)
+    private Long teamRestaurantId;
 }

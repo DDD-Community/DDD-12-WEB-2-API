@@ -3,8 +3,11 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
+import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
+import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
+import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 class TeamRestaurantController {
 
     private final TeamRestaurantService teamRestaurantService;
+    private final TeamRestaurantReviewFacade teamRestaurantReviewFacade;
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}")
     @Operation(summary = "팀 맛집 상세 조회", description = "팀 맛집 상세 조회를 합니다.")
@@ -46,19 +50,12 @@ class TeamRestaurantController {
     }
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews")
-    @Operation(summary = "음식점 데이터 검색 (카카오 api)", description = "음식점 데이터 리스트를 카카오 api를 통해 검색합니다.")
-    public void getTeamRestaurantReviews(
+    @Operation(summary = "팀 맛집 리뷰 조회", description = "팀 맛집 리뷰를 조히해 옵니다.")
+    public ListResponse<TeamRestaurantReviewResponse> getTeamRestaurantReviews(
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamRestaurantId,
             @Valid final TeamRestaurantReviewRequest request) {
-        teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
-    }
-
-    @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews/photos")
-    @Operation(summary = "음식점 데이터 검색 (카카오 api)", description = "음식점 데이터 리스트를 카카오 api를 통해 검색합니다.")
-    public void getTeamRestaurantPhotos(
-            @PathVariable @Positive final Long teamId,
-            @PathVariable @Positive final Long teamRestaurantId) {
-        teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
+        return teamRestaurantReviewFacade.getTeamRestaurantReviews(
+                teamId, teamRestaurantId, request);
     }
 }

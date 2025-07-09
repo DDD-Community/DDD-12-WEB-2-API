@@ -32,11 +32,11 @@ public class TeamRestaurantReviewFacade {
                         teamRestaurant.getId(), request.toPageableAndDateSorted());
 
         // 리뷰 Id 추출
-        List<Long> reviewIds =
+        final List<Long> reviewIds =
                 reviews.getContent().stream().map(ReviewWithUserProjection::id).toList();
 
         // 리뷰 별 리뷰 사진들 정보 가져오기
-        ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
+        final ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
 
         final Page<TeamRestaurantReviewResponse> teamRestaurantReviewResponses =
                 TeamRestaurantReviewResponse.from(reviews, reviewPhotoPaths);

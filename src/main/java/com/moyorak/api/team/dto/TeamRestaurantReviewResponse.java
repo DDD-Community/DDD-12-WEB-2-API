@@ -1,10 +1,8 @@
 package com.moyorak.api.team.dto;
 
-import com.moyorak.api.auth.domain.User;
-import com.moyorak.api.review.domain.Review;
-import com.moyorak.api.review.domain.ReviewPhoto;
+import com.moyorak.api.review.domain.ReviewPhotoPaths;
+import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import java.util.List;
-import java.util.Map;
 import org.springframework.data.domain.Page;
 
 public record TeamRestaurantReviewResponse(
@@ -17,17 +15,17 @@ public record TeamRestaurantReviewResponse(
         String userProfileImageUrl,
         List<String> photoUrls) {
     public static Page<TeamRestaurantReviewResponse> from(
-            Page<Review> review, Map<Long, User> userMap) {
+            Page<ReviewWithUserProjection> review, ReviewPhotoPaths reviewPhotoPaths) {
         return review.map(
                 r ->
                         new TeamRestaurantReviewResponse(
-                                r.getId(),
-                                r.getExtraText(),
-                                r.getScore(),
-                                r.getServingTime(),
-                                r.getWaitingTime(),
-                                userMap.get(r.getUserId()).getName(),
-                                userMap.get(r.getUserId()).getProfileImage(),
-                                r.getReviewPhotos().stream().map(ReviewPhoto::getPath).toList()));
+                                r.id(),
+                                r.extraText(),
+                                r.score(),
+                                r.servingTime(),
+                                r.waitingTime(),
+                                r.name(),
+                                r.profileImage(),
+                                reviewPhotoPaths.getPhotoPaths(r.id())));
     }
 }

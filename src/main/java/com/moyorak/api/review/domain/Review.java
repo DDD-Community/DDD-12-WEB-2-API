@@ -1,9 +1,7 @@
 package com.moyorak.api.review.domain;
 
-import com.moyorak.api.review.domain.ReviewPhoto;
 import com.moyorak.infra.orm.AuditInformation;
 import com.moyorak.infra.orm.BooleanYnConverter;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

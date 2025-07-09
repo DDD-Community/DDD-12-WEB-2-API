@@ -1,6 +1,6 @@
 package com.moyorak.api.review.dto;
 
-public record ReviewUserProjection(
+public record ReviewWithUserProjection(
         Long id,
         String extraText,
         Integer score,

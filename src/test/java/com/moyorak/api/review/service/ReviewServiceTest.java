@@ -45,7 +45,7 @@ public class ReviewServiceTest {
 
         // then
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.getContent().getFirst().name()).isEqualTo("김개발");
-        assertThat(result.getContent().getFirst().extraText()).isEqualTo("매우 만족");
+        assertThat(result.getContent().getFirst().name()).isEqualTo("아무개");
+        assertThat(result.getContent().getFirst().extraText()).isEqualTo("좋은식당");
     }
 }

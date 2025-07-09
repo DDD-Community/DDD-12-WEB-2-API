@@ -1,34 +1,27 @@
 package com.moyorak.api.review.service;
 
-import com.moyorak.api.review.domain.Review;
-import com.moyorak.api.review.dto.ReviewSearchRequest;
+import com.moyorak.api.review.dto.ReviewUserProjection;
 import com.moyorak.api.review.repository.ReviewRepository;
-import com.moyorak.api.team.domain.TeamRestaurant;
-import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
-import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
-import com.moyorak.api.team.repository.TeamRestaurantRepository;
-import com.moyorak.global.domain.ListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final TeamRestaurantRepository teamRestaurantRepository;
 
-    public ListResponse<TeamRestaurantReviewResponse> getReviews(
-            Long teamId, Long teamRestaurantId, ReviewSearchRequest request) {
-        final TeamRestaurant teamRestaurant =
-                teamRestaurantRepository
-                        .findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true)
-                        .orElseThrow(TeamRestaurantNotFoundException::new);
-        final Page<Review> reviews =
-                reviewRepository.findPageWithPhotosAndUserByTeamRestaurantIdAndUse(
-                        teamRestaurant.getId(), true, request.toPageableAndDateSorted());
-        final Page<TeamRestaurantReviewResponse> teamRestaurantReviewResponses =
-                TeamRestaurantReviewResponse.from(reviews);
-        return ListResponse.from(teamRestaurantReviewResponses);
+    //    @Transactional(readOnly = true)
+    //    public Page<Review> getPageByTeamRestaurantId(Long teamRestaurantId, Pageable pageable) {
+    //        return reviewRepository.findByTeamRestaurantIdAndUse(
+    //                teamRestaurantId, true, pageable);
+    //    }
+
+    @Transactional(readOnly = true)
+    public Page<ReviewUserProjection> getPageByTeamRestaurantId(
+            Long teamRestaurantId, Pageable pageable) {
+        return reviewRepository.findReviewWithUserByTeamRestaurantId(teamRestaurantId, pageable);
     }
 }

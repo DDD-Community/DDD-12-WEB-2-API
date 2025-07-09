@@ -17,11 +17,10 @@ public class ReviewPhotoPaths {
                 reviewPhotoPaths.stream()
                         .collect(
                                 Collectors.groupingBy(
-                                        ReviewPhotoPath::reviewId, // key: 리뷰 ID
+                                        ReviewPhotoPath::reviewId,
                                         Collectors.mapping(
                                                 ReviewPhotoPath::reviewPhotoPath,
-                                                Collectors.toList()) // value: path list
-                                        ));
+                                                Collectors.toList())));
 
         return new ReviewPhotoPaths(reviewPhotoPathsMap);
     }

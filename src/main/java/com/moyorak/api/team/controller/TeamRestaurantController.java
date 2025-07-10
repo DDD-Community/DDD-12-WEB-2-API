@@ -11,6 +11,7 @@ import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
 import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
 import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
+import com.moyorak.global.domain.ListRequest;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -76,6 +77,16 @@ class TeamRestaurantController {
             @PathVariable @Positive final Long teamRestaurantId,
             @Valid final TeamRestaurantReviewRequest request) {
         return teamRestaurantReviewFacade.getTeamRestaurantReviews(
+                teamId, teamRestaurantId, request);
+    }
+
+    @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews/photos")
+    @Operation(summary = "팀 맛집 리뷰 사진 조회", description = "팀 맛집 리뷰 사진을 조회합니다.")
+    public ListResponse<String> getTeamRestaurantPhotos(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @Valid final ListRequest request) {
+        return teamRestaurantReviewFacade.getTeamRestaurantReviewPhotos(
                 teamId, teamRestaurantId, request);
     }
 }

@@ -83,7 +83,8 @@ class TeamRestaurantReviewFacadeTest {
 
             final ReviewPhotoPaths reviewPhotoPaths = ReviewPhotoPaths.create(photoPaths);
 
-            given(reviewPhotoService.getReviewPhotoPaths(reviewIds)).willReturn(reviewPhotoPaths);
+            given(reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds))
+                    .willReturn(reviewPhotoPaths);
 
             // when
             final ListResponse<TeamRestaurantReviewResponse> result =

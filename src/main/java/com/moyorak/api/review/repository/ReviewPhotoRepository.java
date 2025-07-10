@@ -3,6 +3,7 @@ package com.moyorak.api.review.repository;
 import com.moyorak.api.review.domain.ReviewPhoto;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import com.moyorak.api.review.dto.ReviewPhotoPath;
 import jakarta.persistence.QueryHint;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,19 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
 """)
     List<FirstReviewPhotoId> findFirstReviewPhotoIdsByTeamRestaurantIds(
             @Param("teamRestaurantIds") List<Long> teamRestaurantIds);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "ReviewPhotoRepository.findByReviewPhotosByReviewIds: 리뷰 ID 로 리뷰 사진 path 조회"))
+    @Query(
+            """
+    SELECT new com.moyorak.api.review.dto.ReviewPhotoPath(r.id, rp.path)
+    FROM ReviewPhoto rp
+    JOIN Review r ON rp.reviewId = r.id
+    WHERE r.id IN :reviewIds AND r.use = true AND rp.use = true
+
+""")
+    List<ReviewPhotoPath> findPhotoPathsByReviewIds(List<Long> reviewIds);
 }

@@ -3,9 +3,12 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
+import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
+import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
+import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
 import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
 import com.moyorak.global.domain.ListResponse;
@@ -32,6 +35,7 @@ class TeamRestaurantController {
 
     private final TeamRestaurantService teamRestaurantService;
     private final TeamRestaurantSearchFacade teamRestaurantSearchFacade;
+    private final TeamRestaurantReviewFacade teamRestaurantReviewFacade;
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}")
     @Operation(summary = "팀 맛집 상세 조회", description = "팀 맛집 상세 조회를 합니다.")
@@ -63,5 +67,15 @@ class TeamRestaurantController {
     public TeamRestaurantLocationsResponse getTeamRestaurantLocations(
             @PathVariable @Positive final Long teamId) {
         return teamRestaurantService.findTeamRestaurantLocations(teamId);
+    }
+
+    @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews")
+    @Operation(summary = "팀 맛집 리뷰 조회", description = "팀 맛집 리뷰를 조회합니다.")
+    public ListResponse<TeamRestaurantReviewResponse> getTeamRestaurantReviews(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @Valid final TeamRestaurantReviewRequest request) {
+        return teamRestaurantReviewFacade.getTeamRestaurantReviews(
+                teamId, teamRestaurantId, request);
     }
 }

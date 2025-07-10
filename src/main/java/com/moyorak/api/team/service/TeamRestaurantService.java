@@ -32,13 +32,7 @@ public class TeamRestaurantService {
 
     @Transactional(readOnly = true)
     public TeamRestaurantResponse getTeamRestaurant(Long teamId, Long teamRestaurantId) {
-        final TeamRestaurant teamRestaurant =
-                teamRestaurantRepository
-                        .findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true)
-                        .orElseThrow(TeamRestaurantNotFoundException::new);
-        if (teamRestaurant.isRestaurantNull()) {
-            throw new BusinessException("연결된 식당 정보가 존재하지 않습니다.");
-        }
+        final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
         return TeamRestaurantResponse.from(teamRestaurant);
     }
@@ -116,5 +110,17 @@ public class TeamRestaurantService {
         final List<TeamRestaurantLocation> teamRestaurantLocations =
                 teamRestaurantRepository.findLocationsByTeamIdAndUse(teamId, true);
         return TeamRestaurantLocationsResponse.of(teamRestaurantLocations);
+    }
+
+    @Transactional(readOnly = true)
+    public TeamRestaurant getValidatedTeamRestaurant(Long teamId, Long teamRestaurantId) {
+        final TeamRestaurant teamRestaurant =
+                teamRestaurantRepository
+                        .findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true)
+                        .orElseThrow(TeamRestaurantNotFoundException::new);
+        if (teamRestaurant.isRestaurantNull()) {
+            throw new BusinessException("연결된 식당 정보가 존재하지 않습니다.");
+        }
+        return teamRestaurant;
     }
 }

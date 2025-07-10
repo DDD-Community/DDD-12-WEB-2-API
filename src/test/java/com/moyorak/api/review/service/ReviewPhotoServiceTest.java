@@ -1,13 +1,14 @@
-package com.moyorak.api.review;
+package com.moyorak.api.review.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
+import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
-import com.moyorak.api.review.service.ReviewPhotoService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -76,6 +77,54 @@ class ReviewPhotoServiceTest {
             // then\
             final String reviewPhotoPath = result.getPhotoPath(teamRestaurantId);
             assertThat(reviewPhotoPath).isEqualTo(photoPath);
+        }
+    }
+
+    @Nested
+    @DisplayName("리뷰 별 사진 조회 시")
+    class GetReviewPhotoPaths {
+        private final Long reviewId1 = 1L;
+        private final Long reviewId2 = 2L;
+
+        @Test
+        @DisplayName("해당 리뷰 ID에 사진이 존재하면 경로 리스트를 반환한다")
+        void shouldReturnPhotoPathsWhenExists() {
+            // given
+            List<Long> reviewIds = List.of(reviewId1, reviewId2);
+
+            List<ReviewPhotoPath> reviewPhotoPathList =
+                    List.of(
+                            new ReviewPhotoPath(reviewId1, "s3://review1/photo1.jpg"),
+                            new ReviewPhotoPath(reviewId1, "s3://review1/photo2.jpg"),
+                            new ReviewPhotoPath(reviewId2, "s3://review2/photo3.jpg"));
+
+            given(reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds))
+                    .willReturn(reviewPhotoPathList);
+
+            // when
+            ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
+
+            // then
+            assertThat(reviewPhotoPaths.getPhotoPaths(reviewId1))
+                    .containsExactlyInAnyOrder(
+                            "s3://review1/photo1.jpg", "s3://review1/photo2.jpg");
+            assertThat(reviewPhotoPaths.getPhotoPaths(reviewId2))
+                    .containsExactly("s3://review2/photo3.jpg");
+        }
+
+        @Test
+        @DisplayName("해당 리뷰 ID에 사진이 없으면 빈 리스트를 반환한다")
+        void shouldReturnEmptyListWhenNoPhotosExist() {
+            // given
+            List<Long> reviewIds = List.of(reviewId1);
+            given(reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds)).willReturn(List.of());
+
+            // when
+            ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
+
+            // then
+            assertThat(reviewPhotoPaths.getPhotoPaths(reviewId1)).isEmpty();
+            assertThat(reviewPhotoPaths.getPhotoPaths(999L)).isEmpty(); // 존재하지 않는 ID
         }
     }
 }

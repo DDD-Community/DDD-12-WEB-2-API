@@ -1,6 +1,7 @@
 package com.moyorak.api.team.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
@@ -59,6 +60,13 @@ class TeamRestaurantController {
             @PathVariable @Positive final Long teamId,
             @Valid final TeamRestaurantSearchRequest teamRestaurantSearchRequest) {
         return teamRestaurantSearchFacade.search(teamId, teamRestaurantSearchRequest);
+    }
+
+    @GetMapping("/{teamId}/restaurants/locations")
+    @Operation(summary = "팀 맛집 위도, 경도 리스트 조회", description = "팀 맛집의 모든 위치를 조회합니다.")
+    public TeamRestaurantLocationsResponse getTeamRestaurantLocations(
+            @PathVariable @Positive final Long teamId) {
+        return teamRestaurantService.findTeamRestaurantLocations(teamId);
     }
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews")

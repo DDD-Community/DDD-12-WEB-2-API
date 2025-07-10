@@ -1,8 +1,10 @@
 package com.moyorak.api.review.service;
 
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
+import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,13 @@ public class ReviewPhotoService {
                 reviewPhotoRepository.findFirstReviewPhotoPathsByIdIn(reviewPhotoIds);
 
         return FirstReviewPhotoPaths.create(teamRestaurantIds, firstReviewPhotoPaths);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewPhotoPaths getReviewPhotoPaths(final List<Long> reviewIds) {
+        final List<ReviewPhotoPath> reviewPhotos =
+                reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds);
+
+        return ReviewPhotoPaths.create(reviewPhotos);
     }
 }

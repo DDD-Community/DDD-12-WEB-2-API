@@ -20,4 +20,14 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
 """)
     Optional<TeamUser> findWithTeamAndCompany(
             @Param("teamId") Long teamId, @Param("userId") Long userId, @Param("use") boolean use);
+
+    @Query(
+            """
+        SELECT tu
+        FROM TeamUser tu
+        JOIN Team t ON tu.team.id = t.id
+        WHERE tu.userId = :userId AND tu.team.id = :teamId AND tu.use = :use
+""")
+    Optional<TeamUser> findByUserIdAndTeamIdAndUse(
+            @Param("userId") Long userId, @Param("teamId") Long teamId, @Param("use") boolean use);
 }

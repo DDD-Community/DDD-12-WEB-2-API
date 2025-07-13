@@ -1,13 +1,12 @@
 package com.moyorak.api.team.service;
 
+import com.moyorak.api.team.domain.InvitationToken;
 import com.moyorak.api.team.domain.TeamInvitation;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
 import com.moyorak.api.team.dto.TeamInvitationCreateResponse;
 import com.moyorak.api.team.repository.TeamInvitationRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,6 @@ public class TeamInvitationService {
 
     private final TeamInvitationRepository teamInvitationRepository;
     private final TeamUserRepository teamUserRepository;
-    private static final int INVITATION_VALIDITY_SECONDS = 60 * 60 * 24; // 일단 하루 (추후에 정하기)
 
     // TODO 프론트에서 사용할 URL로 교체해야함 OR 그냥 토큰만 내려주기(프론트에서 전체 링크 생성)
     private static final String INVITATION_URL_PREFIX = "http://moyorak/invitation/";
@@ -36,12 +34,11 @@ public class TeamInvitationService {
         }
 
         // 초대 토큰 생성
-        final String invitationToken = UUID.randomUUID().toString();
-        final LocalDateTime expiresDate =
-                LocalDateTime.now().plusSeconds(INVITATION_VALIDITY_SECONDS);
+        InvitationToken invitationToken = InvitationToken.generate();
 
         final TeamInvitation teamInvitation =
-                TeamInvitation.create(invitationToken, expiresDate, teamId);
+                TeamInvitation.create(
+                        invitationToken.token(), invitationToken.expiresDate(), teamId);
         teamInvitationRepository.save(teamInvitation);
 
         final String invitationUrl = INVITATION_URL_PREFIX + teamInvitation.getInvitationToken();

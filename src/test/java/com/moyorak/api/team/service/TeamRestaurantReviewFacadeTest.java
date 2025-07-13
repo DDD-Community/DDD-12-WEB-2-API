@@ -14,11 +14,14 @@ import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.review.service.ReviewService;
 import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantFixture;
+import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequest;
+import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,31 @@ class TeamRestaurantReviewFacadeTest {
 
     @Mock private ReviewPhotoService reviewPhotoService;
 
+    Long teamId;
+    Long teamRestaurantId;
+    Restaurant restaurant;
+    TeamRestaurant teamRestaurant;
+
+    @BeforeEach
+    void setUp() {
+        teamId = 1L;
+        teamRestaurantId = 1L;
+
+        restaurant =
+                RestaurantFixture.fixture(
+                        "http://place.map.kakao.com/000000",
+                        "식당",
+                        "서울시 어디구",
+                        "서울로 456",
+                        RestaurantCategory.KOREAN,
+                        127.0,
+                        37.0);
+
+        teamRestaurant =
+                TeamRestaurantFixture.fixture(
+                        teamRestaurantId, "팀 식당", 4.0, 5, 5, 5.0, 5, true, teamId, restaurant);
+    }
+
     @Nested
     @DisplayName("팀 맛집 리뷰 조회 시")
     class GetReview {
@@ -48,27 +76,14 @@ class TeamRestaurantReviewFacadeTest {
         @DisplayName("성공 하면 리뷰를 반환한다")
         void getTeamRestaurantReviewsSuccess() {
             // given
-            Long teamId = 1L;
-            Long teamRestaurantId = 1L;
-            TeamRestaurantReviewRequest request = TeamRestaurantReviewRequestFixture.fixture(1, 10);
-            final Restaurant restaurant =
-                    RestaurantFixture.fixture(
-                            "http://place.map.kakao.com/000000",
-                            "식당",
-                            "서울시 어디구",
-                            "서울로 456",
-                            RestaurantCategory.KOREAN,
-                            127.0,
-                            37.0);
-            final TeamRestaurant teamRestaurant =
-                    TeamRestaurantFixture.fixture(
-                            teamRestaurantId, "팀 식당", 4.0, 5, 5, 5.0, 5, true, teamId, restaurant);
+            final TeamRestaurantReviewRequest request =
+                    TeamRestaurantReviewRequestFixture.fixture(1, 10);
+
             given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
                     .willReturn(teamRestaurant);
 
             final ReviewWithUserProjection review =
                     ReviewWithUserProjectionFixture.defaultFixture();
-
             final Page<ReviewWithUserProjection> reviewPage =
                     new PageImpl<>(List.of(review), PageRequest.of(0, 10), 1);
 
@@ -80,7 +95,6 @@ class TeamRestaurantReviewFacadeTest {
             final List<Long> reviewIds = List.of(1L);
             final List<ReviewPhotoPath> photoPaths =
                     List.of(new ReviewPhotoPath(1L, "s3://review1/photo1.jpg"));
-
             final ReviewPhotoPaths reviewPhotoPaths = ReviewPhotoPaths.create(photoPaths);
 
             given(reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds))
@@ -93,12 +107,48 @@ class TeamRestaurantReviewFacadeTest {
 
             // then
             assertThat(result.getData()).hasSize(1);
-
             final TeamRestaurantReviewResponse teamRestaurantReviewResponse =
                     result.getData().getFirst();
             assertThat(teamRestaurantReviewResponse.id()).isEqualTo(1L);
             assertThat(teamRestaurantReviewResponse.photoUrls())
                     .contains("s3://review1/photo1.jpg");
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 맛집 리뷰 사진 조회 시")
+    class GetReviewPhotos {
+
+        @Test
+        @DisplayName("성공하면 리뷰 사진 경로들을 반환한다")
+        void getTeamRestaurantReviewPhotosSuccess() {
+            final TeamRestaurantReviewPhotoRequest teamRestaurantReviewPhotoRequest =
+                    TeamRestaurantReviewPhotoRequestFixture.fixture(1, 10);
+
+            // given
+            given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
+                    .willReturn(teamRestaurant);
+
+            final List<String> photoPaths =
+                    List.of("s3://review/photo1.jpg", "s3://review/photo2.jpg");
+            final Page<String> photoPathPage =
+                    new PageImpl<>(photoPaths, PageRequest.of(0, 10), photoPaths.size());
+
+            given(
+                            reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
+                                    teamRestaurant.getId(),
+                                    teamRestaurantReviewPhotoRequest.toPageableAndDateSorted()))
+                    .willReturn(photoPathPage);
+
+            // when
+            final ListResponse<String> result =
+                    teamRestaurantReviewFacade.getTeamRestaurantReviewPhotos(
+                            teamId, teamRestaurantId, teamRestaurantReviewPhotoRequest);
+
+            // then
+            assertThat(result.getData()).hasSize(2);
+            assertThat(result.getData())
+                    .containsExactly("s3://review/photo1.jpg", "s3://review/photo2.jpg");
         }
     }
 }

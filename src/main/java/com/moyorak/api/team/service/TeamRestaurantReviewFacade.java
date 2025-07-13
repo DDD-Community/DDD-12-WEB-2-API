@@ -5,9 +5,9 @@ import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.review.service.ReviewService;
 import com.moyorak.api.team.domain.TeamRestaurant;
+import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
-import com.moyorak.global.domain.ListRequest;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class TeamRestaurantReviewFacade {
 
     @Transactional(readOnly = true)
     public ListResponse<String> getTeamRestaurantReviewPhotos(
-            Long teamId, Long teamRestaurantId, ListRequest request) {
+            Long teamId, Long teamRestaurantId, TeamRestaurantReviewPhotoRequest request) {
         final TeamRestaurant teamRestaurant =
                 teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
         final Page<String> reviewPhotoPaths =

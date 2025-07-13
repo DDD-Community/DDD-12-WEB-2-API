@@ -3,6 +3,7 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
+import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
@@ -11,7 +12,6 @@ import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
 import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
 import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
-import com.moyorak.global.domain.ListRequest;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -85,7 +85,7 @@ class TeamRestaurantController {
     public ListResponse<String> getTeamRestaurantPhotos(
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamRestaurantId,
-            @Valid final ListRequest request) {
+            @Valid final TeamRestaurantReviewPhotoRequest request) {
         return teamRestaurantReviewFacade.getTeamRestaurantReviewPhotos(
                 teamId, teamRestaurantId, request);
     }

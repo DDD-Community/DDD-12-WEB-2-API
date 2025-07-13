@@ -8,8 +8,6 @@ import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,8 +41,7 @@ public class ReviewPhotoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<String> getAllReviewPhotoPathsByTeamRestaurantId(
-            Long teamRestaurantId, Pageable pageable) {
-        return reviewPhotoRepository.findPhotoPathsByTeamRestaurantId(teamRestaurantId, pageable);
+    public List<String> getAllReviewPhotoPathsByTeamRestaurantId(Long teamRestaurantId) {
+        return reviewPhotoRepository.findPhotoPathsByTeamRestaurantId(teamRestaurantId);
     }
 }

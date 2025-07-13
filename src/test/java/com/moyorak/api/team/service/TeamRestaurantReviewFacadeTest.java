@@ -7,6 +7,7 @@ import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
+import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import com.moyorak.api.review.dto.ReviewWithUserProjectionFixture;
@@ -21,6 +22,7 @@ import com.moyorak.api.team.dto.TeamRestaurantReviewRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -131,24 +133,26 @@ class TeamRestaurantReviewFacadeTest {
 
             final List<String> photoPaths =
                     List.of("s3://review/photo1.jpg", "s3://review/photo2.jpg");
-            final Page<String> photoPathPage =
-                    new PageImpl<>(photoPaths, PageRequest.of(0, 10), photoPaths.size());
 
             given(
                             reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
-                                    teamRestaurant.getId(),
-                                    teamRestaurantReviewPhotoRequest.toPageableAndDateSorted()))
-                    .willReturn(photoPathPage);
+                                    teamRestaurant.getId()))
+                    .willReturn(photoPaths);
 
             // when
-            final ListResponse<String> result =
+            final ListResponse<PhotoPath> result =
                     teamRestaurantReviewFacade.getTeamRestaurantReviewPhotos(
                             teamId, teamRestaurantId, teamRestaurantReviewPhotoRequest);
 
             // then
-            assertThat(result.getData()).hasSize(2);
-            assertThat(result.getData())
-                    .containsExactly("s3://review/photo1.jpg", "s3://review/photo2.jpg");
+            SoftAssertions.assertSoftly(
+                    it -> {
+                        it.assertThat(result.getData()).hasSize(2);
+                        it.assertThat(result.getData())
+                                .containsExactly(
+                                        new PhotoPath("s3://review/photo1.jpg"),
+                                        new PhotoPath("s3://review/photo2.jpg"));
+                    });
         }
     }
 }

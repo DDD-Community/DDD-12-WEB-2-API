@@ -6,8 +6,6 @@ import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
 import jakarta.persistence.QueryHint;
 import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -61,11 +59,6 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
             """)
     List<ReviewPhotoPath> findPhotoPathsByReviewIds(List<Long> reviewIds);
 
-    @QueryHints(
-            @QueryHint(
-                    name = "org.hibernate.comment",
-                    value =
-                            "ReviewPhotoRepository.findByReviewPhotosByReviewIds: 리뷰 ID 로 리뷰 사진 path 조회"))
     @Query(
             """
         SELECT rp.path
@@ -75,6 +68,10 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
           AND r.use = true
           AND rp.use = true
         """)
-    Page<String> findPhotoPathsByTeamRestaurantId(
-            @Param("teamRestaurantId") Long teamRestaurantId, Pageable pageable);
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "ReviewPhotoRepository.findByReviewPhotosByReviewIds: 팀 맛집 ID 로 리뷰 사진 path 조회"))
+    List<String> findPhotoPathsByTeamRestaurantId(@Param("teamRestaurantId") Long teamRestaurantId);
 }

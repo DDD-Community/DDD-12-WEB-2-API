@@ -1,6 +1,7 @@
 package com.moyorak.api.team.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequest;
@@ -82,7 +83,7 @@ class TeamRestaurantController {
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}/reviews/photos")
     @Operation(summary = "팀 맛집 리뷰 사진 조회", description = "팀 맛집 리뷰 사진을 조회합니다.")
-    public ListResponse<String> getTeamRestaurantPhotos(
+    public ListResponse<PhotoPath> getTeamRestaurantPhotos(
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamRestaurantId,
             @Valid final TeamRestaurantReviewPhotoRequest request) {

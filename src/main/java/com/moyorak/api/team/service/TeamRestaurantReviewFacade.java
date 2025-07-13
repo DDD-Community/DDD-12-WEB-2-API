@@ -1,6 +1,7 @@
 package com.moyorak.api.team.service;
 
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
+import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.review.service.ReviewService;
@@ -46,14 +47,14 @@ public class TeamRestaurantReviewFacade {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<String> getTeamRestaurantReviewPhotos(
+    public ListResponse<PhotoPath> getTeamRestaurantReviewPhotos(
             Long teamId, Long teamRestaurantId, TeamRestaurantReviewPhotoRequest request) {
         final TeamRestaurant teamRestaurant =
                 teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
-        final Page<String> reviewPhotoPaths =
-                reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
-                        teamRestaurant.getId(), request.toPageableAndDateSorted());
+        final List<String> reviewPhotoPaths =
+                reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(teamRestaurant.getId());
 
-        return ListResponse.from(reviewPhotoPaths);
+        return ListResponse.from(
+                PhotoPath.toPage(reviewPhotoPaths, request.toPageableAndDateSorted()));
     }
 }

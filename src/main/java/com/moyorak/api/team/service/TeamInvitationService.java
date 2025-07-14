@@ -5,8 +5,11 @@ import com.moyorak.api.team.domain.TeamInvitation;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
 import com.moyorak.api.team.dto.TeamInvitationCreateResponse;
+import com.moyorak.api.team.dto.TeamInvitationDetailResponse;
 import com.moyorak.api.team.repository.TeamInvitationRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
+import com.moyorak.config.exception.BusinessException;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +46,21 @@ public class TeamInvitationService {
 
         final String invitationUrl = INVITATION_URL_PREFIX + teamInvitation.getInvitationToken();
         return TeamInvitationCreateResponse.of(invitationUrl);
+    }
+
+    @Transactional(readOnly = true)
+    public TeamInvitationDetailResponse getInvitationDetail(final String invitationToken) {
+        final TeamInvitation teamInvitation =
+                teamInvitationRepository
+                        .findByInvitationToken(invitationToken)
+                        .orElseThrow(() -> new BusinessException("토큰이 존재하지 않습니다."));
+
+        if (teamInvitation.isExpired(LocalDateTime.now())) {
+            throw new BusinessException("토큰이 만료되었습니다.");
+        }
+
+        return teamInvitationRepository
+                .findInvitationDetailByTeamId(teamInvitation.getTeamId(), true)
+                .orElseThrow(() -> new BusinessException("팀이 존재하지 않습니다."));
     }
 }

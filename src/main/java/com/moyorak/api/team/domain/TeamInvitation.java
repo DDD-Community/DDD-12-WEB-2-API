@@ -49,4 +49,8 @@ public class TeamInvitation extends AuditInformation {
 
         return teamInvitation;
     }
+
+    public boolean isExpired(LocalDateTime now) {
+        return expiresDate.isBefore(now);
+    }
 }

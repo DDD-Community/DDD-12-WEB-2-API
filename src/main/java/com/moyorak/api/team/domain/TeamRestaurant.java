@@ -70,6 +70,10 @@ public class TeamRestaurant extends AuditInformation {
         return this.restaurant == null;
     }
 
+    public void updateSummary(String summary) {
+        this.summary = summary;
+    }
+
     public static TeamRestaurant create(
             Long teamId, Restaurant restaurant, String summary, double distanceFromTeam) {
         TeamRestaurant teamRestaurant = new TeamRestaurant();

@@ -10,6 +10,7 @@ import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
+import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
 import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
 import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
@@ -25,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +49,17 @@ class TeamRestaurantController {
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamRestaurantId) {
         return teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
+    }
+
+    @PutMapping("/{teamId}/restaurants/{teamRestaurantId}")
+    @Operation(summary = "팀 맛집 수정", description = "팀 맛집 정보를 수정 합니다.")
+    public void updateTeamRestaurant(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @Valid @RequestBody final TeamRestaurantUpdateRequest teamRestaurantUpdateRequest,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamRestaurantService.updateTeamRestaurant(
+                teamId, teamRestaurantId, userPrincipal.getId(), teamRestaurantUpdateRequest);
     }
 
     @PostMapping("/{teamId}/restaurants")

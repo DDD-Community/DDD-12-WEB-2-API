@@ -13,6 +13,7 @@ import com.moyorak.api.team.dto.TeamRestaurantLocation;
 import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
+import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
@@ -35,6 +36,19 @@ public class TeamRestaurantService {
         final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
         return TeamRestaurantResponse.from(teamRestaurant);
+    }
+
+    @Transactional
+    public void updateTeamRestaurant(
+            Long teamId,
+            Long teamRestaurantId,
+            Long userId,
+            TeamRestaurantUpdateRequest teamRestaurantUpdateRequest) {
+        // 팀원인지 확인
+        validateTeamUser(userId, teamId);
+        final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
+        teamRestaurant.updateSummary(teamRestaurantUpdateRequest.summary());
+        teamRestaurantRepository.save(teamRestaurant);
     }
 
     @Transactional

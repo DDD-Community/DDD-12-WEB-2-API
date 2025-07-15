@@ -102,7 +102,8 @@ class ReviewPhotoServiceTest {
                     .willReturn(reviewPhotoPathList);
 
             // when
-            ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
+            ReviewPhotoPaths reviewPhotoPaths =
+                    reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
 
             // then
             assertThat(reviewPhotoPaths.getPhotoPaths(reviewId1))
@@ -120,7 +121,8 @@ class ReviewPhotoServiceTest {
             given(reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds)).willReturn(List.of());
 
             // when
-            ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
+            ReviewPhotoPaths reviewPhotoPaths =
+                    reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
 
             // then
             assertThat(reviewPhotoPaths.getPhotoPaths(reviewId1)).isEmpty();

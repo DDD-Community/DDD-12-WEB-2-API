@@ -1,10 +1,12 @@
 package com.moyorak.api.team.service;
 
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
+import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.review.service.ReviewService;
 import com.moyorak.api.team.domain.TeamRestaurant;
+import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.global.domain.ListResponse;
@@ -36,10 +38,23 @@ public class TeamRestaurantReviewFacade {
                 reviews.getContent().stream().map(ReviewWithUserProjection::id).toList();
 
         // 리뷰 별 리뷰 사진들 정보 가져오기
-        final ReviewPhotoPaths reviewPhotoPaths = reviewPhotoService.getReviewPhotoPaths(reviewIds);
+        final ReviewPhotoPaths reviewPhotoPaths =
+                reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
 
         final Page<TeamRestaurantReviewResponse> teamRestaurantReviewResponses =
                 TeamRestaurantReviewResponse.from(reviews, reviewPhotoPaths);
         return ListResponse.from(teamRestaurantReviewResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public ListResponse<PhotoPath> getTeamRestaurantReviewPhotos(
+            Long teamId, Long teamRestaurantId, TeamRestaurantReviewPhotoRequest request) {
+        final TeamRestaurant teamRestaurant =
+                teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
+        final Page<PhotoPath> reviewPhotoPaths =
+                reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
+                        teamRestaurant.getId(), request.toPageableAndDateSorted());
+
+        return ListResponse.from(reviewPhotoPaths);
     }
 }

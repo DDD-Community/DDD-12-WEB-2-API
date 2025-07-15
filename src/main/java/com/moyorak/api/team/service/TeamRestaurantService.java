@@ -48,7 +48,6 @@ public class TeamRestaurantService {
         validateTeamUser(userId, teamId);
         final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
         teamRestaurant.updateSummary(teamRestaurantUpdateRequest.summary());
-        teamRestaurantRepository.save(teamRestaurant);
     }
 
     @Transactional
@@ -58,7 +57,6 @@ public class TeamRestaurantService {
         final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
         // 사용 여부 값 변경
         teamRestaurant.toggleUse();
-        teamRestaurantRepository.save(teamRestaurant);
     }
 
     @Transactional

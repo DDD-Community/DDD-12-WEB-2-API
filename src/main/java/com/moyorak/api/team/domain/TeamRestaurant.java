@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Entity
@@ -70,8 +71,14 @@ public class TeamRestaurant extends AuditInformation {
         return this.restaurant == null;
     }
 
+    public void toggleUse() {
+        this.use = !this.use;
+    }
+
     public void updateSummary(String summary) {
-        this.summary = summary;
+        if (StringUtils.hasText(summary)) {
+            this.summary = summary;
+        }
     }
 
     public static TeamRestaurant create(

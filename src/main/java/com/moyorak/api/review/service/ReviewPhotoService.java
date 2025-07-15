@@ -4,10 +4,13 @@ import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.repository.ReviewPhotoRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +44,8 @@ public class ReviewPhotoService {
     }
 
     @Transactional(readOnly = true)
-    public List<String> getAllReviewPhotoPathsByTeamRestaurantId(Long teamRestaurantId) {
-        return reviewPhotoRepository.findPhotoPathsByTeamRestaurantId(teamRestaurantId);
+    public Page<PhotoPath> getAllReviewPhotoPathsByTeamRestaurantId(
+            Long teamRestaurantId, Pageable pageable) {
+        return reviewPhotoRepository.findPhotoPathsByTeamRestaurantId(teamRestaurantId, pageable);
     }
 }

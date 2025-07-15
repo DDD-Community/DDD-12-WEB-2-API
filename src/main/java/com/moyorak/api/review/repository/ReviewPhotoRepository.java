@@ -3,9 +3,12 @@ package com.moyorak.api.review.repository;
 import com.moyorak.api.review.domain.ReviewPhoto;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
+import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
 import jakarta.persistence.QueryHint;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -61,7 +64,7 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
 
     @Query(
             """
-        SELECT rp.path
+        SELECT new com.moyorak.api.review.dto.PhotoPath(rp.path)
         FROM ReviewPhoto rp
         JOIN Review r ON rp.reviewId = r.id
         WHERE r.teamRestaurantId = :teamRestaurantId
@@ -73,5 +76,6 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
                     name = "org.hibernate.comment",
                     value =
                             "ReviewPhotoRepository.findByReviewPhotosByReviewIds: 팀 맛집 ID 로 리뷰 사진 path 조회"))
-    List<String> findPhotoPathsByTeamRestaurantId(@Param("teamRestaurantId") Long teamRestaurantId);
+    Page<PhotoPath> findPhotoPathsByTeamRestaurantId(
+            @Param("teamRestaurantId") Long teamRestaurantId, Pageable pageable);
 }

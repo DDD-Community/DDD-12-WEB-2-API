@@ -51,10 +51,10 @@ public class TeamRestaurantReviewFacade {
             Long teamId, Long teamRestaurantId, TeamRestaurantReviewPhotoRequest request) {
         final TeamRestaurant teamRestaurant =
                 teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
-        final List<String> reviewPhotoPaths =
-                reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(teamRestaurant.getId());
+        final Page<PhotoPath> reviewPhotoPaths =
+                reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
+                        teamRestaurant.getId(), request.toPageableAndDateSorted());
 
-        return ListResponse.from(
-                PhotoPath.toPage(reviewPhotoPaths, request.toPageableAndDateSorted()));
+        return ListResponse.from(reviewPhotoPaths);
     }
 }

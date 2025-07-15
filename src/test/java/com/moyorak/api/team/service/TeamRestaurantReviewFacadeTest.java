@@ -124,19 +124,24 @@ class TeamRestaurantReviewFacadeTest {
         @Test
         @DisplayName("성공하면 리뷰 사진 경로들을 반환한다")
         void getTeamRestaurantReviewPhotosSuccess() {
+            // given
             final TeamRestaurantReviewPhotoRequest teamRestaurantReviewPhotoRequest =
                     TeamRestaurantReviewPhotoRequestFixture.fixture(1, 10);
 
-            // given
             given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
                     .willReturn(teamRestaurant);
 
-            final List<String> photoPaths =
-                    List.of("s3://review/photo1.jpg", "s3://review/photo2.jpg");
+            final List<PhotoPath> photoPathList =
+                    List.of(
+                            new PhotoPath("s3://review/photo1.jpg"),
+                            new PhotoPath("s3://review/photo2.jpg"));
+            final Page<PhotoPath> photoPaths =
+                    new PageImpl<>(photoPathList, PageRequest.of(0, 10), photoPathList.size());
 
             given(
                             reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
-                                    teamRestaurant.getId()))
+                                    teamRestaurant.getId(),
+                                    teamRestaurantReviewPhotoRequest.toPageableAndDateSorted()))
                     .willReturn(photoPaths);
 
             // when

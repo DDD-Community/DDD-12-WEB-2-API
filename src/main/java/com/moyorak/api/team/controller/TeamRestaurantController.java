@@ -23,6 +23,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +61,15 @@ class TeamRestaurantController {
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         teamRestaurantService.updateTeamRestaurant(
                 teamId, teamRestaurantId, userPrincipal.getId(), teamRestaurantUpdateRequest);
+    }
+
+    @DeleteMapping("/{teamId}/restaurants/{teamRestaurantId}")
+    @Operation(summary = "팀 맛집 삭제", description = "팀 맛집을 삭제합니다.")
+    public void deleteTeamRestaurant(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamRestaurantService.deleteTeamRestaurant(teamId, teamRestaurantId, userPrincipal.getId());
     }
 
     @PostMapping("/{teamId}/restaurants")

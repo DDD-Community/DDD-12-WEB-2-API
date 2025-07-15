@@ -52,6 +52,16 @@ public class TeamRestaurantService {
     }
 
     @Transactional
+    public void deleteTeamRestaurant(Long teamId, Long teamRestaurantId, Long userId) {
+        // 팀원인지 확인
+        validateTeamUser(userId, teamId);
+        final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
+        // 사용 여부 값 변경
+        teamRestaurant.toggleUse();
+        teamRestaurantRepository.save(teamRestaurant);
+    }
+
+    @Transactional
     public void save(
             final Long userId,
             final Long teamId,

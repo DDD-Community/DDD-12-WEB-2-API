@@ -2,6 +2,7 @@ package com.moyorak.api.team.service;
 
 import com.moyorak.api.team.domain.InvitationToken;
 import com.moyorak.api.team.domain.TeamInvitation;
+import com.moyorak.api.team.domain.TeamInvitationTokenNotFoundException;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
 import com.moyorak.api.team.dto.TeamInvitationCreateResponse;
@@ -49,11 +50,16 @@ public class TeamInvitationService {
     }
 
     @Transactional(readOnly = true)
-    public TeamInvitationDetailResponse getInvitationDetail(final String invitationToken) {
+    public TeamInvitationDetailResponse getInvitationDetail(
+            final Long teamId, final String invitationToken) {
         final TeamInvitation teamInvitation =
                 teamInvitationRepository
                         .findByInvitationToken(invitationToken)
-                        .orElseThrow(() -> new BusinessException("토큰이 존재하지 않습니다."));
+                        .orElseThrow(TeamInvitationTokenNotFoundException::new);
+
+        if (teamInvitation.isNotInTeam(teamId)) {
+            throw new TeamInvitationTokenNotFoundException();
+        }
 
         if (teamInvitation.isExpired(LocalDateTime.now())) {
             throw new BusinessException("토큰이 만료되었습니다.");

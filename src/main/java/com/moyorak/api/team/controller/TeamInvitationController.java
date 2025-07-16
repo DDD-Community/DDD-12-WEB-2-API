@@ -37,7 +37,8 @@ class TeamInvitationController {
 
     @GetMapping("/teams/{teamId}/invitation/{token}")
     @Operation(summary = "팀 초대 링크 조회", description = "팀 초대를 위한 링크를 조회하고 검증합니다.")
-    public TeamInvitationDetailResponse getTeamInvitation(@PathVariable final String token) {
-        return teamInvitationService.getInvitationDetail(token);
+    public TeamInvitationDetailResponse getTeamInvitation(
+            @PathVariable @Positive final Long teamId, @PathVariable final String token) {
+        return teamInvitationService.getInvitationDetail(teamId, token);
     }
 }

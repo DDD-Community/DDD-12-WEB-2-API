@@ -7,6 +7,7 @@ import com.moyorak.api.team.domain.Team;
 import com.moyorak.api.team.domain.TeamFixture;
 import com.moyorak.api.team.domain.TeamInvitation;
 import com.moyorak.api.team.domain.TeamInvitationFixture;
+import com.moyorak.api.team.domain.TeamInvitationTokenNotFoundException;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserFixture;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
@@ -75,6 +76,7 @@ class TeamInvitationServiceTest {
     class GetInvitationDetail {
 
         final String token = "sample-token";
+        final Long teamId = 1L;
 
         @Test
         @DisplayName("토큰이 존재하지 않으면 예외가 발생한다.")
@@ -84,8 +86,8 @@ class TeamInvitationServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> teamInvitationService.getInvitationDetail(token))
-                    .isInstanceOf(BusinessException.class)
+            assertThatThrownBy(() -> teamInvitationService.getInvitationDetail(teamId, token))
+                    .isInstanceOf(TeamInvitationTokenNotFoundException.class)
                     .hasMessage("토큰이 존재하지 않습니다.");
         }
 
@@ -95,13 +97,13 @@ class TeamInvitationServiceTest {
             // given
             LocalDateTime expiredExpiresDate = LocalDateTime.now().minusSeconds(1);
             final TeamInvitation expiredInvitation =
-                    TeamInvitationFixture.fixture(1L, token, expiredExpiresDate);
+                    TeamInvitationFixture.fixture(1L, token, expiredExpiresDate, teamId);
 
             given(teamInvitationRepository.findByInvitationToken(token))
                     .willReturn(Optional.of(expiredInvitation));
 
             // when & then
-            assertThatThrownBy(() -> teamInvitationService.getInvitationDetail(token))
+            assertThatThrownBy(() -> teamInvitationService.getInvitationDetail(teamId, token))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("토큰이 만료되었습니다.");
         }

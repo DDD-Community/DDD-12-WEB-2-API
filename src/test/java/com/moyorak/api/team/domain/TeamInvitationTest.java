@@ -15,7 +15,7 @@ class TeamInvitationTest {
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime expiresDate = now.minusSeconds(1);
         final TeamInvitation teamInvitation =
-                TeamInvitationFixture.fixture(1L, "token", expiresDate);
+                TeamInvitationFixture.fixture(1L, "token", expiresDate, 1L);
 
         // when
         final boolean result = teamInvitation.isExpired(now);

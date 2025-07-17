@@ -6,6 +6,8 @@ import com.moyorak.api.team.dto.TeamRestaurantSearchSummary;
 import jakarta.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -48,4 +50,6 @@ WHERE tr.id IN :ids AND tr.use = :use
     """)
     List<TeamRestaurantLocation> findLocationsByTeamIdAndUse(
             @Param("teamId") Long teamId, @Param("use") boolean use);
+
+    Page<TeamRestaurant> findAllByTeamId(Long teamId, Pageable pageable);
 }

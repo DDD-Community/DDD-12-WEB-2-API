@@ -36,11 +36,14 @@ class TeamRestaurantSearchFacadeTest {
 
     @Mock private ReviewPhotoService reviewPhotoService;
 
+    @Mock private TeamRestaurantEventPublisher teamRestaurantEventPublisher;
+
     @Nested
     @DisplayName("팀 맛집 검색 시")
     class Search {
 
         private final Long teamId = 1L;
+        private final Long userId = 1L;
         private final Long teamRestaurantId = 10L;
         private final String photoPath = "s3://somepath/review.jpg";
 
@@ -75,7 +78,7 @@ class TeamRestaurantSearchFacadeTest {
 
             // when
             ListResponse<TeamRestaurantSearchResponse> result =
-                    teamRestaurantSearchFacade.search(teamId, request);
+                    teamRestaurantSearchFacade.search(userId, teamId, request);
 
             // then
             assertThat(result.getData()).hasSize(1);

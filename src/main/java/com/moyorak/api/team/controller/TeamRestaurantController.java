@@ -62,8 +62,10 @@ class TeamRestaurantController {
     @Operation(summary = "팀 맛집 검색", description = "팀 맛집 검색을 합니다.")
     public ListResponse<TeamRestaurantSearchResponse> searchTeamRestaurants(
             @PathVariable @Positive final Long teamId,
-            @Valid final TeamRestaurantSearchRequest teamRestaurantSearchRequest) {
-        return teamRestaurantSearchFacade.search(teamId, teamRestaurantSearchRequest);
+            @Valid final TeamRestaurantSearchRequest teamRestaurantSearchRequest,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        return teamRestaurantSearchFacade.search(
+                userPrincipal.getId(), teamId, teamRestaurantSearchRequest);
     }
 
     @GetMapping("/{teamId}/restaurants/locations")

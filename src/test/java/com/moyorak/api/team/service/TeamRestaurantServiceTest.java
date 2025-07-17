@@ -24,6 +24,7 @@ import com.moyorak.api.team.domain.TeamUserFixture;
 import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
+import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
@@ -254,6 +255,137 @@ class TeamRestaurantServiceTest {
             assertThatThrownBy(() -> teamRestaurantService.save(userId, teamId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("식당이 존재하지 않습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 맛집 수정 시,")
+    class UpdateTeamRestaurant {
+        private final Long userId = 1L;
+        private final Long teamId = 1L;
+        private final Long teamRestaurantId = 1L;
+
+        @Test
+        @DisplayName("회원이 아닌 경우 예외가 발생한다.")
+        void isInvalidTeamUser() {
+            // given
+            final TeamRestaurantUpdateRequest request = new TeamRestaurantUpdateRequest("맛집입니다.");
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser notApproved =
+                    TeamUserFixture.fixture(userId, team, TeamUserStatus.PENDING, true);
+
+            // when & then
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(notApproved));
+
+            assertThatThrownBy(
+                            () ->
+                                    teamRestaurantService.updateTeamRestaurant(
+                                            teamId, teamRestaurantId, userId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("팀원이 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("성공하면 한줄평이 변경된다.")
+        void updateTeamRestaurant() {
+            // given
+            final String newSummary = "맛집입니다.";
+            final TeamRestaurantUpdateRequest request = new TeamRestaurantUpdateRequest(newSummary);
+
+            final Restaurant restaurant =
+                    RestaurantFixture.fixture(
+                            "http://place.map.kakao.com/123456",
+                            "우가우가 차차차",
+                            "우가우가시 차차차동 24번길",
+                            "우가우가 차차로 123",
+                            RestaurantCategory.KOREAN,
+                            127.043616,
+                            37.503095);
+
+            final TeamRestaurant teamRestaurant =
+                    TeamRestaurantFixture.fixture(
+                            teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
+
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser approvedUser =
+                    TeamUserFixture.fixture(userId, team, TeamUserStatus.APPROVED, true);
+
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(approvedUser));
+
+            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
+                    .willReturn(Optional.of(teamRestaurant));
+
+            // when
+            teamRestaurantService.updateTeamRestaurant(teamId, teamRestaurantId, userId, request);
+
+            // then
+            assertThat(teamRestaurant.getSummary()).isEqualTo(newSummary);
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 맛집 삭제 시,")
+    class DeleteTeamRestaurant {
+        private final Long userId = 1L;
+        private final Long teamId = 1L;
+        private final Long teamRestaurantId = 1L;
+
+        @Test
+        @DisplayName("회원이 아닌 경우 예외가 발생한다.")
+        void isInvalidTeamUser() {
+            // given
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser notApproved =
+                    TeamUserFixture.fixture(userId, team, TeamUserStatus.PENDING, true);
+
+            // when & then
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(notApproved));
+
+            assertThatThrownBy(
+                            () ->
+                                    teamRestaurantService.deleteTeamRestaurant(
+                                            teamId, teamRestaurantId, userId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("팀원이 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("성공하면 팀 맛집이 삭제된다(사용 여부 값 변경).")
+        void deleteTeamRestaurant() {
+            // given
+            final Restaurant restaurant =
+                    RestaurantFixture.fixture(
+                            "http://place.map.kakao.com/123456",
+                            "우가우가 차차차",
+                            "우가우가시 차차차동 24번길",
+                            "우가우가 차차로 123",
+                            RestaurantCategory.KOREAN,
+                            127.043616,
+                            37.503095);
+
+            final TeamRestaurant teamRestaurant =
+                    TeamRestaurantFixture.fixture(
+                            teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
+
+            final boolean before = teamRestaurant.isUse();
+            final Team team = TeamFixture.fixture(teamId, null, true);
+            final TeamUser approvedUser =
+                    TeamUserFixture.fixture(userId, team, TeamUserStatus.APPROVED, true);
+
+            given(teamUserRepository.findWithTeamAndCompany(teamId, userId, true))
+                    .willReturn(Optional.of(approvedUser));
+
+            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
+                    .willReturn(Optional.of(teamRestaurant));
+
+            // when
+            teamRestaurantService.deleteTeamRestaurant(teamId, teamRestaurantId, userId);
+
+            // then
+            assertThat(teamRestaurant.isUse()).isNotEqualTo(before);
         }
     }
 }

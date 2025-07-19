@@ -16,6 +16,16 @@ public class TeamUserFixture {
         return teamUser;
     }
 
+    public static TeamUser fixture(final TeamUserStatus status, final TeamRole role, boolean use) {
+        TeamUser teamUser = new TeamUser();
+
+        ReflectionTestUtils.setField(teamUser, "status", status);
+        ReflectionTestUtils.setField(teamUser, "role", role);
+        ReflectionTestUtils.setField(teamUser, "use", use);
+
+        return teamUser;
+    }
+
     public static TeamUser fixtureApproved(final Long userId, final Team team) {
         return fixture(userId, team, TeamUserStatus.APPROVED, true);
     }

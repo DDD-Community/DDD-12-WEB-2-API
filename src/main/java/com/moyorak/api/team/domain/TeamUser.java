@@ -57,4 +57,13 @@ public class TeamUser extends AuditInformation {
     public boolean isNotApproved() {
         return status != TeamUserStatus.APPROVED;
     }
+
+    public boolean isTeamAdmin() {
+        return role == TeamRole.TEAM_ADMIN;
+    }
+
+    public void withdraw() {
+        status = TeamUserStatus.WITHDRAWN;
+        use = false;
+    }
 }

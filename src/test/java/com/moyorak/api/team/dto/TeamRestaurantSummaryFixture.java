@@ -2,7 +2,7 @@ package com.moyorak.api.team.dto;
 
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 
-public class TeamRestaurantSearchSummaryFixture {
+public class TeamRestaurantSummaryFixture {
 
     public static TeamRestaurantSummary fixture(
             Long teamRestaurantId,

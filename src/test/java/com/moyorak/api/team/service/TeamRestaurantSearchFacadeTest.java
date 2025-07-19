@@ -13,8 +13,8 @@ import com.moyorak.api.team.dto.SearchResult;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
-import com.moyorak.api.team.dto.TeamRestaurantSearchSummaryFixture;
 import com.moyorak.api.team.dto.TeamRestaurantSummary;
+import com.moyorak.api.team.dto.TeamRestaurantSummaryFixture;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -54,7 +54,7 @@ class TeamRestaurantSearchFacadeTest {
             final List<Long> ids = List.of(teamRestaurantId);
             final SearchResult searchResult = new SearchResult(ids, request.toPageable(), 1L);
             final TeamRestaurantSummary teamRestaurantSummary =
-                    TeamRestaurantSearchSummaryFixture.fixture(
+                    TeamRestaurantSummaryFixture.fixture(
                             teamRestaurantId, "우가우가", RestaurantCategory.KOREAN, 4.3, 20);
 
             final FirstReviewPhotoPath photo =

@@ -8,13 +8,13 @@ import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.team.domain.SortOption;
-import com.moyorak.api.team.domain.TeamRestaurantSearchSummaries;
+import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.dto.SearchResult;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
-import com.moyorak.api.team.dto.TeamRestaurantSearchSummary;
 import com.moyorak.api.team.dto.TeamRestaurantSearchSummaryFixture;
+import com.moyorak.api.team.dto.TeamRestaurantSummary;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -53,23 +53,21 @@ class TeamRestaurantSearchFacadeTest {
             // given
             final List<Long> ids = List.of(teamRestaurantId);
             final SearchResult searchResult = new SearchResult(ids, request.toPageable(), 1L);
-            final TeamRestaurantSearchSummary teamRestaurantSearchSummary =
+            final TeamRestaurantSummary teamRestaurantSummary =
                     TeamRestaurantSearchSummaryFixture.fixture(
                             teamRestaurantId, "우가우가", RestaurantCategory.KOREAN, 4.3, 20);
 
             final FirstReviewPhotoPath photo =
                     new FirstReviewPhotoPath(teamRestaurantId, photoPath);
             final TeamRestaurantSearchResponse response =
-                    TeamRestaurantSearchResponse.from(teamRestaurantSearchSummary, photoPath);
+                    TeamRestaurantSearchResponse.from(teamRestaurantSummary, photoPath);
 
             given(
                             teamRestaurantSearchService.search(
                                     teamId, request.getKeyword(), request.toPageable()))
                     .willReturn(searchResult);
             given(teamRestaurantService.findByIdsAndUse(ids, true))
-                    .willReturn(
-                            TeamRestaurantSearchSummaries.create(
-                                    List.of(teamRestaurantSearchSummary)));
+                    .willReturn(TeamRestaurantSummaries.create(List.of(teamRestaurantSummary)));
             given(reviewPhotoService.findFirstReviewPhotoPaths(ids))
                     .willReturn(FirstReviewPhotoPaths.create(ids, List.of(photo)));
 

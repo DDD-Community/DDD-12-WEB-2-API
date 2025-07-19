@@ -13,13 +13,13 @@ public record TeamRestaurantSearchResponse(
         @Schema(description = "리뷰 이미지 path", example = "https://somepath/review.jpg")
                 String reviewImagePath) {
     public static TeamRestaurantSearchResponse from(
-            TeamRestaurantSearchSummary teamRestaurantSearchSummary, String reviewImagePath) {
+            TeamRestaurantSummary teamRestaurantSummary, String reviewImagePath) {
         return new TeamRestaurantSearchResponse(
-                teamRestaurantSearchSummary.teamRestaurantId(),
-                teamRestaurantSearchSummary.restaurantName(),
-                teamRestaurantSearchSummary.restaurantCategory(),
-                teamRestaurantSearchSummary.averageReviewScore(),
-                teamRestaurantSearchSummary.reviewCount(),
+                teamRestaurantSummary.teamRestaurantId(),
+                teamRestaurantSummary.restaurantName(),
+                teamRestaurantSummary.restaurantCategory(),
+                teamRestaurantSummary.averageReviewScore(),
+                teamRestaurantSummary.reviewCount(),
                 reviewImagePath);
     }
 }

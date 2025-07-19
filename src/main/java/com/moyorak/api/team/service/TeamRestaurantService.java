@@ -7,7 +7,7 @@ import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantDistance;
 import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
 import com.moyorak.api.team.domain.TeamRestaurantSearch;
-import com.moyorak.api.team.domain.TeamRestaurantSearchSummaries;
+import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.dto.TeamRestaurantListRequest;
 import com.moyorak.api.team.dto.TeamRestaurantLocation;
@@ -131,9 +131,8 @@ public class TeamRestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public TeamRestaurantSearchSummaries findByIdsAndUse(List<Long> ids, boolean use) {
-        return TeamRestaurantSearchSummaries.create(
-                teamRestaurantRepository.findByIdInAndUse(ids, use));
+    public TeamRestaurantSummaries findByIdsAndUse(List<Long> ids, boolean use) {
+        return TeamRestaurantSummaries.create(teamRestaurantRepository.findByIdInAndUse(ids, use));
     }
 
     @Transactional(readOnly = true)

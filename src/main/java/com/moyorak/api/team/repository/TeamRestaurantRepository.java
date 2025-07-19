@@ -2,7 +2,7 @@ package com.moyorak.api.team.repository;
 
 import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.dto.TeamRestaurantLocation;
-import com.moyorak.api.team.dto.TeamRestaurantSearchSummary;
+import com.moyorak.api.team.dto.TeamRestaurantSummary;
 import jakarta.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +28,12 @@ public interface TeamRestaurantRepository extends CrudRepository<TeamRestaurant,
                             "TeamRestaurantRepository.findByIdInAndUse : 팀 식당 ID 리스트로 팀 식당 요약 정보을 조회합니다."))
     @Query(
             """
-SELECT new com.moyorak.api.team.dto.TeamRestaurantSearchSummary(tr.id, r.name, r.category, tr.averageReviewScore, tr.reviewCount)
+SELECT new com.moyorak.api.team.dto.TeamRestaurantSummary(tr.id, r.name, r.category, tr.averageReviewScore, tr.reviewCount)
 FROM TeamRestaurant tr
 JOIN tr.restaurant r
 WHERE tr.id IN :ids AND tr.use = :use
 """)
-    List<TeamRestaurantSearchSummary> findByIdInAndUse(
+    List<TeamRestaurantSummary> findByIdInAndUse(
             @Param("ids") List<Long> ids, @Param("use") boolean use);
 
     @QueryHints(
